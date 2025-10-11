@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Alert } from "@/entities/Alert";
+
+import Alert from "../../dummy.js" 
+
 import { AlertTriangle, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import AlertFilters from "../components/alerts/AlertFilters";
-import AlertCard from "../components/alerts/AlertCard";
+import AlertFilters from "../../components/dashboard/alert/AlertFilter";
+import AlertCard from "../../components/dashboard/alert/AlertCard";
 
 export default function Alerts() {
   const [alerts, setAlerts] = useState([]);

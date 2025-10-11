@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Alert } from "@/entities/Alert";
+
+//@ts-expect-error
+import Alert from "../../Entities/Alert";
+
 import { Shield, Activity, Eye, AlertCircle } from "lucide-react";
-import MetricCard from "../components/dashboard/MetricCard";
-import SecurityScore from "../components/dashboard/SecurityScore";
-import RecentAlerts from "../components/dashboard/RecentAlerts";
-import SystemHealth from "../components/dashboard/SystemHealth";
+import MetricCard from "../../components/dashboard/MatricCard";
+import SecurityScore from "../../components/dashboard/Security";
+import RecentAlerts from "../../components/dashboard/RecentAlert";
+import SystemHealth from "../../components/dashboard/SystemHealth";
 
 export default function Dashboard() {
   const [alerts, setAlerts] = useState([]);
@@ -21,15 +24,17 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  const activeAlerts = alerts.filter(a => a.status === "active").length;
-  const criticalAlerts = alerts.filter(a => a.severity === "critical").length;
+  const activeAlerts = alerts.filter((a) => a.status === "active").length;
+  const criticalAlerts = alerts.filter((a) => a.severity === "critical").length;
 
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold text-white">Security Dashboard</h1>
-        <p className="text-gray-400">Real-time overview of your security posture</p>
+        <p className="text-gray-400">
+          Real-time overview of your security posture
+        </p>
       </div>
 
       {/* Metrics Grid */}
@@ -71,7 +76,7 @@ export default function Dashboard() {
           <SystemHealth />
         </div>
         <div>
-          <SecurityScore score={87} />
+          <SecurityScore score={60} />
         </div>
       </div>
     </div>

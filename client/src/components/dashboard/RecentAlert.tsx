@@ -1,8 +1,6 @@
-import React from "react";
 import { AlertTriangle, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
 
 const severityColors = {
   critical: "from-red-500 to-rose-500",
@@ -19,7 +17,7 @@ export default function RecentAlerts({ alerts }) {
           <AlertTriangle className="w-5 h-5 text-cyan-400" />
           Recent Alerts
         </h3>
-        <Link to={createPageUrl("Alerts")} className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
+        <Link to={"/Alerts"} className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
           View All →
         </Link>
       </div>
