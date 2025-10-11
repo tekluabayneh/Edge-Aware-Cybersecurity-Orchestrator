@@ -1,13 +1,7 @@
-import React from "react";
 import { Shield } from "lucide-react";
 
-export default function SecurityScore({ score }) {
+export default function SecurityScore({ score }: { score: number }) {
   const percentage = (score / 100) * 100;
-  const getScoreColor = () => {
-    if (score >= 80) return "from-green-500 to-emerald-500";
-    if (score >= 60) return "from-yellow-500 to-orange-500";
-    return "from-red-500 to-rose-500";
-  };
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
@@ -37,8 +31,28 @@ export default function SecurityScore({ score }) {
             />
             <defs>
               <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" className={`text-green-500`} stopColor="currentColor" />
-                <stop offset="100%" className={`text-cyan-500`} stopColor="currentColor" />
+                <stop
+                  offset="0%"
+                  className={`text-green-500`}
+                  stopColor={
+                    score >= 80
+                      ? "#22c55e"
+                      : score >= 60
+                      ? "#eab308"
+                      : "#ef4444"
+                  }
+                />
+                <stop
+                  offset="100%"
+                  className={`text-cyan-500`}
+                  stopColor={
+                    score >= 80
+                      ? "#10b981"
+                      : score >= 60
+                      ? "#f97316"
+                      : "#f43f5e"
+                  }
+                />
               </linearGradient>
             </defs>
           </svg>
@@ -49,7 +63,8 @@ export default function SecurityScore({ score }) {
           </div>
         </div>
         <p className="text-gray-400 text-sm">
-          Your security posture is <span className="text-cyan-400 font-semibold">Excellent</span>
+          Your security posture is{" "}
+          <span className="text-cyan-400 font-semibold">Excellent</span>
         </p>
       </div>
     </div>
