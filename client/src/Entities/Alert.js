@@ -1,0 +1,67 @@
+const Alert = {
+    "name": "Alert",
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string",
+            "description": "Alert title"
+        },
+        "description": {
+            "type": "string",
+            "description": "Detailed description of the threat"
+        },
+        "severity": {
+            "type": "string",
+            "enum": [
+                "critical",
+                "high",
+                "medium",
+                "low"
+            ],
+            "description": "Threat severity level"
+        },
+        "category": {
+            "type": "string",
+            "enum": [
+                "malware",
+                "phishing",
+                "unauthorized_access",
+                "data_breach",
+                "ddos",
+                "vulnerability"
+            ],
+            "description": "Type of security threat"
+        },
+        "source_ip": {
+            "type": "string",
+            "description": "Source IP address"
+        },
+        "target": {
+            "type": "string",
+            "description": "Affected system or resource"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "active",
+                "investigating",
+                "resolved",
+                "dismissed"
+            ],
+            "default": "active",
+            "description": "Current alert status"
+        },
+        "detected_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the threat was detected"
+        }
+    },
+    "required": [
+        "title",
+        "severity",
+        "category"
+    ]
+}
+
+export default Alert
