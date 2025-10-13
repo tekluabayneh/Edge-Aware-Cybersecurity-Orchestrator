@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-//@ts-expect-error
+//@ts-expect-error json will be remove 
 import Alert from "../../Entities/Alert";
 
 import { Shield, Activity, Eye, AlertCircle } from "lucide-react";
@@ -19,8 +19,7 @@ export default function Dashboard() {
 
   const loadData = async () => {
     setLoading(true);
-    const alertsData = await Alert.list("-detected_at");
-    setAlerts(alertsData);
+    setAlerts(Alert);
     setLoading(false);
   };
 

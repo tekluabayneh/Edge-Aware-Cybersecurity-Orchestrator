@@ -1,6 +1,5 @@
 import React from "react";
 import { Filter } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export default function AlertFilters({ activeFilter, setActiveFilter }) {
   const filters = [
@@ -18,18 +17,12 @@ export default function AlertFilters({ activeFilter, setActiveFilter }) {
         <span className="text-sm font-medium">Filter by Severity:</span>
       </div>
       {filters.map((filter) => (
-        <Button
+        <button
           key={filter.value}
           onClick={() => setActiveFilter(filter.value)}
-          variant="outline"
-          className={`transition-all duration-200 ${
-            activeFilter === filter.value
-              ? "bg-cyan-500/20 border-cyan-500 text-cyan-400"
-              : "bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-gray-200"
-          }`}
-        >
+          className="transition-all duration-200 cursor-pointer rounded px-3 py-1 border  border-purple-900 bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-gray-200">
           {filter.label}
-        </Button>
+        </button>
       ))}
     </div>
   );

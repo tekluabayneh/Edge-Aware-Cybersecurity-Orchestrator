@@ -1,67 +1,85 @@
-const Alert = {
-    "name": "Alert",
-    "type": "object",
-    "properties": {
-        "title": {
-            "type": "string",
-            "description": "Alert title"
-        },
-        "description": {
-            "type": "string",
-            "description": "Detailed description of the threat"
-        },
-        "severity": {
-            "type": "string",
-            "enum": [
-                "critical",
-                "high",
-                "medium",
-                "low"
-            ],
-            "description": "Threat severity level"
-        },
-        "category": {
-            "type": "string",
-            "enum": [
-                "malware",
-                "phishing",
-                "unauthorized_access",
-                "data_breach",
-                "ddos",
-                "vulnerability"
-            ],
-            "description": "Type of security threat"
-        },
-        "source_ip": {
-            "type": "string",
-            "description": "Source IP address"
-        },
-        "target": {
-            "type": "string",
-            "description": "Affected system or resource"
-        },
-        "status": {
-            "type": "string",
-            "enum": [
-                "active",
-                "investigating",
-                "resolved",
-                "dismissed"
-            ],
-            "default": "active",
-            "description": "Current alert status"
-        },
-        "detected_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "When the threat was detected"
-        }
-    },
-    "required": [
-        "title",
-        "severity",
-        "category"
-    ]
-}
+const Alert = [
+  {
+    id: 1,
+    title: "Unauthorized login attempt",
+    description:
+      "Multiple failed login attempts detected from IP 192.168.1.100",
+    severity: "critical",
+    status: "open",
+    detected_at: "2025-10-13T08:30:00Z",
+    source_ip: "192.168.1.100",
+    target: "auth-server-1",
+  },
+  {
+    id: 2,
+    title: "Suspicious file download",
+    description: "A suspicious executable was downloaded by user John Doe",
+    severity: "high",
+    status: "investigating",
+    detected_at: "2025-10-12T16:45:00Z",
+    source_ip: "10.0.0.22",
+    target: "storage-node-2",
+  },
+  {
+    id: 3,
+    title: "Firewall configuration changed",
+    description: "Firewall rules were modified without proper approval",
+    severity: "medium",
+    status: "resolved",
+    detected_at: "2025-10-11T12:15:00Z",
+    source_ip: "172.16.0.5",
+    target: "firewall-gateway",
+  },
+  {
+    id: 4,
+    title: "Low disk space",
+    description: "Server disk space below 20% on node 3",
+    severity: "low",
+    status: "open",
+    detected_at: "2025-10-10T09:00:00Z",
+    source_ip: "127.0.0.1",
+    target: "db-server-3",
+  },
+  {
+    id: 5,
+    title: "SQL injection attempt",
+    description: "Potential SQL injection detected in login form",
+    severity: "critical",
+    status: "investigating",
+    detected_at: "2025-10-09T21:30:00Z",
+    source_ip: "203.0.113.45",
+    target: "web-api-prod",
+  },
+  {
+    id: 6,
+    title: "Outdated software version",
+    description: "Server is running an outdated version of Node.js",
+    severity: "medium",
+    status: "resolved",
+    detected_at: "2025-10-08T14:20:00Z",
+    source_ip: "10.0.0.44",
+    target: "backend-server-1",
+  },
+  {
+    id: 7,
+    title: "Brute force attack detected",
+    description: "Multiple password attempts detected for admin account",
+    severity: "high",
+    status: "open",
+    detected_at: "2025-10-07T18:50:00Z",
+    source_ip: "198.51.100.14",
+    target: "auth-server-2",
+  },
+  {
+    id: 8,
+    title: "Unusual network traffic",
+    description: "High volume of outgoing traffic detected from server 5",
+    severity: "low",
+    status: "resolved",
+    detected_at: "2025-10-06T11:05:00Z",
+    source_ip: "172.16.10.20",
+    target: "network-core-5",
+  },
+];
 
-export default Alert
+export default Alert;
