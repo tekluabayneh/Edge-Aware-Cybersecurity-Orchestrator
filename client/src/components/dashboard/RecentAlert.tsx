@@ -1,13 +1,9 @@
 import { AlertTriangle, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
+import { severityColorsForAlert } from "../../constants/colors";
 
-const severityColors = {
-  critical: "from-red-500 to-rose-500",
-  high: "from-orange-500 to-amber-500",
-  medium: "from-yellow-500 to-yellow-600",
-  low: "from-blue-500 to-cyan-500"
-};
+
 
 export default function RecentAlerts({ alerts }) {
   return (
@@ -29,7 +25,7 @@ export default function RecentAlerts({ alerts }) {
           >
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${severityColors[alert.severity]} animate-pulse`}></div>
+                <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${severityColorsForAlert[alert.severity]} animate-pulse`}></div>
                 <span className="text-sm font-medium text-white">{alert.title}</span>
               </div>
               <span className="text-xs text-gray-500 uppercase font-semibold">{alert.severity}</span>

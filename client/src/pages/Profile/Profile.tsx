@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
-import UserInfoCard from "../../components/profile/UserinfoCard"
+import { useState, useEffect } from "react";
+import UserInfoCard from "../../components/profile/UserinfoCard";
 import ActivityLog from "../../components/profile/ActivityLog";
 import SecurityPreferences from "../../components/profile/SecurityPreferance";
+import type { userType } from "../../types/Alert";
 
-const User  ={ 
-  name:"jone",
- email:"jone@gmail.com",
-}
+const User = {
+  email: "jone@gmail.com",
+  full_name: "jone",
+  created_date: "1111",
+};
 
 export default function Profile() {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<userType | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,7 +40,9 @@ export default function Profile() {
       {/* Header */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold text-white">User Profile</h1>
-        <p className="text-gray-400">Manage your account settings and preferences</p>
+        <p className="text-gray-400">
+          Manage your account settings and preferences
+        </p>
       </div>
 
       {/* Profile Grid */}

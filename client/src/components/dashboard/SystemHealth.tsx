@@ -1,12 +1,4 @@
-import React from "react";
-import { Server, Cpu, HardDrive, Network } from "lucide-react";
-
-const healthMetrics = [
-  { name: "CPU Usage", value: 45, icon: Cpu, color: "cyan" },
-  { name: "Memory", value: 67, icon: Server, color: "blue" },
-  { name: "Storage", value: 38, icon: HardDrive, color: "green" },
-  { name: "Network", value: 82, icon: Network, color: "purple" }
-];
+import { healthMetrics } from "../../data/filters";
 
 export default function SystemHealth() {
   return (
@@ -20,7 +12,9 @@ export default function SystemHealth() {
                 <metric.icon className="w-4 h-4 text-cyan-400" />
                 {metric.name}
               </span>
-              <span className="text-sm font-semibold text-white">{metric.value}%</span>
+              <span className="text-sm font-semibold text-white">
+                {metric.value}%
+              </span>
             </div>
             <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
               <div

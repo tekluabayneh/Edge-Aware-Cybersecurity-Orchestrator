@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import type { AlertType } from "../../types/Alert";
 
-//@ts-expect-error json will be remove 
+//@ts-expect-error json will be remove
 import Alert from "../../Entities/Alert";
 
 import { Shield, Activity, Eye, AlertCircle } from "lucide-react";
@@ -10,7 +11,7 @@ import RecentAlerts from "../../components/dashboard/RecentAlert";
 import SystemHealth from "../../components/dashboard/SystemHealth";
 
 export default function Dashboard() {
-  const [alerts, setAlerts] = useState([]);
+  const [alerts, setAlerts] = useState<AlertType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
