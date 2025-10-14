@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { User } from "@/entities/User";
-import UserInfoCard from "../components/profile/UserInfoCard";
-import ActivityLog from "../components/profile/ActivityLog";
-import SecurityPreferences from "../components/profile/SecurityPreferences";
+import UserInfoCard from "../../components/profile/UserinfoCard"
+import ActivityLog from "../../components/profile/ActivityLog";
+import SecurityPreferences from "../../components/profile/SecurityPreferance";
+
+const User  ={ 
+  name:"jone",
+ email:"jone@gmail.com",
+}
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,8 +18,7 @@ export default function Profile() {
 
   const loadUserData = async () => {
     try {
-      const userData = await User.me();
-      setUser(userData);
+      setUser(User);
     } catch (error) {
       console.error("Error loading user data:", error);
     }

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Lock, Bell, Mail, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export default function SecurityPreferences() {
   const [preferences, setPreferences] = useState({
@@ -107,9 +106,9 @@ export default function SecurityPreferences() {
         </div>
       </div>
 
-      <Button className="w-full mt-6 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
+      <button className="w-full rounded cursor-pointer p-2 mt-6 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
         Save Preferences
-      </Button>
+      </button>
     </div>
   );
 }
