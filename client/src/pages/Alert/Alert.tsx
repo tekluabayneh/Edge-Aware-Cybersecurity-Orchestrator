@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { AlertTriangle, Search } from "lucide-react";
 import AlertFilters from "../../components/alert/AlertFilter";
 import AlertCard from "../../components/alert/AlertCard";
+import type { AlertType } from "../../types/Alert";
+//@ts-expect-error  i will remove this import with api call
 import Alert from "../../Entities/Alert.js";
+
 export default function Alerts() {
-  const [alerts, setAlerts] = useState([]);
-  const [filteredAlerts, setFilteredAlerts] = useState([]);
+  const [alerts, setAlerts] = useState<AlertType[] | []>([]);
+  const [filteredAlerts, setFilteredAlerts] = useState<AlertType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -96,10 +99,7 @@ export default function Alerts() {
         </div>
       </div>
 
-      <AlertFilters
-        activeFilter={activeFilter}
-        setActiveFilter={setActiveFilter}
-      />
+      <AlertFilters setActiveFilter={setActiveFilter} />
 
       {/* Alerts List */}
       <div className="space-y-4">

@@ -1,14 +1,7 @@
-import React from "react";
 import { Activity, Clock } from "lucide-react";
 import { format } from "date-fns";
 
-const recentActivities = [
-  { action: "Security scan completed", timestamp: new Date(Date.now() - 3600000) },
-  { action: "Alert dismissed: Low priority phishing attempt", timestamp: new Date(Date.now() - 7200000) },
-  { action: "System settings updated", timestamp: new Date(Date.now() - 14400000) },
-  { action: "2FA enabled", timestamp: new Date(Date.now() - 86400000) },
-  { action: "Password changed", timestamp: new Date(Date.now() - 172800000) }
-];
+import { recentActivities } from "../../data/filters";
 
 export default function ActivityLog() {
   return (
@@ -19,7 +12,10 @@ export default function ActivityLog() {
       </h3>
       <div className="space-y-4">
         {recentActivities.map((activity, index) => (
-          <div key={index} className="flex items-start gap-3 p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors">
+          <div
+            key={index}
+            className="flex items-start gap-3 p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
+          >
             <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2"></div>
             <div className="flex-1">
               <p className="text-sm text-white">{activity.action}</p>
