@@ -6,23 +6,29 @@ export default function SecurityPreferences() {
     twoFactor: true,
     emailNotifications: true,
     alertNotifications: true,
-    autoLock: false
+    autoLock: false,
   });
 
-  const togglePreference = (key) => {
-    setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
+  const togglePreference = (key: string) => {
+    setPreferences((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-white mb-6">Security Preferences</h3>
+      <h3 className="text-lg font-semibold text-white mb-6">
+        Security Preferences
+      </h3>
       <div className="space-y-4">
         <div className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
           <div className="flex items-center gap-3">
             <Lock className="w-5 h-5 text-cyan-400" />
             <div>
-              <p className="text-sm font-medium text-white">Two-Factor Authentication</p>
-              <p className="text-xs text-gray-400">Add extra security to your account</p>
+              <p className="text-sm font-medium text-white">
+                Two-Factor Authentication
+              </p>
+              <p className="text-xs text-gray-400">
+                Add extra security to your account
+              </p>
             </div>
           </div>
           <button
@@ -43,8 +49,12 @@ export default function SecurityPreferences() {
           <div className="flex items-center gap-3">
             <Mail className="w-5 h-5 text-cyan-400" />
             <div>
-              <p className="text-sm font-medium text-white">Email Notifications</p>
-              <p className="text-xs text-gray-400">Receive security updates via email</p>
+              <p className="text-sm font-medium text-white">
+                Email Notifications
+              </p>
+              <p className="text-xs text-gray-400">
+                Receive security updates via email
+              </p>
             </div>
           </div>
           <button
@@ -65,8 +75,12 @@ export default function SecurityPreferences() {
           <div className="flex items-center gap-3">
             <Bell className="w-5 h-5 text-cyan-400" />
             <div>
-              <p className="text-sm font-medium text-white">Alert Notifications</p>
-              <p className="text-xs text-gray-400">Get notified of critical threats</p>
+              <p className="text-sm font-medium text-white">
+                Alert Notifications
+              </p>
+              <p className="text-xs text-gray-400">
+                Get notified of critical threats
+              </p>
             </div>
           </div>
           <button
@@ -87,8 +101,12 @@ export default function SecurityPreferences() {
           <div className="flex items-center gap-3">
             <Shield className="w-5 h-5 text-cyan-400" />
             <div>
-              <p className="text-sm font-medium text-white">Auto-Lock Session</p>
-              <p className="text-xs text-gray-400">Lock after 15 minutes of inactivity</p>
+              <p className="text-sm font-medium text-white">
+                Auto-Lock Session
+              </p>
+              <p className="text-xs text-gray-400">
+                Lock after 15 minutes of inactivity
+              </p>
             </div>
           </div>
           <button
