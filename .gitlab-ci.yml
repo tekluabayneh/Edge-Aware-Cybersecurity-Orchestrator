@@ -1,0 +1,7 @@
+stages:
+  - test
+
+echo-test:
+  stage: test
+  script:
+    - echo "CI/CD pipeline is working!"
