@@ -24,7 +24,7 @@ install_backend:
 install_agent:
   stage: setup
   image: golang:1.22-alpine
-  before-script:
+  script:
     - cd backend
     - go mod tidy
     - go run main.go
