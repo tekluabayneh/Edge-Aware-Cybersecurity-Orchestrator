@@ -13,7 +13,7 @@ install_client:
   script:
     - cd client
     - npm install
-    - npm run dev
+    - npm run build 
 
 install_backend:
   stage: setup
