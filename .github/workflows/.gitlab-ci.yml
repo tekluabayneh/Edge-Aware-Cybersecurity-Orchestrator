@@ -1,7 +1,55 @@
 stages:
+  - setup
   - test
+  - build
+  - deploy
 
-echo-test:
-  stage: test
+install_client:
+  stage: setup
+  image: node:22
   script:
-    - echo "CI/CD pipeline is working!"
+    - apk add  curl
+    - cd client
+    - npm install
+    - npm run dev
+
+install_backend:
+  stage: setup
+  image: golang:1.25-alpine
+  script:
+    - cd backend
+    - go mod tidy
+    - go run main.go
+
+install_agent:
+  stage: setup
+  image: golang:1.25-alpine
+  script:
+    - cd backend
+    - go mod tidy
+    - go run main.go
+
+install_analyzer:
+  stage: setup
+  image: python:3.11
+  script:
+    - cd analyzer
+    - pip install uv
+    - uv sync
+    - uv run python main.py
+# ---- Test ----
+# - curl http://localhost:5173 | grep "Secure Your Digital Empire"
+
+run_docker_compose:
+  stage: test
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker-compose up --build -d
+    - docker-compose ps
+    - docker-compose logs
+    - docker-compose down

@@ -6,16 +6,18 @@ stages:
 
 install_client:
   stage: setup
-  image: node:22
+  image: node:24
+
+  before_script:
+    - apt-get update && apt-get install -y curl 
   script:
-    - apk add  curl
     - cd client
     - npm install
-    - npm run dev
+    - npm run build 
 
 install_backend:
   stage: setup
-  image: golang:1.22-alpine
+  image: golang:1.25-alpine
   script:
     - cd backend
     - go mod tidy
@@ -23,8 +25,8 @@ install_backend:
 
 install_agent:
   stage: setup
-  image: golang:1.22-alpine
-  before-script:
+  image: golang:1.25-alpine
+  script:
     - cd backend
     - go mod tidy
     - go run main.go
@@ -37,6 +39,8 @@ install_analyzer:
     - pip install uv
     - uv sync
     - uv run python main.py
+
+    
 # ---- Test ----
 # - curl http://localhost:5173 | grep "Secure Your Digital Empire"
 
@@ -53,3 +57,7 @@ run_docker_compose:
     - docker-compose ps
     - docker-compose logs
     - docker-compose down
+    - docker-compose ps
+
+
+
