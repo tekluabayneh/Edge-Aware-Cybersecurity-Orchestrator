@@ -10,9 +10,7 @@ install_client:
 
   before_script:
     - apt-get update && apt-get install -y curl 
-
   script:
-    - apk add curl
     - cd client
     - npm install
     - npm run dev
