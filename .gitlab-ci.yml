@@ -7,8 +7,12 @@ stages:
 install_client:
   stage: setup
   image: node:24
+
+  before_script:
+    - apt-get update && apt-get install -y curl 
+
   script:
-    - apk add  curl
+    - apk add curl
     - cd client
     - npm install
     - npm run dev
