@@ -15,7 +15,7 @@ install_client:
 
 install_backend:
   stage: setup
-  image: golang:1.22-alpine
+  image: golang:1.25-alpine
   script:
     - cd backend
     - go mod tidy
@@ -23,7 +23,7 @@ install_backend:
 
 install_agent:
   stage: setup
-  image: golang:1.22-alpine
+  image: golang:1.25-alpine
   script:
     - cd backend
     - go mod tidy
