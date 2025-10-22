@@ -1,6 +1,6 @@
-import { User, Mail, Shield, Calendar } from "lucide-react";
-import { format } from "date-fns";
-import type { userType } from "../../types/Alert";
+import { User, Mail, Shield, Calendar } from 'lucide-react'
+import { format } from 'date-fns'
+import type { userType } from '../../types/Alert'
 export default function UserInfoCard({ user }: { user: userType | null }) {
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
@@ -12,9 +12,9 @@ export default function UserInfoCard({ user }: { user: userType | null }) {
           <User className="w-12 h-12 text-white" />
         </div>
         <h2 className="text-2xl font-bold text-white">
-          {user?.full_name || "User"}
+          {user?.full_name || 'User'}
         </h2>
-        <p className="text-gray-400 text-sm">{user?.role || "user"}</p>
+        <p className="text-gray-400 text-sm">{user?.role || 'user'}</p>
       </div>
 
       <div className="space-y-4">
@@ -23,7 +23,7 @@ export default function UserInfoCard({ user }: { user: userType | null }) {
           <div>
             <p className="text-xs text-gray-400">Email Address</p>
             <p className="text-sm text-white">
-              {user?.email || "user@edge-aware.com"}
+              {user?.email || 'user@edge-aware.com'}
             </p>
           </div>
         </div>
@@ -33,7 +33,7 @@ export default function UserInfoCard({ user }: { user: userType | null }) {
           <div>
             <p className="text-xs text-gray-400">Account Type</p>
             <p className="text-sm text-white capitalize">
-              {user?.role || "Standard User"}
+              {user?.role || 'Standard User'}
             </p>
           </div>
         </div>
@@ -44,12 +44,12 @@ export default function UserInfoCard({ user }: { user: userType | null }) {
             <p className="text-xs text-gray-400">Member Since</p>
             <p className="text-sm text-white">
               {user?.created_date
-                ? format(new Date(user.created_date), "MMMM d, yyyy")
-                : "N/A"}
+                ? format(new Date(user.created_date), 'MMMM d, yyyy')
+                : 'N/A'}
             </p>
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -1,37 +1,37 @@
-import "./App.css";
-import Routers from "./router";
+import './App.css'
+import Routers from './router'
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
   AlertTriangle,
   User,
   Shield,
   Activity,
-} from "lucide-react";
+} from 'lucide-react'
 
 const navigationItems = [
   {
-    title: "Dashboard",
-    url: "/Dashboard",
+    title: 'Dashboard',
+    url: '/Dashboard',
     icon: LayoutDashboard,
   },
   {
-    title: "Alerts",
-    url: "/Alerts",
+    title: 'Alerts',
+    url: '/Alerts',
     icon: AlertTriangle,
   },
   {
-    title: "Profile",
-    url: "/Profile",
+    title: 'Profile',
+    url: '/Profile',
     icon: User,
   },
-];
+]
 
 const App = () => {
-  const location = useLocation();
+  const location = useLocation()
   const isLandingPage =
-    location.pathname === "/" || location.pathname == "/auth";
+    location.pathname === '/' || location.pathname == '/auth'
   return (
     <div className="w-full min-h-screen bg-slate-950 text-gray-100 flex">
       {/* Sidebar */}
@@ -53,21 +53,21 @@ const App = () => {
 
           <nav className="p-4 space-y-2">
             {navigationItems.map((item) => {
-              const isActive = location.pathname === item.url;
+              const isActive = location.pathname === item.url
               return (
                 <Link
                   key={item.title}
                   to={item.url}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                     isActive
-                      ? "bg-gradient-to-r from-indigo-600/20 to-violet-600/20 text-violet-400 border border-violet-500/30"
-                      : "text-gray-400 hover:text-gray-200 hover:bg-slate-800"
+                      ? 'bg-gradient-to-r from-indigo-600/20 to-violet-600/20 text-violet-400 border border-violet-500/30'
+                      : 'text-gray-400 hover:text-gray-200 hover:bg-slate-800'
                   }`}
                 >
                   <item.icon className="w-5 h-5" />
                   <span className="font-medium">{item.title}</span>
                 </Link>
-              );
+              )
             })}
           </nav>
 
@@ -83,7 +83,7 @@ const App = () => {
       {/* Main Content */}
       <main
         className={`${
-          isLandingPage ? "ml-0" : "ml-60"
+          isLandingPage ? 'ml-0' : 'ml-60'
         }  flex-1 pr-3 relative z-10`}
       >
         <Routers />
@@ -95,6 +95,6 @@ const App = () => {
         <div className="absolute bottom-0 left-64 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl"></div>
       </div>
     </div>
-  );
-};
-export default App;
+  )
+}
+export default App

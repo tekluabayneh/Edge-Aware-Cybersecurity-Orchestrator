@@ -1,5 +1,5 @@
-import { TrendingUp, TrendingDown } from "lucide-react";
-import type { MetricCardProps } from "../../types/Alert";
+import { TrendingUp, TrendingDown } from 'lucide-react'
+import type { MetricCardProps } from '../../types/Alert'
 export default function MetricCard({
   title,
   value,
@@ -7,7 +7,7 @@ export default function MetricCard({
   icon: Icon,
   trend,
 }: MetricCardProps) {
-  const isPositive = trend === "up";
+  const isPositive = trend === 'up'
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-cyan-500/30 transition-all duration-300 group">
@@ -18,7 +18,7 @@ export default function MetricCard({
         {change && (
           <div
             className={`flex items-center gap-1 text-xs font-medium ${
-              isPositive ? "text-green-400" : "text-red-400"
+              isPositive ? 'text-green-400' : 'text-red-400'
             }`}
           >
             {isPositive ? (
@@ -33,5 +33,5 @@ export default function MetricCard({
       <h3 className="text-gray-400 text-sm font-medium mb-1">{title}</h3>
       <p className="text-3xl font-bold text-white">{value}</p>
     </div>
-  );
+  )
 }

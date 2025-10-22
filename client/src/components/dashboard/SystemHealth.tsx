@@ -1,4 +1,4 @@
-import { healthMetrics } from "../../data/filters";
+import { healthMetrics } from '../../data/filters'
 
 export default function SystemHealth() {
   return (
@@ -26,5 +26,5 @@ export default function SystemHealth() {
         ))}
       </div>
     </div>
-  );
+  )
 }

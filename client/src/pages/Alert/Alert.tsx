@@ -1,37 +1,37 @@
-import { useState, useEffect } from "react";
-import { AlertTriangle, Search } from "lucide-react";
-import AlertFilters from "../../components/alert/AlertFilter";
-import AlertCard from "../../components/alert/AlertCard";
-import type { AlertType } from "../../types/Alert";
+import { useState, useEffect } from 'react'
+import { AlertTriangle, Search } from 'lucide-react'
+import AlertFilters from '../../components/alert/AlertFilter'
+import AlertCard from '../../components/alert/AlertCard'
+import type { AlertType } from '../../types/Alert'
 //@ts-expect-error  i will remove this import with api call
-import Alert from "../../Entities/Alert.js";
+import Alert from '../../Entities/Alert.js'
 
 export default function Alerts() {
-  const [alerts, setAlerts] = useState<AlertType[] | []>([]);
-  const [filteredAlerts, setFilteredAlerts] = useState<AlertType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [alerts, setAlerts] = useState<AlertType[] | []>([])
+  const [filteredAlerts, setFilteredAlerts] = useState<AlertType[]>([])
+  const [loading, setLoading] = useState(true)
+  const [activeFilter, setActiveFilter] = useState<string>('all')
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
-    loadAlerts();
-  }, []);
+    loadAlerts()
+  }, [])
 
   useEffect(() => {
-    filterAlerts();
-  }, [alerts, activeFilter, searchTerm]);
+    filterAlerts()
+  }, [alerts, activeFilter, searchTerm])
 
   const loadAlerts = async () => {
-    setLoading(true);
-    setAlerts(Alert);
-    setLoading(false);
-  };
+    setLoading(true)
+    setAlerts(Alert)
+    setLoading(false)
+  }
 
   const filterAlerts = () => {
-    let filtered = alerts;
+    let filtered = alerts
 
-    if (activeFilter !== "all") {
-      filtered = filtered.filter((alert) => alert.severity === activeFilter);
+    if (activeFilter !== 'all') {
+      filtered = filtered.filter((alert) => alert.severity === activeFilter)
     }
 
     if (searchTerm) {
@@ -39,11 +39,11 @@ export default function Alerts() {
         (alert) =>
           alert.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           alert.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      )
     }
 
-    setFilteredAlerts(filtered);
-  };
+    setFilteredAlerts(filtered)
+  }
 
   return (
     <div className="space-y-8">
@@ -62,25 +62,25 @@ export default function Alerts() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-gradient-to-br from-red-500/10 to-rose-500/10 border border-red-500/30 rounded-lg p-4">
           <p className="text-2xl font-bold text-red-400">
-            {alerts.filter((a) => a.severity === "critical").length}
+            {alerts.filter((a) => a.severity === 'critical').length}
           </p>
           <p className="text-sm text-gray-400">Critical</p>
         </div>
         <div className="bg-gradient-to-br from-orange-500/10 to-amber-500/10 border border-orange-500/30 rounded-lg p-4">
           <p className="text-2xl font-bold text-orange-400">
-            {alerts.filter((a) => a.severity === "high").length}
+            {alerts.filter((a) => a.severity === 'high').length}
           </p>
           <p className="text-sm text-gray-400">High</p>
         </div>
         <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/30 rounded-lg p-4">
           <p className="text-2xl font-bold text-yellow-400">
-            {alerts.filter((a) => a.severity === "medium").length}
+            {alerts.filter((a) => a.severity === 'medium').length}
           </p>
           <p className="text-sm text-gray-400">Medium</p>
         </div>
         <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-lg p-4">
           <p className="text-2xl font-bold text-blue-400">
-            {alerts.filter((a) => a.severity === "low").length}
+            {alerts.filter((a) => a.severity === 'low').length}
           </p>
           <p className="text-sm text-gray-400">Low</p>
         </div>
@@ -116,5 +116,5 @@ export default function Alerts() {
         )}
       </div>
     </div>
-  );
+  )
 }

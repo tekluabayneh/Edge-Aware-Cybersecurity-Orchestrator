@@ -1,13 +1,13 @@
-import React, { Suspense, lazy } from "react";
-import { Routes, Route } from "react-router-dom";
-import Loading from "./components/loading";
+import React, { Suspense, lazy } from 'react'
+import { Routes, Route } from 'react-router-dom'
+import Loading from './components/loading'
 
-import Footer from "./components/footer/footer";
-const Dashboard = lazy(() => import("./pages/Dashboard/dashbaord"));
-const Alerts = lazy(() => import("./pages/Alert/Alert"));
-const Profiles = lazy(() => import("./pages/Profile/Profile"));
-const Landing = lazy(() => import("./pages/Landing/landing"));
-const Auth = lazy(() => import("./pages/Auth/Auth"));
+import Footer from './components/footer/footer'
+const Dashboard = lazy(() => import('./pages/Dashboard/dashbaord'))
+const Alerts = lazy(() => import('./pages/Alert/Alert'))
+const Profiles = lazy(() => import('./pages/Profile/Profile'))
+const Landing = lazy(() => import('./pages/Landing/landing'))
+const Auth = lazy(() => import('./pages/Auth/Auth'))
 
 const Routers = () => {
   return (
@@ -24,6 +24,6 @@ const Routers = () => {
       {/* Footer */}
       <Footer />
     </>
-  );
-};
-export default Routers;
+  )
+}
+export default Routers

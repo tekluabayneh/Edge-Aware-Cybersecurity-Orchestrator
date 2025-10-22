@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Shield, Lock, Sparkles, Zap, Globe } from "lucide-react";
-import { motion } from "framer-motion";
-import Form from "../../components/form/form";
+import { useState } from 'react'
+import { Shield, Lock, Sparkles, Zap, Globe } from 'lucide-react'
+import { motion } from 'framer-motion'
+import Form from '../../components/form/form'
 
 export default function Auth() {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false)
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center p-4">
@@ -74,9 +74,9 @@ export default function Auth() {
           {/* Features List */}
           <div className="space-y-4 pt-4">
             {[
-              { icon: Zap, text: "Real-time threat detection" },
-              { icon: Globe, text: "Global edge protection" },
-              { icon: Lock, text: "Military-grade encryption" },
+              { icon: Zap, text: 'Real-time threat detection' },
+              { icon: Globe, text: 'Global edge protection' },
+              { icon: Lock, text: 'Military-grade encryption' },
             ].map((feature, index) => (
               <motion.div
                 key={index}
@@ -120,13 +120,13 @@ export default function Auth() {
             <div className="mt-8 pt-6 border-t  border-gray-700">
               <p className="mt-6 text-gray-400 ml-26 ">
                 {isSignUp
-                  ? "Already have an account?"
-                  : "Don’t have an account?"}{" "}
+                  ? 'Already have an account?'
+                  : 'Don’t have an account?'}{' '}
                 <button
                   onClick={() => setIsSignUp(!isSignUp)}
                   className="text-cyan-400 hover:text-cyan-300 cursor-pointer font-medium"
                 >
-                  {isSignUp ? "Sign In" : "Sign Up"}
+                  {isSignUp ? 'Sign In' : 'Sign Up'}
                 </button>
               </p>
             </div>
@@ -149,11 +149,11 @@ export default function Auth() {
           {/* Additional Info */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-500">
-              By signing in, you agree to our{" "}
+              By signing in, you agree to our{' '}
               <a href="#" className="text-cyan-400 hover:text-cyan-300">
                 Terms
-              </a>{" "}
-              and{" "}
+              </a>{' '}
+              and{' '}
               <a href="#" className="text-cyan-400 hover:text-cyan-300">
                 Privacy Policy
               </a>
@@ -162,5 +162,5 @@ export default function Auth() {
         </motion.div>
       </div>
     </div>
-  );
+  )
 }

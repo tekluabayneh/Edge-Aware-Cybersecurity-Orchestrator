@@ -1,38 +1,38 @@
-import { useState, useEffect } from "react";
-import UserInfoCard from "../../components/profile/UserinfoCard";
-import ActivityLog from "../../components/profile/ActivityLog";
-import SecurityPreferences from "../../components/profile/SecurityPreferance";
-import type { userType } from "../../types/Alert";
+import { useState, useEffect } from 'react'
+import UserInfoCard from '../../components/profile/UserinfoCard'
+import ActivityLog from '../../components/profile/ActivityLog'
+import SecurityPreferences from '../../components/profile/SecurityPreferance'
+import type { userType } from '../../types/Alert'
 
 const User = {
-  email: "jone@gmail.com",
-  full_name: "jone",
-  created_date: "1111",
-};
+  email: 'jone@gmail.com',
+  full_name: 'jone',
+  created_date: '1111',
+}
 
 export default function Profile() {
-  const [user, setUser] = useState<userType | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<userType | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadUserData();
-  }, []);
+    loadUserData()
+  }, [])
 
   const loadUserData = async () => {
     try {
-      setUser(User);
+      setUser(User)
     } catch (error) {
-      console.error("Error loading user data:", error);
+      console.error('Error loading user data:', error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-gray-400">Loading profile...</div>
       </div>
-    );
+    )
   }
 
   return (
@@ -56,5 +56,5 @@ export default function Profile() {
         </div>
       </div>
     </div>
-  );
+  )
 }

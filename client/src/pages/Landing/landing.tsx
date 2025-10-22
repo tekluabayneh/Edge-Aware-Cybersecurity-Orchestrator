@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react'
 import {
   Shield,
   Zap,
@@ -11,28 +11,28 @@ import {
   Sparkles,
   Eye,
   Download,
-} from "lucide-react";
-import { motion } from "framer-motion";
-import Navigation from "../../components/navigation/navigation";
+} from 'lucide-react'
+import { motion } from 'framer-motion'
+import Navigation from '../../components/navigation/navigation'
 
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [scrollY, setScrollY] = useState(0)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleScroll = () => setScrollY(window.scrollY)
     const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
 
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('mousemove', handleMouseMove)
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden relative">
@@ -57,7 +57,7 @@ export default function Home() {
               scale: [1, 1.2, 1],
               rotate: [0, 180, 360],
             }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
             className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-gradient-to-r from-cyan-500/30 to-blue-600/30 rounded-full blur-[150px]"
           />
           <motion.div
@@ -65,7 +65,7 @@ export default function Home() {
               scale: [1.2, 1, 1.2],
               rotate: [360, 180, 0],
             }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
             className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-gradient-to-l from-purple-600/30 to-pink-500/30 rounded-full blur-[150px]"
           />
 
@@ -82,8 +82,8 @@ export default function Home() {
                 key={i}
                 className="absolute rounded-full"
                 style={{
-                  width: Math.random() * 4 + 1 + "px",
-                  height: Math.random() * 4 + 1 + "px",
+                  width: Math.random() * 4 + 1 + 'px',
+                  height: Math.random() * 4 + 1 + 'px',
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
                   background: `rgba(0, 212, 255, ${Math.random() * 0.5 + 0.2})`,
@@ -189,9 +189,9 @@ export default function Home() {
                 className="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-6"
               >
                 {[
-                  { icon: Check, text: "Zero Configuration" },
-                  { icon: Zap, text: "Real-time Protection" },
-                  { icon: Star, text: "5-Star Rated" },
+                  { icon: Check, text: 'Zero Configuration' },
+                  { icon: Zap, text: 'Real-time Protection' },
+                  { icon: Star, text: '5-Star Rated' },
                 ].map((item, i) => (
                   <motion.div
                     key={i}
@@ -230,7 +230,7 @@ export default function Home() {
                         transition={{
                           duration: 3,
                           repeat: Infinity,
-                          ease: "linear",
+                          ease: 'linear',
                         }}
                         className="w-12 h-12 bg-gradient-to-br from-green-500/30 to-emerald-600/30 rounded-xl flex items-center justify-center"
                       >
@@ -257,15 +257,15 @@ export default function Home() {
                     {[
                       {
                         icon: Globe,
-                        value: "99.9%",
-                        label: "Uptime",
-                        color: "from-blue-500 to-cyan-500",
+                        value: '99.9%',
+                        label: 'Uptime',
+                        color: 'from-blue-500 to-cyan-500',
                       },
                       {
                         icon: Zap,
-                        value: "<3ms",
-                        label: "Response",
-                        color: "from-yellow-500 to-orange-500",
+                        value: '<3ms',
+                        label: 'Response',
+                        color: 'from-yellow-500 to-orange-500',
                       },
                     ].map((stat, i) => (
                       <motion.div
@@ -379,23 +379,23 @@ export default function Home() {
             {[
               {
                 icon: Shield,
-                title: "Edge Detection",
-                desc: "AI-powered threat detection at the edge. Stop attacks before they reach your network.",
-                color: "from-cyan-500 to-blue-600",
+                title: 'Edge Detection',
+                desc: 'AI-powered threat detection at the edge. Stop attacks before they reach your network.',
+                color: 'from-cyan-500 to-blue-600',
                 delay: 0.1,
               },
               {
                 icon: Zap,
-                title: "Lightning Fast",
+                title: 'Lightning Fast',
                 desc: "Optimized Go-based agent with minimal latency. Protection that doesn't slow you down.",
-                color: "from-yellow-500 to-orange-600",
+                color: 'from-yellow-500 to-orange-600',
                 delay: 0.2,
               },
               {
                 icon: Lock,
-                title: "Zero Trust",
-                desc: "Military-grade encryption. Every connection verified. Trust nothing, verify everything.",
-                color: "from-purple-500 to-pink-600",
+                title: 'Zero Trust',
+                desc: 'Military-grade encryption. Every connection verified. Trust nothing, verify everything.',
+                color: 'from-purple-500 to-pink-600',
                 delay: 0.3,
               },
             ].map((feature, i) => (
@@ -447,21 +447,21 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                num: "01",
-                title: "Download",
-                desc: "Get our lightweight agent",
+                num: '01',
+                title: 'Download',
+                desc: 'Get our lightweight agent',
                 icon: Download,
               },
               {
-                num: "02",
-                title: "Install",
-                desc: "One command installation",
+                num: '02',
+                title: 'Install',
+                desc: 'One command installation',
                 icon: Terminal,
               },
               {
-                num: "03",
-                title: "Protected",
-                desc: "Real-time monitoring active",
+                num: '03',
+                title: 'Protected',
+                desc: 'Real-time monitoring active',
                 icon: Shield,
               },
             ].map((step, i) => (
@@ -504,7 +504,7 @@ export default function Home() {
             <div className="relative z-10">
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
                 className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-2xl flex items-center justify-center"
               >
                 <Shield className="w-10 h-10 text-white" />
@@ -531,5 +531,5 @@ export default function Home() {
         </div>
       </section>
     </div>
-  );
+  )
 }

@@ -1,19 +1,19 @@
-import { useState, type FormEvent } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Lock, Mail, User } from "lucide-react";
+import { useState, type FormEvent } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowRight, Lock, Mail, User } from 'lucide-react'
 
 interface FormProps {
-  isSignUp: boolean;
+  isSignUp: boolean
 }
 
 const Form = ({ isSignUp }: FormProps) => {
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleAuth = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-  };
+    e.preventDefault()
+    setIsLoading(true)
+  }
 
   const flipVariants = {
     initial: (isSignUp: boolean) => ({
@@ -39,18 +39,18 @@ const Form = ({ isSignUp }: FormProps) => {
         ease: [0.45, 0, 0.55, 1],
       },
     }),
-  };
+  }
 
   return (
     <div
       className="relative w-full"
       style={{
-        perspective: 1000, 
+        perspective: 1000,
       }}
     >
       <AnimatePresence mode="wait" custom={isSignUp}>
         <motion.form
-          key={isSignUp ? "signup" : "signin"}
+          key={isSignUp ? 'signup' : 'signin'}
           onSubmit={handleAuth}
           variants={flipVariants}
           initial="initial"
@@ -59,7 +59,7 @@ const Form = ({ isSignUp }: FormProps) => {
           custom={isSignUp}
           className="space-y-5 backface-hidden"
           style={{
-            transformStyle: "preserve-3d",
+            transformStyle: 'preserve-3d',
           }}
         >
           {isSignUp ? (
@@ -196,7 +196,7 @@ const Form = ({ isSignUp }: FormProps) => {
         </motion.form>
       </AnimatePresence>
     </div>
-  );
-};
+  )
+}
 
-export default Form;
+export default Form

@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { ArrowRight, Shield } from "lucide-react";
+import { motion } from 'framer-motion'
+import { ArrowRight, Shield } from 'lucide-react'
 const Navigation = () => {
   return (
     <>
@@ -50,6 +50,6 @@ const Navigation = () => {
         </div>
       </motion.nav>
     </>
-  );
-};
-export default Navigation;
+  )
+}
+export default Navigation
