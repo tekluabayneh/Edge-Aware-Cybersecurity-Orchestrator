@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import Loading from "./components/loading";
 
@@ -8,6 +8,7 @@ const Alerts = lazy(() => import("./pages/Alert/Alert"));
 const Profiles = lazy(() => import("./pages/Profile/Profile"));
 const Landing = lazy(() => import("./pages/Landing/landing"));
 const Auth = lazy(() => import("./pages/Auth/Auth"));
+const Download = lazy(() => import("./pages/Download/download"));
 
 const Routers = () => {
   return (
@@ -15,6 +16,7 @@ const Routers = () => {
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/Download" element={<Download/>} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/Profile" element={<Profiles />} />

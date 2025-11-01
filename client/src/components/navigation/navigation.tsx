@@ -41,7 +41,9 @@ const Navigation = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 <button className="bg-gradient-to-r flex items-center cursor-pointer p-2 rounded-md from-cyan-500 via-blue-600 to-purple-600 hover:from-cyan-600 hover:via-blue-700 hover:to-purple-700 border-0 shadow-lg shadow-cyan-500/50">
+                    <a href="/auth">
                   Get Started
+                  </a>
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </button>
               </motion.div>

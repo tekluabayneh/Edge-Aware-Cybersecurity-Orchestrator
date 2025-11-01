@@ -9,7 +9,6 @@ import {
   Terminal,
   Star,
   Sparkles,
-  Eye,
   Download,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -165,18 +164,10 @@ export default function Home() {
                 >
                   <button className="bg-gradient-to-r flex items-center cursor-pointer from-cyan-500 via-blue-600 to-purple-600 hover:from-cyan-600 hover:via-blue-700 hover:to-purple-700 text-lg px-10 py-7 rounded-xl shadow-2xl shadow-cyan-500/50 border-0 group">
                     <Zap className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+                    <a href="/auth">
                     Start Protection
+                    </a>
                     <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <button className="border-2 flex items-center cursor-pointer  border-gray-600/50 bg-gray-900/50 hover:bg-gray-800/80 backdrop-blur-xl text-lg px-10 py-7 rounded-xl group">
-                    <Eye className="w-5 h-5 mr-2" />
-                    Watch Demo
                   </button>
                 </motion.div>
               </motion.div>
@@ -522,7 +513,9 @@ export default function Home() {
               >
                 <button className="bg-gradient-to-r flex items-center cursor-pointer mx-auto from-cyan-500 via-blue-600 to-purple-600 hover:from-cyan-600 hover:via-blue-700 hover:to-purple-700 text-lg px-12 py-7 rounded-xl shadow-2xl shadow-cyan-500/50">
                   <Sparkles className="w-5 h-5 mr-2" />
+                    <a href="/auth">
                   Activate Protection
+                  </a>
                   <ChevronRight className="w-5 h-5 ml-2" />
                 </button>
               </motion.div>

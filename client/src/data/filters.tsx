@@ -1,4 +1,10 @@
 import { Server, Cpu, HardDrive, Network } from "lucide-react";
+import { Monitor, Apple, Smartphone,
+  LayoutDashboard,
+  AlertTriangle,
+  User,
+  Download,
+} from "lucide-react";
 
 export const filters = [
   { value: "all", label: "All Alerts" },
@@ -29,3 +35,53 @@ export const recentActivities = [
   { action: "2FA enabled", timestamp: new Date(Date.now() - 86400000) },
   { action: "Password changed", timestamp: new Date(Date.now() - 172800000) },
 ];
+
+
+export  const downloadButtons = [
+    {
+      os: "Window",
+      icon: Monitor,
+      color: "from-blue-500 to-cyan-500",
+      hoverColor: "hover:shadow-blue-500/50",
+      downloadUrl: "#",
+    },
+    {
+      os: "macOS",
+      icon: Apple,
+      color: "from-purple-500 to-pink-500",
+      hoverColor: "hover:shadow-purple-500/50",
+      downloadUrl: "#", 
+    },
+    {
+      os: "Linux",
+      icon: Smartphone,
+      color: "from-orange-500 to-red-500",
+      hoverColor: "hover:shadow-orange-500/50",
+      downloadUrl: "#",
+    },
+  ];
+
+
+export const navigationItems = [
+  {
+    title:"Download",
+    url:"/Download",
+    icon:Download,
+  },
+  {
+    title: "Dashboard",
+    url: "/Dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Alerts",
+    url: "/Alerts",
+    icon: AlertTriangle,
+  },
+  {
+    title: "Profile",
+    url: "/Profile",
+    icon: User,
+  },
+];
+

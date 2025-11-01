@@ -1,32 +1,8 @@
 import "./App.css";
 import Routers from "./router";
-
 import { Link, useLocation } from "react-router-dom";
-import {
-  LayoutDashboard,
-  AlertTriangle,
-  User,
-  Shield,
-  Activity,
-} from "lucide-react";
-
-const navigationItems = [
-  {
-    title: "Dashboard",
-    url: "/Dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Alerts",
-    url: "/Alerts",
-    icon: AlertTriangle,
-  },
-  {
-    title: "Profile",
-    url: "/Profile",
-    icon: User,
-  },
-];
+import { Shield, Activity, } from "lucide-react";
+import { navigationItems } from "./data/filters";
 
 const App = () => {
   const location = useLocation();
