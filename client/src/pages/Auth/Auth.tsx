@@ -115,8 +115,11 @@ export default function Auth() {
                 Enter your credentials to access your dashboard
               </p>
             </div>
+            
             {/* From */}
             <Form isSignUp={isSignUp} />
+            {/* form end */}
+
             <div className="mt-8 pt-6 border-t  border-gray-700">
               <p className="mt-6 text-gray-400 ml-26 ">
                 {isSignUp

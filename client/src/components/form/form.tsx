@@ -1,45 +1,31 @@
 import { useState, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Lock, Mail, User } from "lucide-react";
-
+import { flipVariants } from "../../data/filters";
+import axios from "axios";
 interface FormProps {
   isSignUp: boolean;
 }
 
 const Form = ({ isSignUp }: FormProps) => {
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAuth = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+     
+
+    try {
+      const response = await axios.post("/user")
+       console.log(response.data)
+    } catch (err:any) {
+      console.log(err)
+    }
   };
 
-  const flipVariants = {
-    initial: (isSignUp: boolean) => ({
-      rotateY: isSignUp ? -180 : 180,
-      opacity: 0,
-      scale: 0.9,
-    }),
-    animate: {
-      rotateY: 0,
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: [0.45, 0, 0.55, 1],
-      },
-    },
-    exit: (isSignUp: boolean) => ({
-      rotateY: isSignUp ? 180 : -180,
-      opacity: 0,
-      scale: 0.9,
-      transition: {
-        duration: 0.5,
-        ease: [0.45, 0, 0.55, 1],
-      },
-    }),
-  };
 
   return (
     <div
@@ -72,6 +58,8 @@ const Form = ({ isSignUp }: FormProps) => {
                 </label>
                 <input
                   type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your name"
                   className="bg-gray-800 w-full placeholder:pl-3 rounded-md border-gray-700 text-white placeholder:text-gray-500 h-12 focus:border-purple-500 focus:ring-purple-500"
                   required
@@ -102,6 +90,8 @@ const Form = ({ isSignUp }: FormProps) => {
                 </label>
                 <input
                   type="password"
+                   value={password} 
+                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Create a password"
                   className="bg-gray-800 w-full placeholder:pl-3 rounded-md border-gray-700 text-white placeholder:text-gray-500 h-12 focus:border-purple-500 focus:ring-purple-500"
                   required
@@ -152,6 +142,8 @@ const Form = ({ isSignUp }: FormProps) => {
                 </label>
                 <input
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className="bg-gray-800 w-full placeholder:pl-3 rounded-md border-gray-700 text-white placeholder:text-gray-500 h-12 focus:border-cyan-500 focus:ring-cyan-500"
                   required

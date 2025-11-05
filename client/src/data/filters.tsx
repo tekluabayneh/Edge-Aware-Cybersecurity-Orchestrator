@@ -85,3 +85,28 @@ export const navigationItems = [
   },
 ];
 
+  export const flipVariants = {
+    initial: (isSignUp: boolean) => ({
+      rotateY: isSignUp ? -180 : 180,
+      opacity: 0,
+      scale: 0.9,
+    }),
+    animate: {
+      rotateY: 0,
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.6,
+        ease: [0.45, 0, 0.55, 1],
+      },
+    },
+    exit: (isSignUp: boolean) => ({
+      rotateY: isSignUp ? 180 : -180,
+      opacity: 0,
+      scale: 0.9,
+      transition: {
+        duration: 0.5,
+        ease: [0.45, 0, 0.55, 1],
+      },
+    }),
+  };
