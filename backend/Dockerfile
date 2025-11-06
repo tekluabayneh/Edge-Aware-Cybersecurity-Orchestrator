@@ -1,9 +1,6 @@
-FROM golang:1.22-alpine
-
+# Go Backend Dockerfile
+FROM golang:1.22
 WORKDIR /app
-
 COPY . .
-
 RUN go mod tidy
-
-CMD ["go", "run", "main.go"]
+CMD ["go", "run", "./cmd/server/main.go"]

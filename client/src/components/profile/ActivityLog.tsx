@@ -1,7 +1,7 @@
-import { Activity, Clock } from "lucide-react";
-import { format } from "date-fns";
+import { Activity, Clock } from 'lucide-react'
+import { format } from 'date-fns'
 
-import { recentActivities } from "../../data/filters";
+import { recentActivities } from '../../data/filters'
 
 export default function ActivityLog() {
   return (
@@ -28,5 +28,5 @@ export default function ActivityLog() {
         ))}
       </div>
     </div>
-  );
+  )
 }

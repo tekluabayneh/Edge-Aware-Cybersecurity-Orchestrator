@@ -1,4 +1,4 @@
-import { Shield } from "lucide-react";
+import { Shield } from 'lucide-react'
 const Footer = () => {
   return (
     <>
@@ -16,6 +16,6 @@ const Footer = () => {
         </div>
       </footer>
     </>
-  );
-};
-export default Footer;
+  )
+}
+export default Footer

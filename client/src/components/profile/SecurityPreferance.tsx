@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Lock, Bell, Mail, Shield } from "lucide-react";
+import React, { useState } from 'react'
+import { Lock, Bell, Mail, Shield } from 'lucide-react'
 
 export default function SecurityPreferences() {
   const [preferences, setPreferences] = useState({
@@ -7,11 +7,11 @@ export default function SecurityPreferences() {
     emailNotifications: true,
     alertNotifications: true,
     autoLock: false,
-  });
+  })
 
   const togglePreference = (key: string) => {
-    setPreferences((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+    setPreferences((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
@@ -32,14 +32,14 @@ export default function SecurityPreferences() {
             </div>
           </div>
           <button
-            onClick={() => togglePreference("twoFactor")}
+            onClick={() => togglePreference('twoFactor')}
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              preferences.twoFactor ? "bg-cyan-500" : "bg-gray-700"
+              preferences.twoFactor ? 'bg-cyan-500' : 'bg-gray-700'
             }`}
           >
             <span
               className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                preferences.twoFactor ? "translate-x-6" : ""
+                preferences.twoFactor ? 'translate-x-6' : ''
               }`}
             />
           </button>
@@ -58,14 +58,14 @@ export default function SecurityPreferences() {
             </div>
           </div>
           <button
-            onClick={() => togglePreference("emailNotifications")}
+            onClick={() => togglePreference('emailNotifications')}
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              preferences.emailNotifications ? "bg-cyan-500" : "bg-gray-700"
+              preferences.emailNotifications ? 'bg-cyan-500' : 'bg-gray-700'
             }`}
           >
             <span
               className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                preferences.emailNotifications ? "translate-x-6" : ""
+                preferences.emailNotifications ? 'translate-x-6' : ''
               }`}
             />
           </button>
@@ -84,14 +84,14 @@ export default function SecurityPreferences() {
             </div>
           </div>
           <button
-            onClick={() => togglePreference("alertNotifications")}
+            onClick={() => togglePreference('alertNotifications')}
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              preferences.alertNotifications ? "bg-cyan-500" : "bg-gray-700"
+              preferences.alertNotifications ? 'bg-cyan-500' : 'bg-gray-700'
             }`}
           >
             <span
               className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                preferences.alertNotifications ? "translate-x-6" : ""
+                preferences.alertNotifications ? 'translate-x-6' : ''
               }`}
             />
           </button>
@@ -110,14 +110,14 @@ export default function SecurityPreferences() {
             </div>
           </div>
           <button
-            onClick={() => togglePreference("autoLock")}
+            onClick={() => togglePreference('autoLock')}
             className={`relative w-12 h-6 rounded-full transition-colors ${
-              preferences.autoLock ? "bg-cyan-500" : "bg-gray-700"
+              preferences.autoLock ? 'bg-cyan-500' : 'bg-gray-700'
             }`}
           >
             <span
               className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                preferences.autoLock ? "translate-x-6" : ""
+                preferences.autoLock ? 'translate-x-6' : ''
               }`}
             />
           </button>
@@ -128,5 +128,5 @@ export default function SecurityPreferences() {
         Save Preferences
       </button>
     </div>
-  );
+  )
 }

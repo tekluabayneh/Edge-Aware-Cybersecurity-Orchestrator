@@ -1,7 +1,7 @@
-import { Shield } from "lucide-react";
+import { Shield } from 'lucide-react'
 
 export default function SecurityScore({ score }: { score: number }) {
-  const percentage = (score / 100) * 100;
+  const percentage = (score / 100) * 100
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
@@ -36,10 +36,10 @@ export default function SecurityScore({ score }: { score: number }) {
                   className={`text-green-500`}
                   stopColor={
                     score >= 80
-                      ? "#22c55e"
+                      ? '#22c55e'
                       : score >= 60
-                      ? "#eab308"
-                      : "#ef4444"
+                        ? '#eab308'
+                        : '#ef4444'
                   }
                 />
                 <stop
@@ -47,10 +47,10 @@ export default function SecurityScore({ score }: { score: number }) {
                   className={`text-cyan-500`}
                   stopColor={
                     score >= 80
-                      ? "#10b981"
+                      ? '#10b981'
                       : score >= 60
-                      ? "#f97316"
-                      : "#f43f5e"
+                        ? '#f97316'
+                        : '#f43f5e'
                   }
                 />
               </linearGradient>
@@ -63,10 +63,10 @@ export default function SecurityScore({ score }: { score: number }) {
           </div>
         </div>
         <p className="text-gray-400 text-sm">
-          Your security posture is{" "}
+          Your security posture is{' '}
           <span className="text-cyan-400 font-semibold">Excellent</span>
         </p>
       </div>
     </div>
-  );
+  )
 }
