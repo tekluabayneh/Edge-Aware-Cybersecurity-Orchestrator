@@ -1,40 +1,8 @@
-<<<<<<< HEAD
 import "./App.css";
 import Routers from "./router";
 import { Link, useLocation } from "react-router-dom";
 import { Shield, Activity, } from "lucide-react";
 import { navigationItems } from "./data/filters";
-=======
-import './App.css'
-import Routers from './router'
-
-import { Link, useLocation } from 'react-router-dom'
-import {
-  LayoutDashboard,
-  AlertTriangle,
-  User,
-  Shield,
-  Activity,
-} from 'lucide-react'
-
-const navigationItems = [
-  {
-    title: 'Dashboard',
-    url: '/Dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    title: 'Alerts',
-    url: '/Alerts',
-    icon: AlertTriangle,
-  },
-  {
-    title: 'Profile',
-    url: '/Profile',
-    icon: User,
-  },
-]
->>>>>>> 51a603614efb67c2b802b1a2f50a6c7eba24100d
 
 const App = () => {
   const location = useLocation()

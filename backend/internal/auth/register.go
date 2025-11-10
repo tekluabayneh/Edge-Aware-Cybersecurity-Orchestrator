@@ -13,5 +13,6 @@ type RegisterStructure struct {
 }
 
 func (h *AuthRegisterHandlerType) Register(w http.ResponseWriter, r *http.Request) {
+
 	fmt.Println("test register work")
 }

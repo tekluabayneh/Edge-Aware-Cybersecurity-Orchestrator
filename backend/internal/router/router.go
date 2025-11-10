@@ -4,16 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 
+	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	AuthPath "github.com/edge-aware-cyberSecurity/internal/auth"
+	middlewareGlobal "github.com/edge-aware-cyberSecurity/internal/middleware"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
-
-func LoadRouter() *chi.Mux {
+func LoadRouter(db *db.Queries) *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
+	router.Use(middlewareGlobal.ErrorHandler)
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -23,14 +25,13 @@ func LoadRouter() *chi.Mux {
 		MaxAge:           300,
 	}))
 
-
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{
 			"message": "server response with 200 ok message",
 		})
 	})
 
-	router.Route("/auth", func(route chi.Router) {
+	router.With(middlewareGlobal.AuthMiddleWare).Route("/auth", func(route chi.Router) {
 		AuthLogin(route)
 		AuthRegister(route)
 	})
@@ -38,26 +39,14 @@ func LoadRouter() *chi.Mux {
 	return router
 }
 
-
 func AuthLogin(router chi.Router) {
 	AuthHandlerRoute := &AuthPath.AuthLoginHandlerType{}
 
 	router.Post("/login", AuthHandlerRoute.Login)
 }
 
-
-
 func AuthRegister(router chi.Router) {
 	AuthHandlerRegisterRoute := &AuthPath.AuthRegisterHandlerType{}
 
 	router.Post("/register", AuthHandlerRegisterRoute.Register)
 }
-
-
-
- 
-
-
-
-
-

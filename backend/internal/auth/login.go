@@ -13,5 +13,7 @@ type LoginStructure struct {
 }
 
 func (h *AuthLoginHandlerType) Login(w http.ResponseWriter, r *http.Request) {
+
+	 
 	fmt.Println("test work")
 }
