@@ -31,8 +31,11 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 		})
 	})
 
-	router.With(middlewareGlobal.AuthMiddleWare).Route("/auth", func(route chi.Router) {
+	router.With(middlewareGlobal.LoginMiddleWare).Route("/auth/l/", func(route chi.Router) {
 		AuthLogin(route)
+	})
+
+	router.With(middlewareGlobal.RegisterMiddleWare).Route("/auth/r/", func(route chi.Router) {
 		AuthRegister(route)
 	})
 
