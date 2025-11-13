@@ -1,9 +1,8 @@
 package middleware
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"reflect"
 
@@ -14,26 +13,45 @@ type FormType struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	Photo    string `json:"photo"`
-	Phone    string `json:"phone"`
 }
+
+type contextKey string
+
+const RegisterFormDataKey contextKey = "formDataRegister"
+const LoginFromDataKey contextKey = "formDataLogin"
 
 func RegisterMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Context-Type", "application/json")
-		var formType FormType
-		if err := json.NewDecoder(r.Body).Decode(&formType); err != nil {
+		var RegisterFormData FormType
+		if err := json.NewDecoder(r.Body).Decode(&RegisterFormData); err != nil {
 		}
-		fmt.Println("data", formType)
 
-		if formType.Name == "" || formType.Email == "" || formType.Password == "" {
+		if RegisterFormData.Name == "" || RegisterFormData.Email == "" || RegisterFormData.Password == "" {
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(map[string]string{
-				"message": "invalid form",
+				"message": "invalid form or missing form field",
 			})
 			return
 		}
-		next.ServeHTTP(w, r)
+
+		if len(RegisterFormData.Password) < 6 {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{
+				"message": "password length must be at list 6",
+			})
+			return
+		}
+
+		if bol := checkIsValidFields(RegisterFormData); !bol {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{
+				"message": "malformed form input or your input contain script tag",
+			})
+			return
+		}
+		ctx := context.WithValue(r.Context(), RegisterFormDataKey, RegisterFormData)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 
 }
@@ -44,11 +62,6 @@ func LoginMiddleWare(next http.Handler) http.Handler {
 		var LoginFormDataType FormType
 
 		json.NewDecoder(r.Body).Decode(&LoginFormDataType)
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			fmt.Print(err)
-		}
-		fmt.Println(string(body))
 		if LoginFormDataType.Name == "" || LoginFormDataType.Password == "" {
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(map[string]string{
@@ -65,27 +78,25 @@ func LoginMiddleWare(next http.Handler) http.Handler {
 			return
 		}
 
-		var inputJSON []byte
-
-		if err := json.Unmarshal(inputJSON, &LoginFormDataType); err != nil {
-			fmt.Println("Error decoding input:", err)
+		if bol := checkIsValidFields(LoginFormDataType); !bol {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{
+				"message": "malformed form input or your input contain script tag",
+			})
 			return
 		}
+		ctx := context.WithValue(r.Context(), LoginFromDataKey, LoginFormDataType)
+		next.ServeHTTP(w, r.WithContext(ctx))
 
-		val := reflect.ValueOf(LoginFormDataType)
-		for i := 0; i < val.NumField(); i++ {
-			fieldValue := val.Field(i).String()
-
-			// check if inputs are free from bad scripts
-			if !utils.IsINputSafe(fieldValue) {
-				json.NewEncoder(w).Encode(map[string]string{
-					"message": "malformed form input or your input contain script tag",
-				})
-				return
-			}
-		}
-
-		// check if teh input are valid and free from malware
-		next.ServeHTTP(w, r)
 	})
+}
+func checkIsValidFields(formData FormType) bool {
+	val := reflect.ValueOf(formData)
+	for i := range val.NumField() {
+		value := val.Field(i).String()
+		if !utils.IsINputSafe(value) {
+			return false
+		}
+	}
+	return true
 }
