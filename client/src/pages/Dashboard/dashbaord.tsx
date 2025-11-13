@@ -1,31 +1,31 @@
-import { useState, useEffect } from "react";
-import type { AlertType } from "../../types/Alert";
+import { useState, useEffect } from 'react'
+import type { AlertType } from '../../types/Alert'
 
 //@ts-expect-error json will be remove
-import Alert from "../../Entities/Alert";
+import Alert from '../../Entities/Alert'
 
-import { Shield, Activity, Eye, AlertCircle } from "lucide-react";
-import MetricCard from "../../components/dashboard/MatricCard";
-import SecurityScore from "../../components/dashboard/Security";
-import RecentAlerts from "../../components/dashboard/RecentAlert";
-import SystemHealth from "../../components/dashboard/SystemHealth";
+import { Shield, Activity, Eye, AlertCircle } from 'lucide-react'
+import MetricCard from '../../components/dashboard/MatricCard'
+import SecurityScore from '../../components/dashboard/Security'
+import RecentAlerts from '../../components/dashboard/RecentAlert'
+import SystemHealth from '../../components/dashboard/SystemHealth'
 
 export default function Dashboard() {
-  const [alerts, setAlerts] = useState<AlertType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [alerts, setAlerts] = useState<AlertType[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData()
+  }, [])
 
   const loadData = async () => {
-    setLoading(true);
-    setAlerts(Alert);
-    setLoading(false);
-  };
+    setLoading(true)
+    setAlerts(Alert)
+    setLoading(false)
+  }
 
-  const activeAlerts = alerts.filter((a) => a.status === "active").length;
-  const criticalAlerts = alerts.filter((a) => a.severity === "critical").length;
+  const activeAlerts = alerts.filter((a) => a.status === 'active').length
+  const criticalAlerts = alerts.filter((a) => a.severity === 'critical').length
 
   return (
     <div className="space-y-8">
@@ -80,5 +80,5 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
-  );
+  )
 }

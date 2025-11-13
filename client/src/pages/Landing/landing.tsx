@@ -200,7 +200,7 @@ export default function Home() {
       </section>
 
 
-      
+
       {/* Features Section */}
       <section id="features" className="relative py-20 px-4 sm:px-6">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-950 to-black"></div>
@@ -278,7 +278,7 @@ export default function Home() {
       </section>
 
      <HowItWork/>
-      
+
      <CTA/>
     </div>
   );

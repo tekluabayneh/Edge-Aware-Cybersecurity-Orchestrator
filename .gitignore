@@ -47,7 +47,7 @@ client/dist/
 client/build/
 client/.env
 client/.DS_Store
-
+backend/tmp
 # Ignore macOS and Windows metadata
 *.tmp
 desktop.ini

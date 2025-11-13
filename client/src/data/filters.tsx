@@ -50,7 +50,7 @@ export  const downloadButtons = [
       icon: Apple,
       color: "from-purple-500 to-pink-500",
       hoverColor: "hover:shadow-purple-500/50",
-      downloadUrl: "#", 
+      downloadUrl: "#",
     },
     {
       os: "Linux",

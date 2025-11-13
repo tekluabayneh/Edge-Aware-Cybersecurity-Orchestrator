@@ -1,9 +1,9 @@
-import { Filter } from "lucide-react";
-import { filters } from "../../data/filters";
+import { Filter } from 'lucide-react'
+import { filters } from '../../data/filters'
 
 type StateType = {
-  setActiveFilter: React.Dispatch<React.SetStateAction<string>>;
-};
+  setActiveFilter: React.Dispatch<React.SetStateAction<string>>
+}
 const AlertFilters: React.FC<StateType> = ({ setActiveFilter }) => {
   return (
     <div className="flex flex-wrap gap-3">
@@ -21,6 +21,6 @@ const AlertFilters: React.FC<StateType> = ({ setActiveFilter }) => {
         </button>
       ))}
     </div>
-  );
-};
-export default AlertFilters;
+  )
+}
+export default AlertFilters

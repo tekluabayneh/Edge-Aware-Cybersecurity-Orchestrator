@@ -1,11 +1,11 @@
-import { Clock, MapPin, Server } from "lucide-react";
-import { format } from "date-fns";
+import { Clock, MapPin, Server } from 'lucide-react'
+import { format } from 'date-fns'
 import {
   categoryIcons,
   severityColors,
   statusColors,
-} from "../../constants/colors";
-import type { AlertType } from "../../types/Alert";
+} from '../../constants/colors'
+import type { AlertType } from '../../types/Alert'
 
 const AlertCard = ({ alert }: { alert: AlertType }) => {
   return (
@@ -28,6 +28,7 @@ const AlertCard = ({ alert }: { alert: AlertType }) => {
           >
             {alert.severity}
           </div>
+
           <div
             className={`${
               statusColors[alert.status]
@@ -44,7 +45,7 @@ const AlertCard = ({ alert }: { alert: AlertType }) => {
           <span>
             {format(
               new Date(alert.detected_at || alert.detected_at),
-              "MMM d, yyyy HH:mm"
+              'MMM d, yyyy HH:mm'
             )}
           </span>
         </div>
@@ -62,6 +63,6 @@ const AlertCard = ({ alert }: { alert: AlertType }) => {
         )}
       </div>
     </div>
-  );
-};
-export default AlertCard;
+  )
+}
+export default AlertCard

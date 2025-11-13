@@ -115,7 +115,7 @@ export default function Auth() {
                 Enter your credentials to access your dashboard
               </p>
             </div>
-            
+
             {/* From */}
             <Form isSignUp={isSignUp} />
             {/* form end */}

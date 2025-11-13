@@ -16,7 +16,7 @@ const Form = ({ isSignUp }: FormProps) => {
   const handleAuth = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-     
+
 
     try {
       const response = await axios.post("/user")
@@ -31,7 +31,7 @@ const Form = ({ isSignUp }: FormProps) => {
     <div
       className="relative w-full"
       style={{
-        perspective: 1000, 
+        perspective: 1000,
       }}
     >
       <AnimatePresence mode="wait" custom={isSignUp}>
@@ -90,7 +90,7 @@ const Form = ({ isSignUp }: FormProps) => {
                 </label>
                 <input
                   type="password"
-                   value={password} 
+                   value={password}
                    onChange={(e) => setPassword(e.target.value)}
                   placeholder="Create a password"
                   className="bg-gray-800 w-full placeholder:pl-3 rounded-md border-gray-700 text-white placeholder:text-gray-500 h-12 focus:border-purple-500 focus:ring-purple-500"
