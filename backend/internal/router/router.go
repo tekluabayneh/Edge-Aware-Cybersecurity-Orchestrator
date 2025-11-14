@@ -32,24 +32,28 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 	})
 
 	router.With(middlewareGlobal.LoginMiddleWare).Route("/auth/l/", func(route chi.Router) {
-		AuthLogin(route)
+		AuthLogin(route, db)
 	})
 
 	router.With(middlewareGlobal.RegisterMiddleWare).Route("/auth/r/", func(route chi.Router) {
-		AuthRegister(route)
+		AuthRegister(route, db)
 	})
 
 	return router
 }
 
-func AuthLogin(router chi.Router) {
-	AuthHandlerRoute := &AuthPath.AuthLoginHandlerType{}
+func AuthLogin(router chi.Router, db *db.Queries) {
+	AuthHandlerRoute := &AuthPath.AuthLoginHandlerType{
+		DB: db,
+	}
 
 	router.Post("/login", AuthHandlerRoute.Login)
 }
 
-func AuthRegister(router chi.Router) {
-	AuthHandlerRegisterRoute := &AuthPath.AuthRegisterHandlerType{}
+func AuthRegister(router chi.Router, db *db.Queries) {
+	AuthHandlerRegisterRoute := &AuthPath.AuthRegisterHandlerType{
+		DB: db,
+	}
 
 	router.Post("/register", AuthHandlerRegisterRoute.Register)
 }
