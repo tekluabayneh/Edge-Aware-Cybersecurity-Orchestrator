@@ -5,10 +5,13 @@ import (
 	"log"
 	"net/http"
 
+	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/middleware"
 )
 
-type AuthLoginHandlerType struct{}
+type AuthLoginHandlerType struct {
+	DB *db.Queries
+}
 
 type LoginStructure struct {
 	Name  string
