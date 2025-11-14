@@ -1,14 +1,18 @@
 package handler
 
 import (
-	"fmt"
-	"log"
+	"database/sql"
+	"errors"
 	"net/http"
 
+	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/middleware"
+	"github.com/edge-aware-cyberSecurity/internal/utils"
 )
 
-type AuthRegisterHandlerType struct{}
+type AuthRegisterHandlerType struct {
+	DB *db.Queries
+}
 
 type RegisterStructure struct {
 	Name     string
@@ -17,16 +21,58 @@ type RegisterStructure struct {
 }
 
 func (h *AuthRegisterHandlerType) Register(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	ctx := r.Context()
+
+	// get user data form context
 	formData, ok := r.Context().Value(middleware.RegisterFormDataKey).(middleware.FormType)
 	if !ok {
-		log.Fatal("eror loading data")
+		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"message": "internal server error",
+		})
+		return
 	}
-	fmt.Println("test register work", formData)
 
-	// TODO: Check if user already exists in the database (email or phone)
-	// TODO: Hash the password before saving (use bcrypt or similar)
-	// TODO: Save the new user to the database
-	// TODO: Optionally generate a session or JWT token for immediate login
-	// TODO: Optionally send a confirmation or welcome email
+	// check if user already has account
+	user, err := h.DB.GetUserByEmail(ctx, formData.Email)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"message": "internal server error",
+		})
+		return
+	}
 
+	if err == nil && user.Email != "" {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "user already exist",
+		})
+		return
+	}
+
+	HashedPassword, err := utils.HashPassword(formData.Password)
+	if err != nil {
+		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"message": "internal server error",
+		})
+		return
+	}
+
+	userInfo := db.CreateUserParams{
+		Name:     formData.Name,
+		Email:    formData.Email,
+		Password: HashedPassword,
+	}
+
+	// register user if does not exists
+	err = h.DB.CreateUser(ctx, userInfo)
+	if err != nil {
+		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"message": "internal server error",
+		})
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, map[string]string{
+		"message": "user registered successfully",
+	})
 }
