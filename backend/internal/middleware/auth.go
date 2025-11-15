@@ -62,10 +62,10 @@ func LoginMiddleWare(next http.Handler) http.Handler {
 		var LoginFormDataType FormType
 
 		json.NewDecoder(r.Body).Decode(&LoginFormDataType)
-		if LoginFormDataType.Name == "" || LoginFormDataType.Password == "" {
+		if LoginFormDataType.Email == "" || LoginFormDataType.Password == "" {
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(map[string]string{
-				"message": "password or name is missing",
+				"message": "password or email are missing",
 			})
 			return
 		}
