@@ -1,38 +1,44 @@
-package handler
+package oauth
 
 import (
+	"fmt"
 	"net/http"
-	"os"
 
+	OAuth "github.com/edge-aware-cyberSecurity/internal/OAuthConfig"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/github"
-	"golang.org/x/oauth2/google"
 )
 
-var (
-	githubOauthConfig = &oauth2.Config{
-		ClientID:     os.Getenv("YOUR_GITHUB_CLIENT_ID"),
-		ClientSecret: os.Getenv("YOUR_GITHUB_CLIENT_SECRET"),
-		RedirectURL:  os.Getenv("GITHUB_REDIRECT_URL"),
-		Scopes:       []string{"user:email"},
-		Endpoint:     github.Endpoint,
+func GitHubCallbackHandler(w http.ResponseWriter, r *http.Request) {
+	code := r.URL.Query().Get("code")
+
+	token, err := OAuth.GithubOauthConfig.Exchange(r.Context(), code)
+	if err != nil {
+		http.Error(w, "Failed to exchange token", http.StatusInternalServerError)
+		return
 	}
 
-	googleOauthConfig = &oauth2.Config{
-		ClientID:     os.Getenv("YOUR_GOOGLE_CLIENT_ID"),
-		ClientSecret: os.Getenv("YOUR_GOOGLE_CLIENT_SECRET"),
-		RedirectURL:  os.Getenv("GOOGLE_REDIRECT_URL"),
-		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
-		Endpoint:     google.Endpoint,
-	}
-)
+	// Now you can use token to fetch user info from GitHub API
+	fmt.Fprintf(w, "Access token: %s", token.AccessToken)
 
-func GitHubLoginHandler(w http.ResponseWriter, r *http.Request) {
-	url := githubOauthConfig.AuthCodeURL("random-state")
-	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+	client := oauth2.NewClient(r.Context(), oauth2.StaticTokenSource(token))
+	resp, _ := client.Get("https://api.github.com/user/emails")
+
+	fmt.Println(resp)
+	//TODO: parse JSON to get user email
+
 }
+func GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
+	code := r.URL.Query().Get("code")
 
-func GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
-	url := googleOauthConfig.AuthCodeURL("random-state")
-	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+	token, err := OAuth.GithubOauthConfig.Exchange(r.Context(), code)
+	if err != nil {
+		http.Error(w, "Failed to exchange token", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintf(w, "Access token: %s", token.AccessToken)
+	client := oauth2.NewClient(r.Context(), oauth2.StaticTokenSource(token))
+	resp, _ := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
+	fmt.Println(resp)
+	//TODO: parse JSON to get user email
 }
