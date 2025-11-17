@@ -1,4 +1,4 @@
-package handler
+package OAuthconfig
 
 import (
 	"net/http"
@@ -9,23 +9,26 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
-var (
+var GithubOauthConfig *oauth2.Config
+var GoogleOauthConfig *oauth2.Config
+
+func InitOAuthConfigs() {
 	GithubOauthConfig = &oauth2.Config{
-		ClientID:     os.Getenv("YOUR_GITHUB_CLIENT_ID"),
-		ClientSecret: os.Getenv("YOUR_GITHUB_CLIENT_SECRET"),
+		ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
+		ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
 		RedirectURL:  os.Getenv("GITHUB_REDIRECT_URL"),
-		Scopes:       []string{"user:email"},
+		Scopes:       []string{"read:user", "user:email"},
 		Endpoint:     github.Endpoint,
 	}
 
 	GoogleOauthConfig = &oauth2.Config{
-		ClientID:     os.Getenv("YOUR_GOOGLE_CLIENT_ID"),
-		ClientSecret: os.Getenv("YOUR_GOOGLE_CLIENT_SECRET"),
+		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
 		RedirectURL:  os.Getenv("GOOGLE_REDIRECT_URL"),
-		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
+		Scopes:       []string{"profile", "email"},
 		Endpoint:     google.Endpoint,
 	}
-)
+}
 
 func GitHubLoginHandler(w http.ResponseWriter, r *http.Request) {
 	url := GithubOauthConfig.AuthCodeURL("random-state")
