@@ -8,6 +8,55 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Agent struct {
+	ID           pgtype.UUID
+	UserID       pgtype.UUID
+	MachineID    string
+	AgentVersion pgtype.Text
+	Os           pgtype.Text
+	Status       pgtype.Text
+	LastSeen     pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+}
+
+type AgentQueue struct {
+	ID        int64
+	AgentID   pgtype.UUID
+	Event     []byte
+	CreatedAt pgtype.Timestamptz
+}
+
+type Alert struct {
+	ID         int64
+	AgentID    pgtype.UUID
+	AlertType  string
+	Severity   string
+	Message    pgtype.Text
+	RawPayload []byte
+	Status     string
+	CreatedAt  pgtype.Timestamptz
+}
+
+type Command struct {
+	ID          pgtype.UUID
+	AgentID     pgtype.UUID
+	UserID      pgtype.UUID
+	CommandType string
+	Payload     []byte
+	Status      string
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+}
+
+type Notification struct {
+	ID        int64
+	UserID    pgtype.UUID
+	Title     string
+	Message   string
+	IsRead    bool
+	CreatedAt pgtype.Timestamptz
+}
+
 type User struct {
 	ID        int32
 	Name      string
@@ -15,5 +64,13 @@ type User struct {
 	Phone     pgtype.Text
 	Email     string
 	Password  string
-	CreatedAt string
+	CreatedAt pgtype.Timestamptz
+}
+
+type UserSession struct {
+	ID        pgtype.UUID
+	UserID    pgtype.UUID
+	Token     string
+	ExpiresAt pgtype.Timestamptz
+	CreatedAt pgtype.Timestamptz
 }
