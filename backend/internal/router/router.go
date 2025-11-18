@@ -5,7 +5,9 @@ import (
 	"net/http"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
+	OAuthconfig "github.com/edge-aware-cyberSecurity/internal/OAuthConfig"
 	AuthPath "github.com/edge-aware-cyberSecurity/internal/auth"
+	"github.com/edge-aware-cyberSecurity/internal/handler"
 	middlewareGlobal "github.com/edge-aware-cyberSecurity/internal/middleware"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/v5/middleware"
@@ -34,10 +36,15 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 	router.With(middlewareGlobal.LoginMiddleWare).Route("/auth/l/", func(route chi.Router) {
 		AuthLogin(route, db)
 	})
-
 	router.With(middlewareGlobal.RegisterMiddleWare).Route("/auth/r/", func(route chi.Router) {
 		AuthRegister(route, db)
 	})
+
+	oauthHandler := &handler.OAuthHandler{DB: db}
+	router.Get("/oauth/google/callback", oauthHandler.GoogleCallbackHandler)
+	router.Get("/oauth/github/callback", oauthHandler.GitHubCallbackHandler)
+	router.Get("/oauth/google", OAuthconfig.GoogleLoginHandler)
+	router.Get("/oauth/github", OAuthconfig.GitHubLoginHandler)
 
 	return router
 }
@@ -46,7 +53,6 @@ func AuthLogin(router chi.Router, db *db.Queries) {
 	AuthHandlerRoute := &AuthPath.AuthLoginHandlerType{
 		DB: db,
 	}
-
 	router.Post("/login", AuthHandlerRoute.Login)
 }
 
@@ -54,6 +60,5 @@ func AuthRegister(router chi.Router, db *db.Queries) {
 	AuthHandlerRegisterRoute := &AuthPath.AuthRegisterHandlerType{
 		DB: db,
 	}
-
 	router.Post("/register", AuthHandlerRegisterRoute.Register)
 }
