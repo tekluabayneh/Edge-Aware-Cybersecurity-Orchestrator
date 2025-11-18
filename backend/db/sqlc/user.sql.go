@@ -12,16 +12,15 @@ import (
 )
 
 const createUser = `-- name: CreateUser :exec
-INSERT INTO users (name, email, photo, phone, password, created_at) VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO users (name, email, photo, phone, password) VALUES ($1, $2, $3, $4, $5)
 `
 
 type CreateUserParams struct {
-	Name      string
-	Email     string
-	Photo     pgtype.Text
-	Phone     pgtype.Text
-	Password  string
-	CreatedAt pgtype.Timestamptz
+	Name     string
+	Email    string
+	Photo    pgtype.Text
+	Phone    pgtype.Text
+	Password string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
@@ -31,7 +30,6 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 		arg.Photo,
 		arg.Phone,
 		arg.Password,
-		arg.CreatedAt,
 	)
 	return err
 }

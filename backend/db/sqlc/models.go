@@ -9,8 +9,8 @@ import (
 )
 
 type Agent struct {
-	ID           pgtype.UUID
-	UserID       pgtype.UUID
+	ID           int64
+	UserID       int64
 	MachineID    string
 	AgentVersion pgtype.Text
 	Os           pgtype.Text
@@ -21,14 +21,14 @@ type Agent struct {
 
 type AgentQueue struct {
 	ID        int64
-	AgentID   pgtype.UUID
+	AgentID   int64
 	Event     []byte
 	CreatedAt pgtype.Timestamptz
 }
 
 type Alert struct {
 	ID         int64
-	AgentID    pgtype.UUID
+	AgentID    int64
 	AlertType  string
 	Severity   string
 	Message    pgtype.Text
@@ -38,9 +38,9 @@ type Alert struct {
 }
 
 type Command struct {
-	ID          pgtype.UUID
-	AgentID     pgtype.UUID
-	UserID      pgtype.UUID
+	ID          int64
+	AgentID     int64
+	UserID      int64
 	CommandType string
 	Payload     []byte
 	Status      string
@@ -50,7 +50,7 @@ type Command struct {
 
 type Notification struct {
 	ID        int64
-	UserID    pgtype.UUID
+	UserID    int64
 	Title     string
 	Message   string
 	IsRead    bool
@@ -68,8 +68,8 @@ type User struct {
 }
 
 type UserSession struct {
-	ID        pgtype.UUID
-	UserID    pgtype.UUID
+	ID        int64
+	UserID    int64
 	Token     string
 	ExpiresAt pgtype.Timestamptz
 	CreatedAt pgtype.Timestamptz

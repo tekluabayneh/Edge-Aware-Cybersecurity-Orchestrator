@@ -1,8 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS agents (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGSERIAL NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   machine_id TEXT NOT NULL UNIQUE,
   agent_version TEXT,
   os TEXT,
@@ -15,5 +15,5 @@ CREATE TABLE IF NOT EXISTS agents (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE agents
+DROP TABLE agents;
 -- +goose StatementEnd

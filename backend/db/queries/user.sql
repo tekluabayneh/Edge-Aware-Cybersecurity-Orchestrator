@@ -5,4 +5,4 @@ SELECT * FROM users WHERE id = $1;
 SELECT * from users WHERE email = $1;
 
 -- name: CreateUser :exec
-INSERT INTO users (name, email, photo, phone, password, created_at) VALUES ($1, $2, $3, $4, $5, $6);
+INSERT INTO users (name, email, photo, phone, password) VALUES ($1, $2, $3, $4, $5);

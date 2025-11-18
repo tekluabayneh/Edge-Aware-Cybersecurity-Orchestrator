@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS alerts (
   id BIGSERIAL PRIMARY KEY,
-  agent_id UUID NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
+  agent_id BIGSERIAL NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
   alert_type TEXT NOT NULL,
   severity TEXT NOT NULL,
   message TEXT,
@@ -15,5 +15,5 @@ CREATE TABLE IF NOT EXISTS alerts (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE alerts
+DROP TABLE alerts;
 -- +goose StatementEnd
