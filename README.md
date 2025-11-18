@@ -122,6 +122,9 @@ Agents can only execute whitelisted commands.
 
 Alerts include severity, origin, and timestamp.
 
+db schema:
+https://drawsql.app/teams/man-21/diagrams/edage-aware-security-db/embed
+
 🧠 Future Enhancements
 
 Integrate Kafka or NATS for high-throughput event streaming.
