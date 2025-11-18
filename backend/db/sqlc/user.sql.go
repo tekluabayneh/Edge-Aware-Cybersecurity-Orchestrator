@@ -21,7 +21,7 @@ type CreateUserParams struct {
 	Photo     pgtype.Text
 	Phone     pgtype.Text
 	Password  string
-	CreatedAt string
+	CreatedAt pgtype.Timestamptz
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
