@@ -1,4 +1,4 @@
-import { Server, Cpu, HardDrive, Network } from "lucide-react";
+import { Server, BluetoothConnected, Cpu, HardDrive, Network } from "lucide-react";
 import { Monitor, Apple, Smartphone,
   LayoutDashboard,
   AlertTriangle,
@@ -72,6 +72,11 @@ export const navigationItems = [
     title: "Dashboard",
     url: "/Dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    title: "Pair Device",
+    url: "/paring",
+    icon: BluetoothConnected,
   },
   {
     title: "Alerts",
