@@ -89,7 +89,6 @@ func (h *OAuthHandler) GitHubCallbackHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	if errors.Is(err, sql.ErrNoRows) && user.Email == "" {
-		// register new user
 		err := h.DB.CreateUser(ctx, newUser)
 		if err != nil {
 			utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
