@@ -1,13 +1,13 @@
--- name: GetAllAgent:one
-SELECT * FROM alerts LIMIT =50;
+-- name: GetAllAlert :one
+SELECT * FROM alerts LIMIT 50;
 
--- name: GetAgentById:one
+-- name: GetAlertById :one
 SELECT * from alerts WHERE id = $1;
 
--- name: CreateAgent:exec
+-- name: CreateAlert :exec
 INSERT INTO alerts(agent_id, alert_type, severity,  status, message, raw_payload) VALUES ($1, $2, $3, $4, $5, $6);
 
--- name: UpdateSingleAgent:exec
+-- name: UpdateSingleAlert :exec
 UPDATE alerts
 SET
     agent_id = COALESCE($1, agent_id),

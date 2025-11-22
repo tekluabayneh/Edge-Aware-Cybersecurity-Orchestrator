@@ -57,6 +57,14 @@ type Notification struct {
 	CreatedAt pgtype.Timestamptz
 }
 
+type PairingToken struct {
+	ID        int64
+	Token     string
+	UserID    string
+	UserEmail string
+	ExpiresAt pgtype.Timestamptz
+}
+
 type User struct {
 	ID        int32
 	Name      string

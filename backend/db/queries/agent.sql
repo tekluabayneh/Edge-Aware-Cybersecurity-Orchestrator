@@ -1,13 +1,13 @@
--- name: GetAllAgent:one
-SELECT * FROM agents LIMIT =50;
+-- name: GetAllAgent :one
+SELECT * FROM agents LIMIT  50;
 
--- name: GetAgentById:one
+-- name: GetAgentById :one
 SELECT * from agents WHERE id = $1;
 
--- name: CreateAgent:exec
+-- name: CreateAgent :exec
 INSERT INTO agents(user_id, machine_id, agent_version, os, status, last_seen) VALUES ($1, $2, $3, $4, $5, $6);
 
--- name: UpdateSingleAgent:exec
+-- name: UpdateSingleAgent :exec
 UPDATE agents
 SET
     user_id       = COALESCE($1, user_id),

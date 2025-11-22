@@ -3,8 +3,10 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
+	"github.com/edge-aware-cyberSecurity/internal/utils"
 )
 
 type DevicePairingType struct {
@@ -12,11 +14,27 @@ type DevicePairingType struct {
 }
 
 func (h *DevicePairingType) DevicePairing(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("devince paring handler test")
+	fmt.Println("Device paring handler test")
+	ctx := r.Context()
+	/*  Generate token
+	-- When user clicks “Add Device”.
+	*/
+	user, err := h.DB.GetUserByEmail(ctx, "")
+
+	if err != nil {
+		return
+	}
+	token := utils.GenerateDeviceParingToken(16)
+	paringDeviceData := db.CreateParingTokenParams{
+		Token:     token,
+		UserID:    user.id,
+		UserEmail: user.email,
+		ExpiresAt: time.Now().Add(24),
+	}
+	h.DB.CreateParingToken(ctx, paringDeviceData)
+
 	// TODO:
 	/*
-	   Generate token
-	    -- When user clicks “Add Device”.
 	   Store token related to the user email
 	    -- Save it in pairing_tokens table with expiry.
 	   Limit number of active tokens per user (optional but recommended now)

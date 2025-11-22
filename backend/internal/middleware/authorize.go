@@ -1,22 +1,62 @@
 package middleware
 
 import (
-	"fmt"
+	"context"
+	"database/sql"
+	"errors"
 	"net/http"
+	"time"
+
+	db "github.com/edge-aware-cyberSecurity/db/sqlc"
+	"github.com/edge-aware-cyberSecurity/internal/utils"
+	"github.com/golang-jwt/jwt/v5"
 )
 
-func Authorize(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func Authorize(db *db.Queries) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			isValid, token := utils.VerifyToken(r)
+			if !isValid {
+				utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+					"message": "invalid token",
+				})
+				return
+			}
+			claims := token.Claims.(jwt.MapClaims)
+			expiryTime := time.Unix(int64(claims["exp"].(float64)), 0)
+			email := claims["user_email"]
+			emailStr, ok := email.(string)
 
-		fmt.Println("devince paring middleware test")
-		// TODO: Extract JWT token from Authorization header (Bearer token)
-		// TODO: Validate the token (check signature, expiration, etc.)
-		// TODO: Extract user ID or email from token claims
-		// TODO: Check if the user exists in the database
-		// TODO: If validation fails, return 401 Unauthorized
-		// TODO: If validation succeeds, attach user info to request context
-		// TODO: Call the next handler with next.ServeHTTP(w, r)
+			if !ok {
+				utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+					"message": "invalid email in token",
+				})
+				return
+			}
 
-		next.ServeHTTP(w, r)
-	})
+			if time.Now().After(expiryTime) {
+				utils.WriteJSON(w, http.StatusUnauthorized, map[string]string{
+					"message": "token is expired",
+				})
+				return
+			}
+			user, err := db.GetUserByEmail(ctx, emailStr)
+			if err != nil && !errors.Is(err, sql.ErrNoRows) {
+				utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
+					"message": "internal server error",
+				})
+				return
+			}
+
+			if err != nil && user.Email == "" {
+				utils.WriteJSON(w, http.StatusUnauthorized, map[string]string{
+					"message": "UnAuthorized user",
+				})
+				return
+			}
+			ctx := context.WithValue(context.Background, "", "")
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
 }

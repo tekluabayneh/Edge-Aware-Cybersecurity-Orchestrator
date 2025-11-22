@@ -1,13 +1,13 @@
--- name: GetAllNotifications:one
-SELECT * FROM  notifications LIMIT =50;
+-- name: GetAllNotifications :one
+SELECT * FROM  notifications LIMIT 50;
 
--- name: GetNotificationById:one
+-- name: GetNotificationById :one
 SELECT * from notifications WHERE id = $1;
 
--- name: CreateNotification:exec
-INSERT INTO notifications(user_id, title, message, is_read) VALUES ($1, $2, $3, $4)
+-- name: CreateNotification :exec
+INSERT INTO notifications(user_id, title, message, is_read) VALUES ($1, $2, $3, $4);
 
--- name: UpdateNotificationById:exec
+-- name: UpdateNotificationById :exec
 UPDATE notifications
 SET
     user_id       = COALESCE($1, user_id),
