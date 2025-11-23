@@ -7,6 +7,10 @@ SELECT * from agents WHERE id = $1;
 -- name: CreateAgent :exec
 INSERT INTO agents(user_id, machine_id, agent_version, os, status, last_seen) VALUES ($1, $2, $3, $4, $5, $6);
 
+-- name: GetUserDeviceCount :one
+SELECT COUNT(*) from agents WHERE user_id = $1;
+
+
 -- name: UpdateSingleAgent :exec
 UPDATE agents
 SET

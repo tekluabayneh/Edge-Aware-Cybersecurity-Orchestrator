@@ -55,8 +55,9 @@ func Authorize(db *db.Queries) func(http.Handler) http.Handler {
 				})
 				return
 			}
-			ctx := context.WithValue(context.Background, "", "")
-			next.ServeHTTP(w, r.WithContext(ctx))
+			ctxValue := context.WithValue(ctx, "email", email)
+			next.ServeHTTP(w, r.WithContext(ctxValue))
+
 		})
 	}
 }

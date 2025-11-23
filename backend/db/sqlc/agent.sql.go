@@ -37,7 +37,7 @@ func (q *Queries) CreateAgent(ctx context.Context, arg CreateAgentParams) error 
 }
 
 const getAgentById = `-- name: GetAgentById :one
-SELECT id, user_id, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE id = $1
+SELECT id, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE id = $1
 `
 
 func (q *Queries) GetAgentById(ctx context.Context, id int64) (Agent, error) {
@@ -46,6 +46,8 @@ func (q *Queries) GetAgentById(ctx context.Context, id int64) (Agent, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
+		&i.AgentID,
+		&i.AgentToken,
 		&i.MachineID,
 		&i.AgentVersion,
 		&i.Os,
@@ -57,7 +59,7 @@ func (q *Queries) GetAgentById(ctx context.Context, id int64) (Agent, error) {
 }
 
 const getAllAgent = `-- name: GetAllAgent :one
-SELECT id, user_id, machine_id, agent_version, os, status, last_seen, created_at FROM agents LIMIT  50
+SELECT id, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at FROM agents LIMIT  50
 `
 
 func (q *Queries) GetAllAgent(ctx context.Context) (Agent, error) {
@@ -66,6 +68,8 @@ func (q *Queries) GetAllAgent(ctx context.Context) (Agent, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
+		&i.AgentID,
+		&i.AgentToken,
 		&i.MachineID,
 		&i.AgentVersion,
 		&i.Os,
@@ -74,6 +78,17 @@ func (q *Queries) GetAllAgent(ctx context.Context) (Agent, error) {
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const getUserDeviceCount = `-- name: GetUserDeviceCount :one
+SELECT COUNT(*) from agents WHERE user_id = $1
+`
+
+func (q *Queries) GetUserDeviceCount(ctx context.Context, userID int64) (int64, error) {
+	row := q.db.QueryRow(ctx, getUserDeviceCount, userID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const updateSingleAgent = `-- name: UpdateSingleAgent :exec

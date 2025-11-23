@@ -17,7 +17,7 @@ INSERT INTO pairing_tokens(token, user_id, user_email, expires_at) VALUES ($1, $
 
 type CreateParingTokenParams struct {
 	Token     string
-	UserID    string
+	UserID    int32
 	UserEmail string
 	ExpiresAt pgtype.Timestamptz
 }
@@ -33,17 +33,46 @@ func (q *Queries) CreateParingToken(ctx context.Context, arg CreateParingTokenPa
 }
 
 const deleteUsedToken = `-- name: DeleteUsedToken :exec
-DELETE  from pairing_tokens WHERE user_email = $1 and user_id = $2
+DELETE  from pairing_tokens WHERE user_email = $1
 `
 
-type DeleteUsedTokenParams struct {
-	UserEmail string
-	UserID    string
+func (q *Queries) DeleteUsedToken(ctx context.Context, userEmail string) error {
+	_, err := q.db.Exec(ctx, deleteUsedToken, userEmail)
+	return err
 }
 
-func (q *Queries) DeleteUsedToken(ctx context.Context, arg DeleteUsedTokenParams) error {
-	_, err := q.db.Exec(ctx, deleteUsedToken, arg.UserEmail, arg.UserID)
-	return err
+const getAllParingTokenByEmail = `-- name: GetAllParingTokenByEmail :one
+SELECT id, token, user_id, user_email, expires_at from pairing_tokens WHERE user_email = $1
+`
+
+func (q *Queries) GetAllParingTokenByEmail(ctx context.Context, userEmail string) (PairingToken, error) {
+	row := q.db.QueryRow(ctx, getAllParingTokenByEmail, userEmail)
+	var i PairingToken
+	err := row.Scan(
+		&i.ID,
+		&i.Token,
+		&i.UserID,
+		&i.UserEmail,
+		&i.ExpiresAt,
+	)
+	return i, err
+}
+
+const getAllTokenRelatedToUserByEmail = `-- name: GetAllTokenRelatedToUserByEmail :one
+SELECT id, token, user_id, user_email, expires_at from pairing_tokens WHERE user_email = $1
+`
+
+func (q *Queries) GetAllTokenRelatedToUserByEmail(ctx context.Context, userEmail string) (PairingToken, error) {
+	row := q.db.QueryRow(ctx, getAllTokenRelatedToUserByEmail, userEmail)
+	var i PairingToken
+	err := row.Scan(
+		&i.ID,
+		&i.Token,
+		&i.UserID,
+		&i.UserEmail,
+		&i.ExpiresAt,
+	)
+	return i, err
 }
 
 const getUserTokenById = `-- name: GetUserTokenById :one

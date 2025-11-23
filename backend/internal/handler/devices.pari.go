@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"fmt"
+	"database/sql"
+	"errors"
 	"net/http"
 	"time"
 
@@ -14,41 +15,62 @@ type DevicePairingType struct {
 }
 
 func (h *DevicePairingType) DevicePairing(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Device paring handler test")
 	ctx := r.Context()
-	/*  Generate token
-	-- When user clicks “Add Device”.
-	*/
-	user, err := h.DB.GetUserByEmail(ctx, "")
+	UserEmail := r.Context().Value("email").(string)
+	incomingToken := r.URL.Query().Get("token")
 
-	if err != nil {
+	if incomingToken == "" {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "token not found",
+		})
 		return
 	}
-	token := utils.GenerateDeviceParingToken(16)
-	paringDeviceData := db.CreateParingTokenParams{
-		Token:     token,
-		UserID:    user.id,
-		UserEmail: user.email,
-		ExpiresAt: time.Now().Add(24),
+
+	userToken, err := h.DB.GetAllParingTokenByEmail(ctx, UserEmail)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"message": "internal server error",
+		})
+		return
 	}
-	h.DB.CreateParingToken(ctx, paringDeviceData)
 
-	// TODO:
-	/*
-	   Store token related to the user email
-	    -- Save it in pairing_tokens table with expiry.
-	   Limit number of active tokens per user (optional but recommended now)
-	     -- If there are too many, delete old tokens before proceeding.
-	   Logging (optional but early helps debugging)
-	     -- Record who generated token & timestamp.
-	   Handle refresh token request
-	     -- If the user clicked refresh → generate new token, replace old one, update DB.
-	   Check if incoming token is valid & pair the device with the user
-	     -- When agent sends pairing request → validate token → link agent → create agent_id and agent_token.
-	   Agent should send those credentials and store in agent table
-	     -- Store agent_token, agent_id, machine_id, OS, version, etc.
-	   Expiration
-	     -- Automatically expire pairing token after a few minutes (or when used).
-	*/
+	if err == nil && len(userToken.Token) < 1 {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "token is not found",
+		})
+		return
+	}
 
+	if time.Now().After(userToken.ExpiresAt.Time) {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "token is expired",
+		})
+		return
+	}
+
+	if userToken.Token != incomingToken {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "invalid token",
+		})
+		return
+	}
+
+	err = h.DB.DeleteUsedToken(ctx, UserEmail)
+
+	if err != nil {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "internal server error",
+		})
+		return
+	}
+
+	agent_id := utils.GenerateDeviceParingToken(6)
+	agent_token := utils.GenerateDeviceParingToken(16)
+
+	// send agent_id and agent_token with success message and agent will send agent info and stor them
+	utils.WriteJSON(w, http.StatusOK, map[string]string{
+		"message":     "token validation success",
+		"agent_id":    agent_id,
+		"agent_token": agent_token,
+	})
 }

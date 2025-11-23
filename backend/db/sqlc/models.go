@@ -11,6 +11,8 @@ import (
 type Agent struct {
 	ID           int64
 	UserID       int64
+	AgentID      string
+	AgentToken   string
 	MachineID    string
 	AgentVersion pgtype.Text
 	Os           pgtype.Text
@@ -60,7 +62,7 @@ type Notification struct {
 type PairingToken struct {
 	ID        int64
 	Token     string
-	UserID    string
+	UserID    int32
 	UserEmail string
 	ExpiresAt pgtype.Timestamptz
 }
