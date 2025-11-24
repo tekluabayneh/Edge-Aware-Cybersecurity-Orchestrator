@@ -5,7 +5,7 @@ CREATE TABLE pairing_tokens (
   token TEXT UNIQUE NOT NULL,
   user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   user_email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
-  expires_at TIMESTAMP WITH TIME ZONE NOT NULL
+  expires_at TIMESTAMP WITH TIME ZONE
 );
 -- +goose StatementEnd
 
