@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -47,17 +48,18 @@ func (h *DevicePairingType) GenerateTokenHandler(w http.ResponseWriter, r *http.
 		})
 		return
 	}
+	t := time.Now().Add(6 * time.Hour)
+	expires := pgtype.Timestamptz{
+		Time:  t,
+		Valid: true,
+	}
 
+	fmt.Println("time", expires)
 	if err == nil && len(AllUserToken.Token) > 0 {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
 			"message": "you already have token",
 		})
 		return
-	}
-
-	t := time.Now().Add(6 * time.Hour)
-	expires := pgtype.Timestamptz{
-		Time: t,
 	}
 
 	paringDeviceData := db.CreateParingTokenParams{
@@ -67,7 +69,6 @@ func (h *DevicePairingType) GenerateTokenHandler(w http.ResponseWriter, r *http.
 		ExpiresAt: expires,
 	}
 
-	// if all pass create token set expire to 6 hour
 	err = h.DB.CreateParingToken(ctx, paringDeviceData)
 	if err != nil {
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
@@ -77,7 +78,7 @@ func (h *DevicePairingType) GenerateTokenHandler(w http.ResponseWriter, r *http.
 	}
 
 	// send token to use paring dashboard
-	utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+	utils.WriteJSON(w, http.StatusOK, map[string]string{
 		"message": "paring token created",
 		"token":   token,
 	})
