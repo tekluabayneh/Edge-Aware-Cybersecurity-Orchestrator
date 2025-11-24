@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS agents (
   os TEXT,
   status TEXT,
   last_seen TIMESTAMP WITH TIME ZONE,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- +goose StatementEnd
