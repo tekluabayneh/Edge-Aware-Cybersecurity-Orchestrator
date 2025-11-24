@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS alerts (
   message TEXT,
   raw_payload JSONB,
   status TEXT NOT NULL DEFAULT 'new',
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- +goose StatementEnd
