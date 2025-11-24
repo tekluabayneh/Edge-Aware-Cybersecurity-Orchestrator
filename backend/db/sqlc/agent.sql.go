@@ -12,11 +12,13 @@ import (
 )
 
 const createAgent = `-- name: CreateAgent :exec
-INSERT INTO agents(user_id, machine_id, agent_version, os, status, last_seen) VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO agents(user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 `
 
 type CreateAgentParams struct {
 	UserID       int64
+	AgentID      string
+	AgentToken   string
 	MachineID    string
 	AgentVersion pgtype.Text
 	Os           pgtype.Text
@@ -27,6 +29,8 @@ type CreateAgentParams struct {
 func (q *Queries) CreateAgent(ctx context.Context, arg CreateAgentParams) error {
 	_, err := q.db.Exec(ctx, createAgent,
 		arg.UserID,
+		arg.AgentID,
+		arg.AgentToken,
 		arg.MachineID,
 		arg.AgentVersion,
 		arg.Os,
@@ -95,17 +99,20 @@ const updateSingleAgent = `-- name: UpdateSingleAgent :exec
 UPDATE agents
 SET
     user_id       = COALESCE($1, user_id),
-    machine_id    = COALESCE($2, machine_id),
-    agent_version = COALESCE($3, agent_version),
-    os            = COALESCE($4, os),
-    status        = COALESCE($5, status),
-    last_seen     = COALESCE($6, last_seen)
-WHERE id = $7
+    agent_id = COALESCE($2, agent_id),
+    agent_token = COALESCE($3, agent_token),
+    machine_id    = COALESCE($3, machine_id),
+    agent_version = COALESCE($4, agent_version),
+    os            = COALESCE($5, os),
+    status        = COALESCE($6, status),
+    last_seen     = COALESCE($7, last_seen)
+WHERE id = $8
 `
 
 type UpdateSingleAgentParams struct {
 	UserID       int64
-	MachineID    string
+	AgentID      string
+	AgentToken   string
 	AgentVersion pgtype.Text
 	Os           pgtype.Text
 	Status       pgtype.Text
@@ -116,7 +123,8 @@ type UpdateSingleAgentParams struct {
 func (q *Queries) UpdateSingleAgent(ctx context.Context, arg UpdateSingleAgentParams) error {
 	_, err := q.db.Exec(ctx, updateSingleAgent,
 		arg.UserID,
-		arg.MachineID,
+		arg.AgentID,
+		arg.AgentToken,
 		arg.AgentVersion,
 		arg.Os,
 		arg.Status,
