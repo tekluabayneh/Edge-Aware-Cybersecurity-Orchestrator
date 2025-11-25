@@ -59,6 +59,10 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 		AcknowledgePairing(route, db)
 	})
 
+	router.With(middlewareGlobal.Authorize(db)).Route("/telementary", func(route chi.Router) {
+		TelemetryReport(route, db)
+	})
+
 	return router
 }
 
@@ -88,4 +92,9 @@ func GenerateToken(router chi.Router, db *db.Queries) {
 func AcknowledgePairing(router chi.Router, db *db.Queries) {
 	DeviceAckParingTokenHandler := &handler.DevicePairingType{DB: db}
 	router.Post("/ack", DeviceAckParingTokenHandler.AcknowledgePairing)
+}
+
+func TelemetryReport(router chi.Router, db *db.Queries) {
+	TelemetryReportHandler := &handler.TelemetryType{DB: db}
+	router.Post("/report", TelemetryReportHandler.ReceiveTelemetry)
 }
