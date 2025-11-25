@@ -3,7 +3,7 @@
 CREATE TABLE IF NOT EXISTS agents (
   id BIGSERIAL PRIMARY KEY,
   user_id BIGSERIAL NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  agent_id TEXT NOT NULL,
+  agent_id BIGSERIAL NOT NULL,
   agent_token TEXT NOT NULL,
   machine_id TEXT NOT NULL UNIQUE,
   agent_version TEXT,
