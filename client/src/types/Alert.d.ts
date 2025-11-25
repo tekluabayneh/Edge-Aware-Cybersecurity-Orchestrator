@@ -1,3 +1,5 @@
+import type { number } from "framer-motion"
+
 export type AlertType = {
   id: number
   title: string
@@ -21,4 +23,14 @@ type MetricCardProps = {
   change: string
   trend: 'up' | 'down'
   icon: React.ComponentType
+}
+
+export type DeviceType = {
+  user_id: number,
+  machine_id: number,
+  agent_version: string,
+  os:string,
+  status: string,
+  last_seen:string,
+  created_at:string,
 }

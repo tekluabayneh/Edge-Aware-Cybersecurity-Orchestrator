@@ -67,7 +67,7 @@ func (h *AuthRegisterHandlerType) Register(w http.ResponseWriter, r *http.Reques
 	err = h.DB.CreateUser(ctx, userInfo)
 	if err != nil {
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
-			"message": "internal server error",
+			"message": "internal ddd server error",
 		})
 		return
 	}

@@ -10,6 +10,7 @@ const Profiles = lazy(() => import("./pages/Profile/Profile"));
 const Landing = lazy(() => import("./pages/Landing/landing"));
 const Auth = lazy(() => import("./pages/Auth/Auth"));
 const Download = lazy(() => import("./pages/Download/download"));
+const Device = lazy(() => import("./pages/DeviceParing/Paring"));
 
 const Routers = () => {
   return (
@@ -19,6 +20,7 @@ const Routers = () => {
           <Route path="/" element={<Landing />} />
           <Route path="/Download" element={<Download/>} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/paring" element={<Device/>} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/Profile" element={<Profiles />} />
           <Route path="/Alerts" element={<Alerts />} />

@@ -46,6 +46,19 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 	router.Get("/oauth/google", OAuthconfig.GoogleLoginHandler)
 	router.Get("/oauth/github", OAuthconfig.GitHubLoginHandler)
 
+	// device paring route
+	router.With(middlewareGlobal.Authorize(db)).Route("/", func(route chi.Router) {
+		DeviceParing(route, db)
+	})
+
+	router.With(middlewareGlobal.Authorize(db)).Route("/paringToken", func(route chi.Router) {
+		GenerateToken(route, db)
+	})
+
+	router.With(middlewareGlobal.Authorize(db)).Route("/Token", func(route chi.Router) {
+		AcknowledgePairing(route, db)
+	})
+
 	return router
 }
 
@@ -61,4 +74,18 @@ func AuthRegister(router chi.Router, db *db.Queries) {
 		DB: db,
 	}
 	router.Post("/register", AuthHandlerRegisterRoute.Register)
+}
+
+func DeviceParing(router chi.Router, db *db.Queries) {
+	DeviceParingHandler := &handler.DevicePairingType{DB: db}
+	router.Post("/DeviceParing", DeviceParingHandler.DevicePairing)
+}
+func GenerateToken(router chi.Router, db *db.Queries) {
+	DeviceParingTokenHandler := &handler.DevicePairingType{DB: db}
+	router.Post("/token", DeviceParingTokenHandler.GenerateTokenHandler)
+}
+
+func AcknowledgePairing(router chi.Router, db *db.Queries) {
+	DeviceAckParingTokenHandler := &handler.DevicePairingType{DB: db}
+	router.Post("/ack", DeviceAckParingTokenHandler.AcknowledgePairing)
 }
