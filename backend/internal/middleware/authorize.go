@@ -19,7 +19,7 @@ func Authorize(db *db.Queries) func(http.Handler) http.Handler {
 			isValid, token := utils.VerifyToken(r)
 			if !isValid {
 				utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
-					"message": "invalid token",
+					"message": "invalid JWT token",
 				})
 				return
 			}

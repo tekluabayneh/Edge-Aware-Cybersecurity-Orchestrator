@@ -36,7 +36,7 @@ func (h *DevicePairingType) DevicePairing(w http.ResponseWriter, r *http.Request
 
 	if err == nil && len(userToken.Token) < 1 {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
-			"message": "token is not found",
+			"message": "token not found",
 		})
 		return
 	}
