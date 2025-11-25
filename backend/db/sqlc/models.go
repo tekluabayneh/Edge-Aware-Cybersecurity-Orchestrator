@@ -11,7 +11,7 @@ import (
 type Agent struct {
 	ID           int64
 	UserID       int64
-	AgentID      string
+	AgentID      int64
 	AgentToken   string
 	MachineID    string
 	AgentVersion pgtype.Text
@@ -29,14 +29,19 @@ type AgentQueue struct {
 }
 
 type Alert struct {
-	ID         int64
-	AgentID    int64
-	AlertType  string
-	Severity   string
-	Message    pgtype.Text
-	RawPayload []byte
-	Status     string
-	CreatedAt  pgtype.Timestamptz
+	ID          int64
+	AgentID     int64
+	AlertType   string
+	Severity    string
+	Message     pgtype.Text
+	RawPayload  []byte
+	Status      string
+	RiskLevel   pgtype.Text
+	Summary     pgtype.Text
+	Performance []byte
+	Network     []byte
+	Security    []byte
+	CreatedAt   pgtype.Timestamptz
 }
 
 type Command struct {
