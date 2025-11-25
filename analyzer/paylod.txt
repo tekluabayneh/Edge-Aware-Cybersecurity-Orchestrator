@@ -1,0 +1,42 @@
+{
+  "agent_id": "AGT-123",
+  "agent_token": "abc123xyzTOKEN",
+  "timestamp": "2025-11-25T18:00:00Z",
+  "system": {
+    "cpu_usage": 37.5,
+    "memory_usage": 68.0,
+    "disk_usage": 82.5,
+    "uptime_seconds": 128882
+  },
+  "processes": [
+    {
+      "pid": 1234,
+      "name": "chrome.exe",
+      "cpu": 4.2,
+      "memory": 512000,
+      "parent_pid": 200
+    }
+  ],
+  "network": {
+    "connections": [
+      {
+        "remote_ip": "104.18.23.45",
+        "remote_port": 443,
+        "process": "chrome.exe"
+      }
+    ],
+    "suspicious_ips": ["93.184.216.34"]
+  },
+  "security": {
+    "firewall_enabled": true,
+    "antivirus_running": true,
+    "malicious_process_detected": false,
+    "integrity_failures": [],
+    "suspicious_files": []
+  },
+  "system_integrity": {
+    "critical_file_changes": [],
+    "kernel_version": "5.15.0",
+    "patch_level": "2025-11-01"
+  }
+}
