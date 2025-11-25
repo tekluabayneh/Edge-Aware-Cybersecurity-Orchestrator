@@ -2,13 +2,18 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS alerts (
   id BIGSERIAL PRIMARY KEY,
-  agent_id BIGSERIAL NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
+  agent_id BIGINT NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
   alert_type TEXT NOT NULL,
   severity TEXT NOT NULL,
   message TEXT,
   raw_payload JSONB,
   status TEXT NOT NULL DEFAULT 'new',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  risk_level TEXT,
+  summary TEXT,
+  performance JSONB,
+  network JSONB,
+  security JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- +goose StatementEnd
@@ -17,3 +22,4 @@ CREATE TABLE IF NOT EXISTS alerts (
 -- +goose StatementBegin
 DROP TABLE alerts;
 -- +goose StatementEnd
+
