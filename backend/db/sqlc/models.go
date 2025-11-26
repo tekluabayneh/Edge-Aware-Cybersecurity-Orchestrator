@@ -31,6 +31,7 @@ type AgentQueue struct {
 type Alert struct {
 	ID          int64
 	AgentID     int64
+	AgentToken  string
 	AlertType   string
 	Severity    string
 	Message     pgtype.Text
