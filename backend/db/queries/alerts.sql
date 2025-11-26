@@ -7,6 +7,7 @@ SELECT * from alerts WHERE id = $1;
 -- name: CreateAlert :exec
 INSERT INTO alerts (
   agent_id,
+  agent_token,
   alert_type,
   severity,
   message,
@@ -19,22 +20,23 @@ INSERT INTO alerts (
   security,
   created_at
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
 );
 
 -- name: UpdateSingleAlert :exec
 UPDATE alerts
 SET
     agent_id     = COALESCE($1, agent_id),
-    alert_type   = COALESCE($2, alert_type),
-    severity     = COALESCE($3, severity),
-    message      = COALESCE($4, message),
-    status       = COALESCE($5, status),
-    raw_payload  = COALESCE($6, raw_payload),
-    created_at   = COALESCE($7, created_at),
-    risk_level   = COALESCE($8, risk_level),
-    summary      = COALESCE($9, summary),
-    performance  = COALESCE($10, performance),
-    network      = COALESCE($11, network),
-    security     = COALESCE($12, security)
-WHERE id = $13;
+    agent_token  = COALESCE($2, agent_token),
+    alert_type   = COALESCE($3, alert_type),
+    severity     = COALESCE($4, severity),
+    message      = COALESCE($5, message),
+    status       = COALESCE($6, status),
+    raw_payload  = COALESCE($7, raw_payload),
+    created_at   = COALESCE($8, created_at),
+    risk_level   = COALESCE($9, risk_level),
+    summary      = COALESCE($10, summary),
+    performance  = COALESCE($11, performance),
+    network      = COALESCE($12, network),
+    security     = COALESCE($13, security)
+WHERE id = $14;
