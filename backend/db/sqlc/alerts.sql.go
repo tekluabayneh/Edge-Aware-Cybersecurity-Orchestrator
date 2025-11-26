@@ -14,6 +14,7 @@ import (
 const createAlert = `-- name: CreateAlert :exec
 INSERT INTO alerts (
   agent_id,
+  agent_token,
   alert_type,
   severity,
   message,
@@ -26,12 +27,13 @@ INSERT INTO alerts (
   security,
   created_at
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
 )
 `
 
 type CreateAlertParams struct {
 	AgentID     int64
+	AgentToken  string
 	AlertType   string
 	Severity    string
 	Message     pgtype.Text
@@ -48,6 +50,7 @@ type CreateAlertParams struct {
 func (q *Queries) CreateAlert(ctx context.Context, arg CreateAlertParams) error {
 	_, err := q.db.Exec(ctx, createAlert,
 		arg.AgentID,
+		arg.AgentToken,
 		arg.AlertType,
 		arg.Severity,
 		arg.Message,
@@ -64,7 +67,7 @@ func (q *Queries) CreateAlert(ctx context.Context, arg CreateAlertParams) error 
 }
 
 const getAlertById = `-- name: GetAlertById :one
-SELECT id, agent_id, alert_type, severity, message, raw_payload, status, risk_level, summary, performance, network, security, created_at from alerts WHERE id = $1
+SELECT id, agent_id, agent_token, alert_type, severity, message, raw_payload, status, risk_level, summary, performance, network, security, created_at from alerts WHERE id = $1
 `
 
 func (q *Queries) GetAlertById(ctx context.Context, id int64) (Alert, error) {
@@ -73,6 +76,7 @@ func (q *Queries) GetAlertById(ctx context.Context, id int64) (Alert, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.AgentID,
+		&i.AgentToken,
 		&i.AlertType,
 		&i.Severity,
 		&i.Message,
@@ -89,7 +93,7 @@ func (q *Queries) GetAlertById(ctx context.Context, id int64) (Alert, error) {
 }
 
 const getAllAlert = `-- name: GetAllAlert :one
-SELECT id, agent_id, alert_type, severity, message, raw_payload, status, risk_level, summary, performance, network, security, created_at FROM alerts LIMIT 50
+SELECT id, agent_id, agent_token, alert_type, severity, message, raw_payload, status, risk_level, summary, performance, network, security, created_at FROM alerts LIMIT 50
 `
 
 func (q *Queries) GetAllAlert(ctx context.Context) (Alert, error) {
@@ -98,6 +102,7 @@ func (q *Queries) GetAllAlert(ctx context.Context) (Alert, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.AgentID,
+		&i.AgentToken,
 		&i.AlertType,
 		&i.Severity,
 		&i.Message,
@@ -117,22 +122,24 @@ const updateSingleAlert = `-- name: UpdateSingleAlert :exec
 UPDATE alerts
 SET
     agent_id     = COALESCE($1, agent_id),
-    alert_type   = COALESCE($2, alert_type),
-    severity     = COALESCE($3, severity),
-    message      = COALESCE($4, message),
-    status       = COALESCE($5, status),
-    raw_payload  = COALESCE($6, raw_payload),
-    created_at   = COALESCE($7, created_at),
-    risk_level   = COALESCE($8, risk_level),
-    summary      = COALESCE($9, summary),
-    performance  = COALESCE($10, performance),
-    network      = COALESCE($11, network),
-    security     = COALESCE($12, security)
-WHERE id = $13
+    agent_token  = COALESCE($2, agent_token),
+    alert_type   = COALESCE($3, alert_type),
+    severity     = COALESCE($4, severity),
+    message      = COALESCE($5, message),
+    status       = COALESCE($6, status),
+    raw_payload  = COALESCE($7, raw_payload),
+    created_at   = COALESCE($8, created_at),
+    risk_level   = COALESCE($9, risk_level),
+    summary      = COALESCE($10, summary),
+    performance  = COALESCE($11, performance),
+    network      = COALESCE($12, network),
+    security     = COALESCE($13, security)
+WHERE id = $14
 `
 
 type UpdateSingleAlertParams struct {
 	AgentID     int64
+	AgentToken  string
 	AlertType   string
 	Severity    string
 	Message     pgtype.Text
@@ -150,6 +157,7 @@ type UpdateSingleAlertParams struct {
 func (q *Queries) UpdateSingleAlert(ctx context.Context, arg UpdateSingleAlertParams) error {
 	_, err := q.db.Exec(ctx, updateSingleAlert,
 		arg.AgentID,
+		arg.AgentToken,
 		arg.AlertType,
 		arg.Severity,
 		arg.Message,
