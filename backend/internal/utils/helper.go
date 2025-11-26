@@ -28,11 +28,20 @@ func RequiredFieldsSet(a Agent) bool {
 
 }
 
-func CheckError(w http.ResponseWriter, err error, status int, Msg string) {
+func CheckError(w http.ResponseWriter, err error, status int, Msg string) bool {
 	if err != nil {
 		WriteJSON(w, status, map[string]string{
 			"message": Msg,
+			"del":     err.Error(),
 		})
-		return
+		return true
 	}
+	return false
+}
+
+func ToPgText(s string) pgtype.Text {
+	var t pgtype.Text
+	t.Valid = true
+	t.String = s
+	return t
 }
