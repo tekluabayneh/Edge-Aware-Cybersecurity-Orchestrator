@@ -1,8 +1,9 @@
 -- name: GetAllAlert :one
-SELECT * FROM alerts LIMIT 50;
+SELECT * FROM alerts WHERE agent_id = $1;
 
 -- name: GetAlertById :one
 SELECT * from alerts WHERE id = $1;
+
 
 -- name: CreateAlert :exec
 INSERT INTO alerts (
