@@ -41,5 +41,5 @@ func TelemetryReport(router chi.Router, db *db.Queries) {
 }
 func AlertReport(router chi.Router, db *db.Queries) {
 	AlertReportHandler := &handler.AlertType{DB: db}
-	router.Get("/alert", AlertReportHandler.Alert)
+	router.Get("/alert", AlertReportHandler.Alerts)
 }
