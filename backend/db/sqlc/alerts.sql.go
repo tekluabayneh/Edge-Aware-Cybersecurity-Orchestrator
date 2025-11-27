@@ -93,11 +93,11 @@ func (q *Queries) GetAlertById(ctx context.Context, id int64) (Alert, error) {
 }
 
 const getAllAlert = `-- name: GetAllAlert :one
-SELECT id, agent_id, agent_token, alert_type, severity, message, raw_payload, status, risk_level, summary, performance, network, security, created_at FROM alerts LIMIT 50
+SELECT id, agent_id, agent_token, alert_type, severity, message, raw_payload, status, risk_level, summary, performance, network, security, created_at FROM alerts WHERE agent_id = $1
 `
 
-func (q *Queries) GetAllAlert(ctx context.Context) (Alert, error) {
-	row := q.db.QueryRow(ctx, getAllAlert)
+func (q *Queries) GetAllAlert(ctx context.Context, agentID int64) (Alert, error) {
+	row := q.db.QueryRow(ctx, getAllAlert, agentID)
 	var i Alert
 	err := row.Scan(
 		&i.ID,
