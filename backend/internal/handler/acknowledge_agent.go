@@ -56,6 +56,7 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]any{
 			"message": "internal server error",
 			"ack":     false,
+			"dl":      err.Error(),
 		})
 		return
 	}
