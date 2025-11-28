@@ -66,5 +66,9 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 		AlertReport(route, db)
 	})
 
+	router.With(middlewareGlobal.Authorize(db)).Route("/alerts", func(route chi.Router) {
+		GetSingleAlertByAgentId(route, db)
+	})
+
 	return router
 }
