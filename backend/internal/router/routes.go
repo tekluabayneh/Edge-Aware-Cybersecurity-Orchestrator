@@ -43,3 +43,8 @@ func AlertReport(router chi.Router, db *db.Queries) {
 	AlertReportHandler := &handler.AlertType{DB: db}
 	router.Get("/alert", AlertReportHandler.Alerts)
 }
+
+func GetSingleAlertByAgentId(router chi.Router, db *db.Queries) {
+	SingleAlertHandler := &handler.AlertType{DB: db}
+	router.Get("/id", SingleAlertHandler.GetAlertByAgentId)
+}
