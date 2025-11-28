@@ -15,6 +15,7 @@ import (
 func Authorize(db *db.Queries) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
 			ctx := r.Context()
 			isValid, token := utils.VerifyToken(r)
 			if !isValid {
@@ -55,7 +56,8 @@ func Authorize(db *db.Queries) func(http.Handler) http.Handler {
 				})
 				return
 			}
-			ctxValue := context.WithValue(ctx, "email", email)
+
+			ctxValue := context.WithValue(ctx, "email", emailStr)
 			next.ServeHTTP(w, r.WithContext(ctxValue))
 
 		})
