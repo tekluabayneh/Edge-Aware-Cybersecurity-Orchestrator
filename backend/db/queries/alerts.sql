@@ -1,9 +1,11 @@
--- name: GetAllAlert :one
+-- name: GetAllAlert :many
 SELECT * FROM alerts WHERE agent_id = $1;
 
 -- name: GetAlertById :one
 SELECT * from alerts WHERE id = $1;
 
+-- name: GetAlertByAgentId :one
+SELECT * from alerts WHERE id = $1 AND agent_id = $2;
 
 -- name: CreateAlert :exec
 INSERT INTO alerts (
