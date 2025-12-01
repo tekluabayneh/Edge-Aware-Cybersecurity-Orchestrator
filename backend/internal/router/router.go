@@ -70,5 +70,20 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 		GetSingleAlertByAgentId(route, db)
 	})
 
+	router.With(middlewareGlobal.Authorize(db)).Route("/alert", func(route chi.Router) {
+		UpdateAlertByID(route, db)
+	})
+	router.With(middlewareGlobal.Authorize(db)).Route("/update", func(route chi.Router) {
+		UpdateAllAlertToRead(route, db)
+	})
+
+	router.With(middlewareGlobal.Authorize(db)).Route("/status", func(route chi.Router) {
+		GetAllAlertStatus(route, db)
+	})
+
+	router.With(middlewareGlobal.Authorize(db)).Route("/delete", func(route chi.Router) {
+		DeleteAlertById(route, db)
+	})
+
 	return router
 }
