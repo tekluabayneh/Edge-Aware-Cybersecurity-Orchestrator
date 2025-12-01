@@ -25,11 +25,17 @@ func (h *DevicePairingType) DevicePairing(w http.ResponseWriter, r *http.Request
 		})
 		return
 	}
-
 	userToken, err := h.DB.GetAllParingTokenByEmail(ctx, UserEmail)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
 			"message": "internal server error",
+		})
+		return
+	}
+
+	if userToken.Token == "" {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "no pairing token found",
 		})
 		return
 	}
