@@ -2,7 +2,7 @@
 SELECT * FROM alerts WHERE agent_id = $1;
 
 -- name: GetAlertById :one
-SELECT * from alerts WHERE id = $1;
+SELECT * from alerts WHERE agent_id = $1;
 
 -- name: GetAlertByAgentId :one
 SELECT * from alerts WHERE id = $1 AND agent_id = $2;
@@ -43,3 +43,21 @@ SET
     network      = COALESCE($12, network),
     security     = COALESCE($13, security)
 WHERE id = $14;
+
+-- name: UpdateSingleAlertStatus :one
+UPDATE alerts SET status = $1 WHERE id = $2 AND agent_id = $3 RETURNING id;
+
+-- name: UpdateAllAlertStatusByAgentId :one
+UPDATE alerts SET status = $1 WHERE agent_id = $2 RETURNING id;
+
+
+-- name: DeleteAlertByAGentId :one
+DELETE FROM alerts WHERE id = $1 AND agent_id = $2 RETURNING id;
+
+
+-- name: GetAllAlertStatus :many
+SELECT status FROM alerts WHERE agent_id = $1;
+
+
+
+
