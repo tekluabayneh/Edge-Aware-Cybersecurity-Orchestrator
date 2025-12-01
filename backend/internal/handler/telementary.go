@@ -18,19 +18,19 @@ type Issue struct {
 }
 
 type TelemetryReport struct {
-	AgentID     int64       `json:"agent_id" validate:"required"`
-	AgentToken  string      `json:"agent_token" validate:"required"`
-	Severity    string      `json:"severity" validate:"required"`
-	RawPayload  []Issue     `json:"raw_payload" validate:"required,dive,required"`
-	Status      string      `json:"status" validate:"required"`
-	Message     pgtype.Text `json:"message" validate:"required"`
-	RiskLevel   pgtype.Text `json:"risk_level" validate:"required"`
-	Summary     pgtype.Text `json:"summary" validate:"required"`
-	Performance []Issue     `json:"performance" validate:"required,dive,required"`
-	Network     []Issue     `json:"network" validate:"required,dive,required"`
-	Security    []Issue     `json:"security" validate:"required,dive,required"`
-	AlertType   string      `json:"alert_type" validate:"required"`
-	CreatedAt   pgtype.Time `json:"created_at"`
+	AgentID     int64              `json:"agent_id" validate:"required"`
+	AgentToken  string             `json:"agent_token" validate:"required"`
+	Severity    string             `json:"severity" validate:"required"`
+	RawPayload  []Issue            `json:"raw_payload" validate:"required,dive,required"`
+	Status      string             `json:"status" validate:"required"`
+	Message     pgtype.Text        `json:"message" validate:"required"`
+	RiskLevel   pgtype.Text        `json:"risk_level" validate:"required"`
+	Summary     pgtype.Text        `json:"summary" validate:"required"`
+	Performance []Issue            `json:"performance" validate:"required,dive,required"`
+	Network     []Issue            `json:"network" validate:"required,dive,required"`
+	Security    []Issue            `json:"security" validate:"required,dive,required"`
+	AlertType   string             `json:"alert_type" validate:"required"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 }
 type TelemetryType struct {
 	DB *db.Queries
