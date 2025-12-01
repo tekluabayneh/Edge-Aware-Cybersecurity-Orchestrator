@@ -48,3 +48,23 @@ func GetSingleAlertByAgentId(router chi.Router, db *db.Queries) {
 	SingleAlertHandler := &handler.AlertType{DB: db}
 	router.Get("/id", SingleAlertHandler.GetAlertByAgentId)
 }
+
+func UpdateAlertByID(router chi.Router, db *db.Queries) {
+	SingleAlertHandler := &handler.AlertType{DB: db}
+	router.Post("/id", SingleAlertHandler.UpdateAlertsById)
+}
+
+func UpdateAllAlertToRead(router chi.Router, db *db.Queries) {
+	SingleAlertHandler := &handler.AlertType{DB: db}
+	router.Patch("/alert", SingleAlertHandler.UpdateAllAlerts)
+}
+
+func GetAllAlertStatus(router chi.Router, db *db.Queries) {
+	SingleAlertHandler := &handler.AlertType{DB: db}
+	router.Get("/status", SingleAlertHandler.GetAllAlertStatus)
+}
+
+func DeleteAlertById(router chi.Router, db *db.Queries) {
+	SingleAlertHandler := &handler.AlertType{DB: db}
+	router.Delete("/delete", SingleAlertHandler.DeleteAlertById)
+}
