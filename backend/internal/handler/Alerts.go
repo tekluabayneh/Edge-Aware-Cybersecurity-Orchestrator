@@ -11,11 +11,13 @@ import (
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/utils"
-	"github.com/go-chi/chi/v5"
 )
 
 type AlertType struct {
 	DB *db.Queries
+}
+type alertStatusType struct {
+	Status string `json:"status"`
 }
 
 /*
@@ -38,9 +40,14 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 	if utils.CheckError(w, err, http.StatusBadRequest, "user not found") {
 		return
 	}
-
 	// Get all alerts for the user
 	alerts, err := h.DB.GetAllAlert(ctx, int64(user.ID))
+	if len(alerts) < 1 {
+		utils.WriteJSON(w, http.StatusNotFound, map[string]string{
+			"message": "alert not found",
+		})
+		return
+	}
 	if utils.CheckError(w, err, http.StatusBadRequest, "agent not found") {
 		return
 	}
@@ -87,10 +94,10 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 		allAlerts = append(allAlerts, alertMap)
 	}
 
-	utils.WriteJSON(w, http.StatusOK, map[string]string{
+	utils.WriteJSON(w, http.StatusOK, map[string]any{
 		"message": "alerts fetched successfully",
+		"alert":   allAlerts,
 	})
-	json.NewEncoder(w).Encode(allAlerts)
 }
 
 // GET /api/alerts/:agent_id
@@ -164,60 +171,156 @@ func (h *AlertType) GetAlertByAgentId(w http.ResponseWriter, r *http.Request) {
 
 // PATCH /api/alerts/:id/read
 func (h *AlertType) UpdateAlertsById(w http.ResponseWriter, r *http.Request) {
-	idQuiery := r.URL.Query().Get("id")
-	alertID, err := strconv.ParseInt(idQuiery, 10, 64)
-
-	if err != nil {
-		http.Error(w, "invalid alert id", http.StatusBadRequest)
+	ctx := r.Context()
+	id := r.URL.Query().Get("id")
+	email := r.Context().Value("email").(string)
+	user, err := h.DB.GetUserByEmail(ctx, email)
+	if utils.CheckError(w, err, http.StatusBadRequest, "invalid agent id") {
+		return
+	}
+	if user.Email == "" {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "agent id not found",
+		})
+		return
+	}
+	alertID, err := strconv.ParseInt(id, 10, 64)
+	if utils.CheckError(w, err, http.StatusBadRequest, "invalid alert id") {
+		return
+	}
+	var statusValue alertStatusType
+	err = json.NewDecoder(r.Body).Decode(&statusValue)
+	if utils.CheckError(w, err, http.StatusBadRequest, "invalid alert status") {
+		return
+	}
+	fmt.Println("alert id", alertID)
+	params := db.UpdateSingleAlertStatusParams{
+		ID:      alertID,
+		AgentID: int64(user.ID),
+		Status:  statusValue.Status,
+	}
+	_, err = h.DB.UpdateSingleAlertStatus(ctx, params)
+	if errors.Is(err, sql.ErrNoRows) {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "alert not found",
+		})
+		return
+	}
+	if utils.CheckError(w, err, http.StatusBadRequest, "invalid alert id") {
 		return
 	}
 
-	fmt.Println("→ Mark alert as read:", alertID)
-
-	// TODO: mark alert as read in DB
-	w.Write([]byte("updated alert by id"))
+	utils.WriteJSON(w, http.StatusOK, map[string]string{
+		"message": "updated alert by id",
+	})
 }
 
 // PATCH /api/alerts/read-all
 func (h *AlertType) UpdateAllAlerts(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	fmt.Println("→ Mark all alerts as read")
-
-	// TODO: mark all alerts as read in DB
-	w.Write([]byte("updated all alerts"))
-}
-
-// DELETE /api/alerts/:id
-func (h *AlertType) DeleteAlertById(w http.ResponseWriter, r *http.Request) {
-	idParam := chi.URLParam(r, "id")
-	alertID, err := strconv.ParseInt(idParam, 10, 64)
-	if err != nil {
-		http.Error(w, "invalid alert id", http.StatusBadRequest)
+	email := r.Context().Value("email").(string)
+	user, err := h.DB.GetUserByEmail(ctx, email)
+	if utils.CheckError(w, err, http.StatusBadRequest, "invalid agent id") {
+		return
+	}
+	if user.Email == "" {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "agent id not found",
+		})
+		return
+	}
+	var statusValue alertStatusType
+	err = json.NewDecoder(r.Body).Decode(&statusValue)
+	if utils.CheckError(w, err, http.StatusBadRequest, "invalid alert status") {
+		return
+	}
+	params := db.UpdateAllAlertStatusByAgentIdParams{
+		AgentID: int64(user.ID),
+		Status:  statusValue.Status,
+	}
+	_, err = h.DB.UpdateAllAlertStatusByAgentId(ctx, params)
+	if errors.Is(err, sql.ErrNoRows) {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "alert not found",
+		})
+		return
+	}
+	if utils.CheckError(w, err, http.StatusBadRequest, "invalid alert id") {
 		return
 	}
 
-	fmt.Println("→ Delete alert:", alertID)
-
-	// TODO: delete alert from DB
-	w.Write([]byte("deleted alert by id"))
+	utils.WriteJSON(w, http.StatusOK, map[string]string{
+		"message": "updated alert by id",
+	})
 }
 
 // GET /api/alerts/stats
 func (h *AlertType) GetAllAlertStatus(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("→ Get alert statistics")
-
-	// Example response structure
-	stats := map[string]int{
-		"total":       100, // TODO: replace with real DB query
-		"unread":      25,
-		"read":        75,
-		"high_risk":   10,
-		"medium_risk": 50,
-		"low_risk":    40,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(stats); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	ctx := r.Context()
+	email := r.Context().Value("email").(string)
+	user, err := h.DB.GetUserByEmail(ctx, email)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return
 	}
+	if utils.CheckError(w, err, http.StatusBadRequest, "user not found") {
+		return
+	}
+
+	AlertSTatus, err := h.DB.GetAllAlertStatus(ctx, int64(user.ID))
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return
+	}
+	if utils.CheckError(w, err, http.StatusBadRequest, "user not found") {
+		return
+	}
+
+	if len(AlertSTatus) < 1 {
+		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
+			"message": "no alert found",
+		})
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, map[string]any{
+		"message": "alert status fetched successfully",
+		"status":  AlertSTatus,
+	})
+
+}
+
+// DELETE /api/alerts/:id
+func (h *AlertType) DeleteAlertById(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	email := r.Context().Value("email").(string)
+	idQuery := r.URL.Query().Get("id")
+	user, err := h.DB.GetUserByEmail(ctx, email)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return
+	}
+	if utils.CheckError(w, err, http.StatusBadRequest, "user not found") {
+		return
+	}
+	alertID, err := strconv.ParseInt(idQuery, 10, 64)
+	if utils.CheckError(w, err, http.StatusBadRequest, "invalid alert id") {
+		return
+	}
+	params := db.DeleteAlertByAGentIdParams{
+		ID:      alertID,
+		AgentID: int64(user.ID),
+	}
+	DeltedAlertId, err := h.DB.DeleteAlertByAGentId(ctx, params)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": fmt.Sprintf("message not found with the id of %d", DeltedAlertId),
+		})
+		return
+	}
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
+		return
+	}
+	utils.WriteJSON(w, http.StatusOK, map[string]string{
+		"message": "deleted alert by id",
+	})
+
 }
