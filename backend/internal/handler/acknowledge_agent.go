@@ -12,7 +12,7 @@ import (
 type Agent struct {
 	UserID       int64              `json:"user_id"`
 	AgentToken   string             `json:"agent_token"`
-	AgentId      string             `json:"agent_id"`
+	AgentId      int64              `json:"agent_id"`
 	MachineID    string             `json:"machine_id"`
 	AgentVersion pgtype.Text        `json:"agent_version"`
 	Os           pgtype.Text        `json:"os"`
@@ -27,11 +27,11 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 	if err != nil {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]any{
 			"message": "invalid request",
-			"dl":      err.Error(),
 			"ack":     false,
 		})
 		return
 	}
+
 	if !utils.RequiredFieldsSet(utils.Agent(AgentValue)) {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]any{
 			"message": "missing required info",
@@ -52,12 +52,11 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 	}
 
 	err = h.DB.CreateAgent(ctx, AgentInfo)
-
 	if err != nil {
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]any{
 			"message": "internal server error",
-			"dl":      err.Error(),
 			"ack":     false,
+			"dl":      err.Error(),
 		})
 		return
 	}

@@ -6,7 +6,6 @@ import (
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	OAuthconfig "github.com/edge-aware-cyberSecurity/internal/OAuthConfig"
-	AuthPath "github.com/edge-aware-cyberSecurity/internal/auth"
 	"github.com/edge-aware-cyberSecurity/internal/handler"
 	middlewareGlobal "github.com/edge-aware-cyberSecurity/internal/middleware"
 	"github.com/go-chi/chi"
@@ -59,33 +58,32 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 		AcknowledgePairing(route, db)
 	})
 
+	router.With(middlewareGlobal.Authorize(db)).Route("/telementary", func(route chi.Router) {
+		TelemetryReport(route, db)
+	})
+
+	router.With(middlewareGlobal.Authorize(db)).Route("/device", func(route chi.Router) {
+		AlertReport(route, db)
+	})
+
+	router.With(middlewareGlobal.Authorize(db)).Route("/alerts", func(route chi.Router) {
+		GetSingleAlertByAgentId(route, db)
+	})
+
+	router.With(middlewareGlobal.Authorize(db)).Route("/alert", func(route chi.Router) {
+		UpdateAlertByID(route, db)
+	})
+	router.With(middlewareGlobal.Authorize(db)).Route("/update", func(route chi.Router) {
+		UpdateAllAlertToRead(route, db)
+	})
+
+	router.With(middlewareGlobal.Authorize(db)).Route("/status", func(route chi.Router) {
+		GetAllAlertStatus(route, db)
+	})
+
+	router.With(middlewareGlobal.Authorize(db)).Route("/delete", func(route chi.Router) {
+		DeleteAlertById(route, db)
+	})
+
 	return router
-}
-
-func AuthLogin(router chi.Router, db *db.Queries) {
-	AuthHandlerRoute := &AuthPath.AuthLoginHandlerType{
-		DB: db,
-	}
-	router.Post("/login", AuthHandlerRoute.Login)
-}
-
-func AuthRegister(router chi.Router, db *db.Queries) {
-	AuthHandlerRegisterRoute := &AuthPath.AuthRegisterHandlerType{
-		DB: db,
-	}
-	router.Post("/register", AuthHandlerRegisterRoute.Register)
-}
-
-func DeviceParing(router chi.Router, db *db.Queries) {
-	DeviceParingHandler := &handler.DevicePairingType{DB: db}
-	router.Post("/DeviceParing", DeviceParingHandler.DevicePairing)
-}
-func GenerateToken(router chi.Router, db *db.Queries) {
-	DeviceParingTokenHandler := &handler.DevicePairingType{DB: db}
-	router.Post("/token", DeviceParingTokenHandler.GenerateTokenHandler)
-}
-
-func AcknowledgePairing(router chi.Router, db *db.Queries) {
-	DeviceAckParingTokenHandler := &handler.DevicePairingType{DB: db}
-	router.Post("/ack", DeviceAckParingTokenHandler.AcknowledgePairing)
 }

@@ -17,7 +17,7 @@ INSERT INTO agents(user_id, agent_id, agent_token, machine_id, agent_version, os
 
 type CreateAgentParams struct {
 	UserID       int64
-	AgentID      string
+	AgentID      int64
 	AgentToken   string
 	MachineID    string
 	AgentVersion pgtype.Text
@@ -38,6 +38,28 @@ func (q *Queries) CreateAgent(ctx context.Context, arg CreateAgentParams) error 
 		arg.LastSeen,
 	)
 	return err
+}
+
+const getAgentByAgentId = `-- name: GetAgentByAgentId :one
+SELECT id, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE agent_id = $1
+`
+
+func (q *Queries) GetAgentByAgentId(ctx context.Context, agentID int64) (Agent, error) {
+	row := q.db.QueryRow(ctx, getAgentByAgentId, agentID)
+	var i Agent
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.AgentID,
+		&i.AgentToken,
+		&i.MachineID,
+		&i.AgentVersion,
+		&i.Os,
+		&i.Status,
+		&i.LastSeen,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const getAgentById = `-- name: GetAgentById :one
@@ -101,18 +123,19 @@ SET
     user_id       = COALESCE($1, user_id),
     agent_id = COALESCE($2, agent_id),
     agent_token = COALESCE($3, agent_token),
-    machine_id    = COALESCE($3, machine_id),
-    agent_version = COALESCE($4, agent_version),
-    os            = COALESCE($5, os),
-    status        = COALESCE($6, status),
-    last_seen     = COALESCE($7, last_seen)
-WHERE id = $8
+    machine_id    = COALESCE($4, machine_id),
+    agent_version = COALESCE($5, agent_version),
+    os            = COALESCE($6, os),
+    status        = COALESCE($7, status),
+    last_seen     = COALESCE($8, last_seen)
+WHERE id = $9
 `
 
 type UpdateSingleAgentParams struct {
 	UserID       int64
-	AgentID      string
+	AgentID      int64
 	AgentToken   string
+	MachineID    string
 	AgentVersion pgtype.Text
 	Os           pgtype.Text
 	Status       pgtype.Text
@@ -125,6 +148,7 @@ func (q *Queries) UpdateSingleAgent(ctx context.Context, arg UpdateSingleAgentPa
 		arg.UserID,
 		arg.AgentID,
 		arg.AgentToken,
+		arg.MachineID,
 		arg.AgentVersion,
 		arg.Os,
 		arg.Status,

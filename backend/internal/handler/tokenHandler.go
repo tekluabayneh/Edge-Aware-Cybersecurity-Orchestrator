@@ -3,7 +3,6 @@ package handler
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -54,7 +53,6 @@ func (h *DevicePairingType) GenerateTokenHandler(w http.ResponseWriter, r *http.
 		Valid: true,
 	}
 
-	fmt.Println("time", expires)
 	if err == nil && len(AllUserToken.Token) > 0 {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
 			"message": "you already have token",
