@@ -66,6 +66,22 @@ func (q *Queries) CreateAlert(ctx context.Context, arg CreateAlertParams) error 
 	return err
 }
 
+const deleteAlertByAGentId = `-- name: DeleteAlertByAGentId :one
+DELETE FROM alerts WHERE id = $1 AND agent_id = $2 RETURNING id
+`
+
+type DeleteAlertByAGentIdParams struct {
+	ID      int64
+	AgentID int64
+}
+
+func (q *Queries) DeleteAlertByAGentId(ctx context.Context, arg DeleteAlertByAGentIdParams) (int64, error) {
+	row := q.db.QueryRow(ctx, deleteAlertByAGentId, arg.ID, arg.AgentID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const getAlertByAgentId = `-- name: GetAlertByAgentId :one
 SELECT id, agent_id, agent_token, alert_type, severity, message, raw_payload, status, risk_level, summary, performance, network, security, created_at from alerts WHERE id = $1 AND agent_id = $2
 `
@@ -98,11 +114,11 @@ func (q *Queries) GetAlertByAgentId(ctx context.Context, arg GetAlertByAgentIdPa
 }
 
 const getAlertById = `-- name: GetAlertById :one
-SELECT id, agent_id, agent_token, alert_type, severity, message, raw_payload, status, risk_level, summary, performance, network, security, created_at from alerts WHERE id = $1
+SELECT id, agent_id, agent_token, alert_type, severity, message, raw_payload, status, risk_level, summary, performance, network, security, created_at from alerts WHERE agent_id = $1
 `
 
-func (q *Queries) GetAlertById(ctx context.Context, id int64) (Alert, error) {
-	row := q.db.QueryRow(ctx, getAlertById, id)
+func (q *Queries) GetAlertById(ctx context.Context, agentID int64) (Alert, error) {
+	row := q.db.QueryRow(ctx, getAlertById, agentID)
 	var i Alert
 	err := row.Scan(
 		&i.ID,
@@ -162,6 +178,46 @@ func (q *Queries) GetAllAlert(ctx context.Context, agentID int64) ([]Alert, erro
 	return items, nil
 }
 
+const getAllAlertStatus = `-- name: GetAllAlertStatus :many
+SELECT status FROM alerts WHERE agent_id = $1
+`
+
+func (q *Queries) GetAllAlertStatus(ctx context.Context, agentID int64) ([]string, error) {
+	rows, err := q.db.Query(ctx, getAllAlertStatus, agentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var status string
+		if err := rows.Scan(&status); err != nil {
+			return nil, err
+		}
+		items = append(items, status)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateAllAlertStatusByAgentId = `-- name: UpdateAllAlertStatusByAgentId :one
+UPDATE alerts SET status = $1 WHERE agent_id = $2 RETURNING id
+`
+
+type UpdateAllAlertStatusByAgentIdParams struct {
+	Status  string
+	AgentID int64
+}
+
+func (q *Queries) UpdateAllAlertStatusByAgentId(ctx context.Context, arg UpdateAllAlertStatusByAgentIdParams) (int64, error) {
+	row := q.db.QueryRow(ctx, updateAllAlertStatusByAgentId, arg.Status, arg.AgentID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const updateSingleAlert = `-- name: UpdateSingleAlert :exec
 UPDATE alerts
 SET
@@ -216,4 +272,21 @@ func (q *Queries) UpdateSingleAlert(ctx context.Context, arg UpdateSingleAlertPa
 		arg.ID,
 	)
 	return err
+}
+
+const updateSingleAlertStatus = `-- name: UpdateSingleAlertStatus :one
+UPDATE alerts SET status = $1 WHERE id = $2 AND agent_id = $3 RETURNING id
+`
+
+type UpdateSingleAlertStatusParams struct {
+	Status  string
+	ID      int64
+	AgentID int64
+}
+
+func (q *Queries) UpdateSingleAlertStatus(ctx context.Context, arg UpdateSingleAlertStatusParams) (int64, error) {
+	row := q.db.QueryRow(ctx, updateSingleAlertStatus, arg.Status, arg.ID, arg.AgentID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
