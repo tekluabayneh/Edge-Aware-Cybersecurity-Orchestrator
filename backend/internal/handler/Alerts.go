@@ -218,7 +218,6 @@ func (h *AlertType) UpdateAlertsById(w http.ResponseWriter, r *http.Request) {
 // PATCH /api/alerts/read-all
 func (h *AlertType) UpdateAllAlerts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	fmt.Println("→ Mark all alerts as read")
 	email := r.Context().Value("email").(string)
 	user, err := h.DB.GetUserByEmail(ctx, email)
 	if utils.CheckError(w, err, http.StatusBadRequest, "invalid agent id") {
