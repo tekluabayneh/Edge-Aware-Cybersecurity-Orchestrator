@@ -20,17 +20,6 @@ type alertStatusType struct {
 	Status string `json:"status"`
 }
 
-/*
-	ALERT ENDPOINTS:
-
-	GET    /api/alerts              -> Get all alerts
-	GET    /api/alerts/:agent_id    -> Get alerts by agent ID
-	PATCH  /api/alerts/:id/read     -> Mark single alert as read
-	PATCH  /api/alerts/read-all     -> Mark all alerts as read
-	DELETE /api/alerts/:id          -> Delete an alert
-	GET    /api/alerts/stats        -> Alert statistics
-*/
-
 // GET /api/alerts
 func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -41,7 +30,7 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Get all alerts for the user
-	alerts, err := h.DB.GetAllAlert(ctx, int64(user.ID))
+	alerts, err := h.DB.GetAllAlert(ctx, string(user.ID))
 	if len(alerts) < 1 {
 		utils.WriteJSON(w, http.StatusNotFound, map[string]string{
 			"message": "alert not found",
@@ -122,7 +111,7 @@ func (h *AlertType) GetAlertByAgentId(w http.ResponseWriter, r *http.Request) {
 
 	params := db.GetAlertByAgentIdParams{
 		ID:      id,
-		AgentID: int64(user.ID),
+		AgentID: string(user.ID),
 	}
 	alert, err := h.DB.GetAlertByAgentId(ctx, params)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -193,10 +182,10 @@ func (h *AlertType) UpdateAlertsById(w http.ResponseWriter, r *http.Request) {
 	if utils.CheckError(w, err, http.StatusBadRequest, "invalid alert status") {
 		return
 	}
-	fmt.Println("alert id", alertID)
+
 	params := db.UpdateSingleAlertStatusParams{
 		ID:      alertID,
-		AgentID: int64(user.ID),
+		AgentID: string(user.ID),
 		Status:  statusValue.Status,
 	}
 	_, err = h.DB.UpdateSingleAlertStatus(ctx, params)
@@ -235,7 +224,7 @@ func (h *AlertType) UpdateAllAlerts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	params := db.UpdateAllAlertStatusByAgentIdParams{
-		AgentID: int64(user.ID),
+		AgentID: string(user.ID),
 		Status:  statusValue.Status,
 	}
 	_, err = h.DB.UpdateAllAlertStatusByAgentId(ctx, params)
@@ -266,7 +255,7 @@ func (h *AlertType) GetAllAlertStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	AlertSTatus, err := h.DB.GetAllAlertStatus(ctx, int64(user.ID))
+	AlertSTatus, err := h.DB.GetAllAlertStatus(ctx, string(user.ID))
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return
 	}
@@ -306,7 +295,7 @@ func (h *AlertType) DeleteAlertById(w http.ResponseWriter, r *http.Request) {
 	}
 	params := db.DeleteAlertByAGentIdParams{
 		ID:      alertID,
-		AgentID: int64(user.ID),
+		AgentID: string(user.ID),
 	}
 	DeltedAlertId, err := h.DB.DeleteAlertByAGentId(ctx, params)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
