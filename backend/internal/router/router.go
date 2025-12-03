@@ -85,5 +85,17 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 		DeleteAlertById(route, db)
 	})
 
+	router.With(middlewareGlobal.Authorize(db)).Route("/create", func(route chi.Router) {
+		CreateCommand(route, db)
+	})
+	router.With(middlewareGlobal.Authorize(db)).Route("/fetch", func(route chi.Router) {
+		FeatchCommand(route, db)
+	})
+
+	router.With(middlewareGlobal.Authorize(db)).Route("/ack", func(route chi.Router) {
+		AcknowledgeCommandExecutionHandle(route, db)
+	})
+
+
 	return router
 }

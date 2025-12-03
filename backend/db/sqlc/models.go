@@ -11,7 +11,7 @@ import (
 type Agent struct {
 	ID           int64
 	UserID       int64
-	AgentID      int64
+	AgentID      string
 	AgentToken   string
 	MachineID    string
 	AgentVersion pgtype.Text
@@ -30,7 +30,7 @@ type AgentQueue struct {
 
 type Alert struct {
 	ID          int64
-	AgentID     int64
+	AgentID     string
 	AgentToken  string
 	AlertType   string
 	Severity    string
@@ -47,8 +47,8 @@ type Alert struct {
 
 type Command struct {
 	ID          int64
-	AgentID     int64
 	UserID      int64
+	AgentID     string
 	CommandType string
 	Payload     []byte
 	Status      string

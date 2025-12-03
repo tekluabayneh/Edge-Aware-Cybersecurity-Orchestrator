@@ -18,7 +18,7 @@ type Issue struct {
 }
 
 type TelemetryReport struct {
-	AgentID     int64              `json:"agent_id" validate:"required"`
+	AgentID     string             `json:"agent_id" validate:"required"`
 	AgentToken  string             `json:"agent_token" validate:"required"`
 	Severity    string             `json:"severity" validate:"required"`
 	RawPayload  []Issue            `json:"raw_payload" validate:"required,dive,required"`
@@ -45,14 +45,12 @@ func (h *TelemetryType) ReceiveTelemetry(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	fmt.Println("Incoming:", IncomingAgentInfo.AgentID)
-
-	user, err := h.DB.GetAgentByAgentId(ctx, IncomingAgentInfo.AgentID)
+	agent, err := h.DB.GetAgentByAgentToken(ctx, IncomingAgentInfo.AgentToken)
 	if utils.CheckError(w, err, http.StatusBadGateway, "agent not found") {
 		return
 	}
 
-	if IncomingAgentInfo.AgentID != user.AgentID || IncomingAgentInfo.AgentToken != user.AgentToken {
+	if IncomingAgentInfo.AgentToken != agent.AgentToken {
 		utils.WriteJSON(w, http.StatusUnauthorized, map[string]string{
 			"message": "invalid agent credentials",
 		})
@@ -78,13 +76,14 @@ func (h *TelemetryType) ReceiveTelemetry(w http.ResponseWriter, r *http.Request)
 	if utils.CheckError(w, err, http.StatusInternalServerError, "failed raw_payload encoding") {
 		return
 	}
+
 	CreateAtTime := pgtype.Timestamptz{
 		Time:  time.Now(),
 		Valid: true,
 	}
 
 	AlertToCommit := db.CreateAlertParams{
-		AgentID:     user.ID,
+		AgentID:     agent.MachineID,
 		AgentToken:  IncomingAgentInfo.AgentToken,
 		AlertType:   IncomingAgentInfo.AlertType,
 		Severity:    IncomingAgentInfo.Severity,
@@ -101,10 +100,12 @@ func (h *TelemetryType) ReceiveTelemetry(w http.ResponseWriter, r *http.Request)
 
 	err = h.DB.CreateAlert(ctx, AlertToCommit)
 	if utils.CheckError(w, err, http.StatusInternalServerError, "failed creating alert") {
+		fmt.Println(err.Error())
 		return
 	}
 
 	utils.WriteJSON(w, http.StatusOK, map[string]string{
 		"message": "alert created successfully",
 	})
+
 }

@@ -16,7 +16,7 @@ INSERT INTO commands(agent_id, user_id, command_type, payload, status, updated_a
 `
 
 type CreateCommandParams struct {
-	AgentID     int64
+	AgentID     string
 	UserID      int64
 	CommandType string
 	Payload     []byte
@@ -36,8 +36,39 @@ func (q *Queries) CreateCommand(ctx context.Context, arg CreateCommandParams) er
 	return err
 }
 
+const deleteCommandByAgentId = `-- name: DeleteCommandByAgentId :one
+DELETE  from commands WHERE agent_id = $1 RETURNING id
+`
+
+func (q *Queries) DeleteCommandByAgentId(ctx context.Context, agentID string) (int64, error) {
+	row := q.db.QueryRow(ctx, deleteCommandByAgentId, agentID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const fetchPendingCommndByAgentId = `-- name: FetchPendingCommndByAgentId :one
+SELECT id, user_id, agent_id, command_type, payload, status, created_at, updated_at from commands WHERE agent_id = $1
+`
+
+func (q *Queries) FetchPendingCommndByAgentId(ctx context.Context, agentID string) (Command, error) {
+	row := q.db.QueryRow(ctx, fetchPendingCommndByAgentId, agentID)
+	var i Command
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.AgentID,
+		&i.CommandType,
+		&i.Payload,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getAllCommands = `-- name: GetAllCommands :one
-SELECT id, agent_id, user_id, command_type, payload, status, created_at, updated_at FROM commands LIMIT 50
+SELECT id, user_id, agent_id, command_type, payload, status, created_at, updated_at FROM commands LIMIT 50
 `
 
 func (q *Queries) GetAllCommands(ctx context.Context) (Command, error) {
@@ -45,8 +76,8 @@ func (q *Queries) GetAllCommands(ctx context.Context) (Command, error) {
 	var i Command
 	err := row.Scan(
 		&i.ID,
-		&i.AgentID,
 		&i.UserID,
+		&i.AgentID,
 		&i.CommandType,
 		&i.Payload,
 		&i.Status,
@@ -57,7 +88,7 @@ func (q *Queries) GetAllCommands(ctx context.Context) (Command, error) {
 }
 
 const getCommandById = `-- name: GetCommandById :one
-SELECT id, agent_id, user_id, command_type, payload, status, created_at, updated_at from commands WHERE id = $1
+SELECT id, user_id, agent_id, command_type, payload, status, created_at, updated_at from commands WHERE id = $1
 `
 
 func (q *Queries) GetCommandById(ctx context.Context, id int64) (Command, error) {
@@ -65,8 +96,8 @@ func (q *Queries) GetCommandById(ctx context.Context, id int64) (Command, error)
 	var i Command
 	err := row.Scan(
 		&i.ID,
-		&i.AgentID,
 		&i.UserID,
+		&i.AgentID,
 		&i.CommandType,
 		&i.Payload,
 		&i.Status,
@@ -89,7 +120,7 @@ WHERE id = $7
 `
 
 type UpdateCommandByIdParams struct {
-	AgentID     int64
+	AgentID     string
 	UserID      int64
 	CommandType string
 	Payload     []byte
@@ -109,4 +140,15 @@ func (q *Queries) UpdateCommandById(ctx context.Context, arg UpdateCommandByIdPa
 		arg.ID,
 	)
 	return err
+}
+
+const updateCommandStatusByAgentId = `-- name: UpdateCommandStatusByAgentId :one
+DELETE  from commands WHERE agent_id = $1 RETURNING id
+`
+
+func (q *Queries) UpdateCommandStatusByAgentId(ctx context.Context, agentID string) (int64, error) {
+	row := q.db.QueryRow(ctx, updateCommandStatusByAgentId, agentID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }

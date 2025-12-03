@@ -17,7 +17,7 @@ INSERT INTO agents(user_id, agent_id, agent_token, machine_id, agent_version, os
 
 type CreateAgentParams struct {
 	UserID       int64
-	AgentID      int64
+	AgentID      string
 	AgentToken   string
 	MachineID    string
 	AgentVersion pgtype.Text
@@ -40,12 +40,12 @@ func (q *Queries) CreateAgent(ctx context.Context, arg CreateAgentParams) error 
 	return err
 }
 
-const getAgentByAgentId = `-- name: GetAgentByAgentId :one
-SELECT id, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE agent_id = $1
+const getAgentByAgentToken = `-- name: GetAgentByAgentToken :one
+SELECT id, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE agent_token = $1
 `
 
-func (q *Queries) GetAgentByAgentId(ctx context.Context, agentID int64) (Agent, error) {
-	row := q.db.QueryRow(ctx, getAgentByAgentId, agentID)
+func (q *Queries) GetAgentByAgentToken(ctx context.Context, agentToken string) (Agent, error) {
+	row := q.db.QueryRow(ctx, getAgentByAgentToken, agentToken)
 	var i Agent
 	err := row.Scan(
 		&i.ID,
@@ -68,6 +68,28 @@ SELECT id, user_id, agent_id, agent_token, machine_id, agent_version, os, status
 
 func (q *Queries) GetAgentById(ctx context.Context, id int64) (Agent, error) {
 	row := q.db.QueryRow(ctx, getAgentById, id)
+	var i Agent
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.AgentID,
+		&i.AgentToken,
+		&i.MachineID,
+		&i.AgentVersion,
+		&i.Os,
+		&i.Status,
+		&i.LastSeen,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getAgentByUserId = `-- name: GetAgentByUserId :one
+SELECT id, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE user_id = $1
+`
+
+func (q *Queries) GetAgentByUserId(ctx context.Context, userID int64) (Agent, error) {
+	row := q.db.QueryRow(ctx, getAgentByUserId, userID)
 	var i Agent
 	err := row.Scan(
 		&i.ID,
@@ -133,7 +155,7 @@ WHERE id = $9
 
 type UpdateSingleAgentParams struct {
 	UserID       int64
-	AgentID      int64
+	AgentID      string
 	AgentToken   string
 	MachineID    string
 	AgentVersion pgtype.Text

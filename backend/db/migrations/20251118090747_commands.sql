@@ -2,8 +2,8 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS commands (
   id BIGSERIAL PRIMARY KEY,
-  agent_id BIGSERIAL NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
   user_id BIGSERIAL NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  agent_id TEXT NOT NULL REFERENCES agents(machine_id) ON DELETE CASCADE,
   command_type TEXT NOT NULL,
   payload JSONB,
   status TEXT NOT NULL DEFAULT 'pending',
