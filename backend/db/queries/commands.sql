@@ -4,8 +4,21 @@ SELECT * FROM commands LIMIT 50;
 -- name: GetCommandById :one
 SELECT * from commands WHERE id = $1;
 
+-- name: FetchPendingCommndByAgentId :one
+SELECT * from commands WHERE agent_id = $1;
+
+-- name: DeleteCommandByAgentId :one
+DELETE  from commands WHERE agent_id = $1 RETURNING id;
+
+
+-- name: UpdateCommandStatusByAgentId :one
+DELETE  from commands WHERE agent_id = $1 RETURNING id;
+
+
 -- name: CreateCommand :exec
 INSERT INTO commands(agent_id, user_id, command_type, payload, status, updated_at) VALUES ($1, $2, $3, $4, $5, $6);
+
+
 -- name: UpdateCommandById :exec
 UPDATE commands
 SET
