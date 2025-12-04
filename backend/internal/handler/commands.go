@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -21,7 +20,7 @@ type commandPaylod struct {
 	UserId      int64              `json:"user_id"`
 	AgentId     string             `json:"agent_id"`
 	CommandType string             `json:"command_type"`
-	Payload     []byte             `json:"payload"`
+	Payload     json.RawMessage    `json:"payload"`
 	Status      string             `json:"status"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
@@ -42,25 +41,25 @@ func (h *CreateCommdnType) CreateCommandHandler(w http.ResponseWriter, r *http.R
 	if utils.CheckError(w, err, http.StatusNotFound, "user not found") {
 		return
 	}
-
-	agent, err := h.DB.GetAgentByUserId(ctx, int64(user.ID))
-	if utils.CheckError(w, err, http.StatusNotFound, "agent id not found") {
-		return
-	}
-
 	var IncomPayloadtype commandPaylod
 	err = json.NewDecoder(r.Body).Decode(&IncomPayloadtype)
 	if utils.CheckError(w, err, http.StatusBadRequest, "paylod is not correct") {
 		return
 	}
-
 	CreateAtTime := pgtype.Timestamptz{
 		Time: time.Now(), Valid: true,
 	}
 
+	var jsonPaylod map[string]any
+	err = json.Unmarshal(IncomPayloadtype.Payload, &jsonPaylod)
+
+	if utils.CheckError(w, err, http.StatusBadRequest, "paylod is not correct") {
+		return
+	}
+
 	params := db.CreateCommandParams{
 		UserID:      int64(user.ID),
-		AgentID:     agent.AgentID,
+		AgentID:     IncomPayloadtype.AgentId,
 		CommandType: IncomPayloadtype.CommandType,
 		Payload:     IncomPayloadtype.Payload,
 		Status:      IncomPayloadtype.Status,
@@ -68,7 +67,7 @@ func (h *CreateCommdnType) CreateCommandHandler(w http.ResponseWriter, r *http.R
 	}
 
 	err = h.DB.CreateCommand(ctx, params)
-	if utils.CheckError(w, err, http.StatusNotFound, "user not found") {
+	if utils.CheckError(w, err, http.StatusNotFound, "error committing command") {
 		return
 	}
 
@@ -95,18 +94,27 @@ func (h *CreateCommdnType) FetchPendingCommandsHandler(w http.ResponseWriter, r 
 	}
 
 	agent, err := h.DB.GetAgentByUserId(ctx, int64(user.ID))
-	if utils.CheckError(w, err, http.StatusNotFound, "user not found") {
+	if utils.CheckError(w, err, http.StatusNotFound, "agent not found") {
 		return
 	}
 
-	status, err := h.DB.FetchPendingCommndByAgentId(ctx, agent.AgentID)
+	command, err := h.DB.FetchPendingCommndByAgentId(ctx, agent.MachineID)
 	if utils.CheckError(w, err, http.StatusNotFound, "command not found") {
 		return
 	}
 
+	var jsonpaylod map[string]any
+	for _, cmd := range command {
+		err = json.Unmarshal(cmd.Payload, &jsonpaylod)
+		if utils.CheckError(w, err, http.StatusNotFound, "invalid paylod form") {
+			return
+		}
+	}
+
 	utils.WriteJSON(w, http.StatusOK, map[string]any{
-		"message": "commadn Fetched successfully",
-		"status":  status,
+		"message": "command Fetched successfully",
+		"command": command,
+		"paylod":  jsonpaylod,
 	})
 
 }
@@ -123,6 +131,7 @@ func (h *CreateCommdnType) AcknowledgeCommandExecutionHandler(w http.ResponseWri
 		})
 		return
 	}
+
 	if utils.CheckError(w, err, http.StatusNotFound, "user not found") {
 		return
 	}
@@ -132,14 +141,13 @@ func (h *CreateCommdnType) AcknowledgeCommandExecutionHandler(w http.ResponseWri
 		return
 	}
 
-	status, err := h.DB.UpdateCommandStatusByAgentId(ctx, agent.AgentID)
-	if utils.CheckError(w, err, http.StatusNotFound, "user not found") {
+	status, err := h.DB.UpdateCommandStatusByAgentId(ctx, agent.MachineID)
+	if utils.CheckError(w, err, http.StatusNotFound, "command not found") {
 		return
 	}
 
 	utils.WriteJSON(w, http.StatusOK, map[string]any{
-		"message": "commadn Fetched successfully",
+		"message": "commadn updated ruccessfully",
 		"status":  status,
 	})
-
 }
