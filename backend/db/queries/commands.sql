@@ -4,15 +4,15 @@ SELECT * FROM commands LIMIT 50;
 -- name: GetCommandById :one
 SELECT * from commands WHERE id = $1;
 
--- name: FetchPendingCommndByAgentId :one
-SELECT * from commands WHERE agent_id = $1;
+-- name: FetchPendingCommndByAgentId :many
+SELECT * from commands WHERE agent_id = $1 AND status = 'pending';
 
 -- name: DeleteCommandByAgentId :one
 DELETE  from commands WHERE agent_id = $1 RETURNING id;
 
 
 -- name: UpdateCommandStatusByAgentId :one
-DELETE  from commands WHERE agent_id = $1 RETURNING id;
+UPDATE commands set status = 'read' WHERE agent_id = $1 RETURNING id;
 
 
 -- name: CreateCommand :exec
@@ -29,3 +29,5 @@ SET
     status = COALESCE($5, status),
     updated_at = COALESCE($6, updated_at)
 WHERE id = $7;
+
+
