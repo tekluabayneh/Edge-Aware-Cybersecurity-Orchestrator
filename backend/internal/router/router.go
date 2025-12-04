@@ -96,6 +96,5 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 		AcknowledgeCommandExecutionHandle(route, db)
 	})
 
-
 	return router
 }
