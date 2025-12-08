@@ -7,24 +7,53 @@ import (
 	"agent/internal/telemetry/security"
 	"agent/internal/telemetry/system"
 	"context"
+	"fmt"
 	"sync"
+	"time"
 )
 
 func Telemetry() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	var wg sync.WaitGroup
+	chanSystemInfo := make(chan system.GetSysInfotype)
+	chanSecurity := make(chan bool)
+	chanNetwork := make(chan bool)
+	chanProcesses := make(chan bool)
+	chanIntegrity := make(chan bool)
 
-	wg.Add(5)
-	go func() { defer wg.Done(); security.Security(ctx) }()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			go security.Security(chanSecurity)
+			go network.Network(chanNetwork)
+			go processes.Processes(chanProcesses)
+			go integrity.Integrity(chanIntegrity)
+			go system.System(chanSystemInfo)
 
-	go func() { defer wg.Done(); network.Network(ctx) }()
+			// Collect system info
+			sysInfo := <-chanSystemInfo
+			securityR := <-chanSecurity
+			networkR := <-chanNetwork
+			processR := <-chanProcesses
+			integR := <-chanIntegrity
 
-	go func() { defer wg.Done(); processes.Processes(ctx) }()
+			fmt.Println(sysInfo.Cpu[0])
+			fmt.Println(securityR)
+			fmt.Println(networkR)
+			fmt.Println(processR)
+			fmt.Println(integR)
 
-	go func() { defer wg.Done(); integrity.Integrity(ctx) }()
-
-	go func() { defer wg.Done(); system.System(ctx) }()
-
-	wg.Wait()
+			// send all alert to analizer
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				time.Sleep(time.Second * 5)
+				fmt.Println("pro pro")
+			}()
+			wg.Wait()
+		}
+	}
 }
