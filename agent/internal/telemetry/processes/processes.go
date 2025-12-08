@@ -3,17 +3,27 @@ package processes
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 )
 
-func Processes(ctx context.Context) {
+func Processes(ch chan bool) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	var wg sync.WaitGroup
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		default:
-			fmt.Println("test Processes")
-			time.Sleep(5 * time.Second)
+			wg.Add(1)
+			go func() {
+				fmt.Println("test Processes")
+				ch <- true
+				time.Sleep(5 * time.Second)
+				wg.Done()
+			}()
+			wg.Wait()
 		}
 	}
 }
