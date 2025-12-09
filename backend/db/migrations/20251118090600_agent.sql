@@ -2,6 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS agents (
   id BIGSERIAL PRIMARY KEY,
+  device_name TEXT NOT NULL, 
   user_id BIGSERIAL NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   agent_id TEXT NOT NULL UNIQUE, 
   agent_token TEXT NOT NULL,

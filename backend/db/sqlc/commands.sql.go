@@ -47,24 +47,37 @@ func (q *Queries) DeleteCommandByAgentId(ctx context.Context, agentID string) (i
 	return id, err
 }
 
-const fetchPendingCommndByAgentId = `-- name: FetchPendingCommndByAgentId :one
-SELECT id, user_id, agent_id, command_type, payload, status, created_at, updated_at from commands WHERE agent_id = $1
+const fetchPendingCommndByAgentId = `-- name: FetchPendingCommndByAgentId :many
+SELECT id, user_id, agent_id, command_type, payload, status, created_at, updated_at from commands WHERE agent_id = $1 AND status = 'pending'
 `
 
-func (q *Queries) FetchPendingCommndByAgentId(ctx context.Context, agentID string) (Command, error) {
-	row := q.db.QueryRow(ctx, fetchPendingCommndByAgentId, agentID)
-	var i Command
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.AgentID,
-		&i.CommandType,
-		&i.Payload,
-		&i.Status,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *Queries) FetchPendingCommndByAgentId(ctx context.Context, agentID string) ([]Command, error) {
+	rows, err := q.db.Query(ctx, fetchPendingCommndByAgentId, agentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Command
+	for rows.Next() {
+		var i Command
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.AgentID,
+			&i.CommandType,
+			&i.Payload,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getAllCommands = `-- name: GetAllCommands :one
@@ -143,7 +156,7 @@ func (q *Queries) UpdateCommandById(ctx context.Context, arg UpdateCommandByIdPa
 }
 
 const updateCommandStatusByAgentId = `-- name: UpdateCommandStatusByAgentId :one
-DELETE  from commands WHERE agent_id = $1 RETURNING id
+UPDATE commands set status = 'read' WHERE agent_id = $1 RETURNING id
 `
 
 func (q *Queries) UpdateCommandStatusByAgentId(ctx context.Context, agentID string) (int64, error) {

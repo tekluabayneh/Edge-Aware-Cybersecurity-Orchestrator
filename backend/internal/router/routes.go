@@ -79,13 +79,7 @@ func FeatchCommand(router chi.Router, db *db.Queries) {
 	router.Get("/fetch", SingleAlertHandler.FetchPendingCommandsHandler)
 }
 
-
 func AcknowledgeCommandExecutionHandle(router chi.Router, db *db.Queries) {
 	SingleAlertHandler := &handler.CreateCommdnType{DB: db}
 	router.Post("/ack", SingleAlertHandler.AcknowledgeCommandExecutionHandler)
 }
-
-
-
-
-

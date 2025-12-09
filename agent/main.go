@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"agent/cmd/app"
+	"fmt"
+)
 
 func main() {
-	fmt.Println("test")
+	app.App()
+	fmt.Print("main work")
 }

@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
@@ -22,6 +24,7 @@ type Agent struct {
 
 func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	email := r.Context().Value("email").(string)
 	var AgentValue Agent
 	err := json.NewDecoder(r.Body).Decode(&AgentValue)
 	if err != nil {
@@ -29,6 +32,17 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 			"message": "invalid request",
 			"ack":     false,
 		})
+		return
+	}
+
+	user, err := h.DB.GetUserByEmail(ctx, email)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
+			"message": "user not found",
+		})
+		return
+	}
+	if utils.CheckError(w, err, http.StatusNotFound, "user not found") {
 		return
 	}
 
@@ -41,7 +55,7 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 	}
 
 	AgentInfo := db.CreateAgentParams{
-		UserID:       AgentValue.UserID,
+		UserID:       int64(user.ID),
 		AgentToken:   AgentValue.AgentToken,
 		AgentID:      AgentValue.AgentId,
 		MachineID:    AgentValue.MachineID,
