@@ -15,13 +15,11 @@ import (
 func App() {
 
 	// authenticate agent with user
-	isRegister, err := register.Register()
-	if err != nil {
+	isRegister := register.Register()
+	if !isRegister {
 		fmt.Println("user not registred")
 		return
 	}
-
-	fmt.Print(isRegister)
 
 	// if register pass start the app
 	telemetry.Telemetry()
