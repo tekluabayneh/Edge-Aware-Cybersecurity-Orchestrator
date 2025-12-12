@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
@@ -26,6 +27,7 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 	ctx := r.Context()
 	email := r.Context().Value("email").(string)
 	var AgentValue Agent
+	fmt.Println("val val", AgentValue)
 	err := json.NewDecoder(r.Body).Decode(&AgentValue)
 	if err != nil {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]any{
