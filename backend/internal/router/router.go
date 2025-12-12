@@ -46,7 +46,7 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 	router.Get("/oauth/github", OAuthconfig.GitHubLoginHandler)
 
 	// device paring route
-	router.With(middlewareGlobal.Authorize(db)).Route("/", func(route chi.Router) {
+	router.With().Route("/", func(route chi.Router) {
 		DeviceParing(route, db)
 	})
 
