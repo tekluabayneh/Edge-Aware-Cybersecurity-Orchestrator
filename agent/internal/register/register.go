@@ -129,7 +129,6 @@ func Register() bool {
 			panic(err)
 		}
 
-		fmt.Println("res res", res)
 		if res.StatusCode != 200 && !DeviceInfoRespons.Ack {
 			fmt.Println(utils.ErrorBox.Render(DeviceInfoRespons.Message))
 			return false
