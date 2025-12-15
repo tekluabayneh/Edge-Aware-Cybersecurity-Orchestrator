@@ -13,8 +13,9 @@ import (
 	"time"
 )
 
-// user generate code user dashboard
-// user isntall agent withe the generated code
+// user generate code from user dashboard
+// user isntall agent
+// and past the token intot he terminal input box and also email
 // device make request to the device paring api
 // api will return generated toke
 // device will send acknowlaege with the device info, in success the agent will start to run
@@ -23,6 +24,7 @@ type DeviceInfo struct {
 	DeviceName   string    `json:"device_name"`
 	AgentID      string    `json:"agent_id"`
 	AgentToken   string    `json:"agent_token"`
+	Email        string    `json:"email"`
 	MachineID    string    `json:"machine_id"`
 	AgentVersion string    `json:"agent_version"`
 	OS           string    `json:"os"`
@@ -111,34 +113,35 @@ func Register() bool {
 
 	// if the device paring success make device acknowlaege api call
 	DeviceInfoPaylod := DeviceInfo{
-		DeviceName:   "teklu_dev",
+		DeviceName:   utils.StaticSysInfo().HostName,
+		Email:        usrePaylod[1],
 		AgentID:      responsPaylod.AgentID,
 		AgentToken:   responsPaylod.AgentToken,
-		MachineID:    "machine-004",
-		AgentVersion: "1.4.2",
-		Status:       "pending",
+		MachineID:    utils.StaticSysInfo().MachineID,
+		AgentVersion: utils.StaticSysInfo().AgentVersion,
+		Status:       utils.StaticSysInfo().Status,
 		LastSeen:     time.Now(),
-		OS:           "window",
+		OS:           utils.StaticSysInfo().OS,
 	}
 
 	var DeviceInfoRespons PairingAckResponse
+	// if the token vlidation api response ok, proccede to the token acknowlaege api call
 	if res.StatusCode == 200 {
 		res, err := httpclient.InitiateParing(ctx, baseUrl+"/Token/ack", DeviceInfoPaylod)
 		if err != nil {
+			fmt.Println(utils.ErrorBox.Render("message: =>", DeviceInfoRespons.Message))
+			fmt.Println("ack: =>", DeviceInfoRespons.Ack)
 			fmt.Println(err)
 			panic(err)
 		}
 
+		// check if the akc tokne api call is response is not StatusOK
 		if res.StatusCode != 200 && !DeviceInfoRespons.Ack {
 			fmt.Println(utils.ErrorBox.Render(DeviceInfoRespons.Message))
+			fmt.Println(res)
 			return false
 		}
-
 	}
-
-	// make api call withe tht token
-	// get the response
-
 	fmt.Println(utils.SuccessBox.Render("✅ DeviceParing complete!"))
 	return true
 
