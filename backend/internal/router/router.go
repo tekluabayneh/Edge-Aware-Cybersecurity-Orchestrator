@@ -54,7 +54,7 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 		GenerateToken(route, db)
 	})
 
-	router.With(middlewareGlobal.Authorize(db)).Route("/Token", func(route chi.Router) {
+	router.With().Route("/Token", func(route chi.Router) {
 		AcknowledgePairing(route, db)
 	})
 
@@ -92,7 +92,7 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 		FeatchCommand(route, db)
 	})
 
-	router.With(middlewareGlobal.Authorize(db)).Route("/ack", func(route chi.Router) {
+	router.With().Route("/ack", func(route chi.Router) {
 		AcknowledgeCommandExecutionHandle(route, db)
 	})
 
