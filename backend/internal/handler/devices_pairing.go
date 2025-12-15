@@ -26,6 +26,7 @@ func (h *DevicePairingType) DevicePairing(w http.ResponseWriter, r *http.Request
 	json.NewDecoder(r.Body).Decode(&UserEmail)
 	incomingToken := strings.TrimSpace(r.URL.Query().Get("token"))
 	UserEmail.Email = strings.TrimSpace(UserEmail.Email)
+
 	if UserEmail.Email == "" {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
 			"message": "email is required",
