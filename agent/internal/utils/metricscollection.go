@@ -90,4 +90,5 @@ func Sysinfo() SysInfo {
 		Hostname: sysInfoValue.Hostname,
 		Platform: sysInfoValue.Platform,
 	}
+
 }

@@ -13,6 +13,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading env")
 	}
+
 	// load env files after env loaded
 	handler.InitOAuthConfigs()
 	app := server.New()

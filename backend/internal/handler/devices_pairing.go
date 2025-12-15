@@ -2,8 +2,10 @@ package handler
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
@@ -14,18 +16,33 @@ type DevicePairingType struct {
 	DB *db.Queries
 }
 
+type EmailType struct {
+	Email string `json:"email"`
+}
+
 func (h *DevicePairingType) DevicePairing(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	UserEmail := r.Context().Value("email").(string)
-	incomingToken := r.URL.Query().Get("token")
+	var UserEmail EmailType
+	json.NewDecoder(r.Body).Decode(&UserEmail)
+	incomingToken := strings.TrimSpace(r.URL.Query().Get("token"))
+	UserEmail.Email = strings.TrimSpace(UserEmail.Email)
+
+	if UserEmail.Email == "" {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "email is required",
+		})
+		return
+
+	}
 
 	if incomingToken == "" {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
-			"message": "token not found",
+			"message": "token is required",
 		})
 		return
 	}
-	userToken, err := h.DB.GetAllParingTokenByEmail(ctx, UserEmail)
+
+	userToken, err := h.DB.GetAllParingTokenByEmail(ctx, UserEmail.Email)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
 			"message": "internal server error",
@@ -33,16 +50,9 @@ func (h *DevicePairingType) DevicePairing(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if userToken.Token == "" {
+	if userToken.Token == "" || len(userToken.Token) < 1 {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
 			"message": "no pairing token found",
-		})
-		return
-	}
-
-	if err == nil && len(userToken.Token) < 1 {
-		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
-			"message": "token not found",
 		})
 		return
 	}
@@ -61,7 +71,7 @@ func (h *DevicePairingType) DevicePairing(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = h.DB.DeleteUsedToken(ctx, UserEmail)
+	err = h.DB.DeleteUsedToken(ctx, UserEmail.Email)
 
 	if err != nil {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{

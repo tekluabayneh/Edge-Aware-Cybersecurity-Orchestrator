@@ -9,7 +9,8 @@ import (
 type Agent struct {
 	UserID       int64              `json:"user_id"`
 	AgentToken   string             `json:"agent_token"`
-	AgentId      string `json:"agent_id"`
+	AgentId      string             `json:"agent_id"`
+	Email        string             `json:"email"`
 	MachineID    string             `json:"machine_id"`
 	AgentVersion pgtype.Text        `json:"agent_version"`
 	Os           pgtype.Text        `json:"os"`

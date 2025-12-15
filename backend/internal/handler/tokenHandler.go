@@ -53,6 +53,16 @@ func (h *DevicePairingType) GenerateTokenHandler(w http.ResponseWriter, r *http.
 		Valid: true,
 	}
 
+	if time.Now().After(AllUserToken.ExpiresAt.Time) {
+		err = h.DB.DeleteUsedToken(ctx, UserEmail)
+		if err != nil {
+			utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+				"message": "internal server error",
+			})
+			return
+		}
+	}
+
 	if err == nil && len(AllUserToken.Token) > 0 {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
 			"message": "you already have token",
