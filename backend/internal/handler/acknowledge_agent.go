@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/utils"
@@ -16,6 +17,7 @@ type Agent struct {
 	UserID       int64              `json:"user_id"`
 	AgentToken   string             `json:"agent_token"`
 	AgentId      string             `json:"agent_id"`
+	Email        string             `json:"email"`
 	MachineID    string             `json:"machine_id"`
 	AgentVersion pgtype.Text        `json:"agent_version"`
 	Os           pgtype.Text        `json:"os"`
@@ -25,7 +27,6 @@ type Agent struct {
 
 func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	email := r.Context().Value("email").(string)
 	var AgentValue Agent
 	fmt.Println("val val", AgentValue)
 	err := json.NewDecoder(r.Body).Decode(&AgentValue)
@@ -36,11 +37,22 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 		})
 		return
 	}
+	fmt.Println(AgentValue.Email)
+	AgentValue.Email = strings.TrimSpace(AgentValue.Email)
+	if AgentValue.Email == "" {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]any{
+			"message": "email is required",
+			"ack":     false,
+		})
+		return
 
-	user, err := h.DB.GetUserByEmail(ctx, email)
+	}
+
+	user, err := h.DB.GetUserByEmail(ctx, AgentValue.Email)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
 			"message": "user not found",
+			"ack":     false,
 		})
 		return
 	}
@@ -72,7 +84,6 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]any{
 			"message": "internal server error",
 			"ack":     false,
-			"dl":      err.Error(),
 		})
 		return
 	}
