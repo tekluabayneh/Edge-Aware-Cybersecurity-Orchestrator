@@ -1,65 +1,66 @@
-# ==============================
-# Node & Dependencies (all projects)
-# ==============================
-**/node_modules/
-**/npm-debug.log*
-**/yarn-debug.log*
-**/yarn-error.log*
-**/pnpm-debug.log*
-**/package-lock.json
-**/.pnpm-debug.log
-
-# ==============================
-# Build Output (all projects)
-# ==============================
-**/dist/
-**/build/
-**/.cache/
-**/.temp/
-**/coverage/
-**/*.tsbuildinfo
-
-# ==============================
-# Environment & Local Settings
-# ==============================
-**/.env
-**/.env.local
-**/.env.development.local
-**/.env.test.local
-**/.env.production.local
-
-# ==============================
-# System / Editor Files
-# ==============================
-.DS_Store
-Thumbs.db
-*.log
-.idea/
-.vscode/
-*.swp
-*.swo
-desktop.ini
-*.tmp
-
-# ==============================
-# Project Specific
-# ==============================
-backend/tmp/
-backend/tmp/main.exe
-
-client/dist/
-client/build/
-client/.env
-client/.DS_Store
-
-agent/tmp/
-agent/.env
-agent/build/
-
-analyzer/tmp/
-analyzer/.env
-analyzer/build/
-
-desktop/tmp/
-desktop/.env
-desktop/build/
+# ==============================
+# Node & Dependencies (all projects)
+# ==============================
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+**/package-lock.json
+**/.pnpm-debug.log
+
+# ==============================
+# Build Output (all projects)
+# ==============================
+**/dist/
+**/build/
+**/.cache/
+**/.temp/
+**/coverage/
+**/*.tsbuildinfo
+
+# ==============================
+# Environment & Local Settings
+# ==============================
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# ==============================
+# System / Editor Files
+# ==============================
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+*.swp
+*.swo
+desktop.ini
+*.tmp
+
+# ==============================
+# Project Specific
+# ==============================
+backend/tmp/
+backend/tmp/main.exe
+
+client/dist/
+client/build/
+client/.env
+client/.DS_Store
+
+agent/tmp/
+agent/.env
+agent/build/
+
+analyzer/tmp/
+analyzer/.env
+analyzer/build/
+
+desktop/tmp/
+desktop/.env
+desktop/build/
+
