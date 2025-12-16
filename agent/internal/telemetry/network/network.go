@@ -18,6 +18,8 @@ func Network(ch chan bool) {
 		default:
 			wg.Add(1)
 			go func() {
+				susIp := FilterSusIp()
+				fmt.Println(susIp)
 				fmt.Println("network second")
 				time.Sleep(5 * time.Second)
 				ch <- true
