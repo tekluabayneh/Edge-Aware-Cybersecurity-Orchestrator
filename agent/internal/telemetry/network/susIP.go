@@ -56,7 +56,6 @@ func CheckIsSusIp(ip string) (map[string]AbuseIPDBResponse, error) {
 }
 
 func FilterSusIp() (map[string]AbuseIPDBResponse, error) {
-
 	collectSusIp := map[string]string{}
 	ipsCollectionToReturn := map[string]AbuseIPDBResponse{}
 	iface, err := net.Interfaces()
@@ -87,7 +86,6 @@ func FilterSusIp() (map[string]AbuseIPDBResponse, error) {
 		// call the api based on the ips number/length
 		for _, ip := range collectSusIp {
 			checkedIps, err := CheckIsSusIp(collectSusIp[ip])
-			fmt.Println("man", checkedIps)
 			if err != nil {
 				return nil, fmt.Errorf("failed to check suspicious IP %s: %w", ip, err)
 			}
