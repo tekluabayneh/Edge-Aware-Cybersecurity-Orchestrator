@@ -2,7 +2,6 @@ package main
 
 import (
 	"agent/cmd/app"
-	"fmt"
 	"log"
 
 	"github.com/joho/godotenv"
@@ -15,5 +14,4 @@ func main() {
 	}
 
 	app.App()
-	fmt.Print("main work")
 }
