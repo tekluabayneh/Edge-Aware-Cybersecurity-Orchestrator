@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Installing MyApp..."
+echo "Installing agent..."
 
 # detect platform
 OS=$(uname | tr '[:upper:]' '[:lower:]')
