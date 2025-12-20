@@ -2,15 +2,22 @@ package security
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 )
 
-func Security(ch chan bool) {
+type SecurityReport struct {
+	Firewall           FirewallStatus
+	Antivirus          AntivirusStatus
+	MaliciousProcesses []SuspiciousProcess
+	SuspiciousFiles    []SuspiciousFile
+}
+
+func Security(ch chan SecurityReport) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	var wg sync.WaitGroup
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -18,12 +25,17 @@ func Security(ch chan bool) {
 		default:
 			wg.Add(1)
 			go func() {
-				fmt.Println("test Security")
-				ch <- true
 				time.Sleep(5 * time.Second)
+				ch <- SecurityReport{
+					Firewall:           CheckFirewall(),
+					Antivirus:          CheckAntivirus(),
+					MaliciousProcesses: DetectMaliciousProcesses(),
+					SuspiciousFiles:    DetectSuspiciousFiles(),
+				}
 				wg.Done()
 			}()
 			wg.Wait()
 		}
 	}
+
 }
