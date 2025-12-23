@@ -22,7 +22,6 @@ func Network(ch chan bool) {
 			go func() {
 				// checkedIpdsCollectin
 				//  connections monitoring collect
-
 				// check susIp only after ~41 times in an hour
 				// since the time expire use the existing sus ips data
 				lastRun := time.Now()
@@ -43,9 +42,7 @@ func Network(ch chan bool) {
 						log.Println("Warning: failed to unmarshal suspicious IPs:", err)
 					}
 					lastRun = time.Now()
-
 				}
-
 				val := ConnectionsMonitoring()
 				fmt.Printf("data %+v\n", val)
 				time.Sleep(5 * time.Second)

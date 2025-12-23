@@ -9,11 +9,8 @@ import (
 
 // Active sockets	Local/remote IP, port, PID, state	Detect suspicious processes and endpoints
 // Network interfaces	Up/down, IP addresses	Detect connectivity and unusual interfaces
-
 // Connection patterns	Frequency, volume	Detect abnormal behavior
-
 // i need to gather all device info like:
-//
 //	for sockets: Local/remote IP, port, PID, state
 //	for interfaces: Up/down, IP addresses
 //	for Connection patterns: Frequency, volume	Detect abnormal behavior
