@@ -7,7 +7,6 @@ import (
 	"agent/internal/telemetry/security"
 	// "agent/internal/telemetry/system"
 	"context"
-	"fmt"
 	"sync"
 	"time"
 )
@@ -38,13 +37,13 @@ func Telemetry() {
 
 				// Collect system info
 				// sysInfo := <-chanSystemInfo
-				securityr := <-chanSecurity
+				// securityr := <-chanSecurity
 				// networkr := <-chanNetwork
 				// processr := <-chanProcesses
 				// integR := <-chanIntegrity
 				//
 				// fmt.Println(sysInfo)
-				fmt.Println(securityr)
+				// fmt.Println(securityr)
 				// fmt.Println(networkR)
 				// fmt.Println(processr)
 				// fmt.Println(integr)
