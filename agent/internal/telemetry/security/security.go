@@ -10,7 +10,7 @@ type SecurityReport struct {
 	Firewall           FirewallStatus
 	Antivirus          AntivirusStatus
 	MaliciousProcesses []SuspiciousProcess
-	SuspiciousFiles    []SuspiciousFile
+	SuspiciousFiles    []SuspiciouseFiletype
 }
 
 func Security(ch chan SecurityReport) {
