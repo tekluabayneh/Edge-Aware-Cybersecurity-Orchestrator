@@ -9,7 +9,13 @@ import (
 	"time"
 )
 
-func Network(ch chan bool) {
+type ConnectionMonitoringType struct {
+	ActiveSockets      []ActiveSocket
+	NetworkInterfaces  []networkInterfaces
+	ConnectionPatterns []ConnectionPatterns
+}
+
+func Network(ch chan ConnectionMonitoringType) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	var wg sync.WaitGroup
@@ -22,7 +28,7 @@ func Network(ch chan bool) {
 			go func() {
 				// checkedIpdsCollectin
 				//  connections monitoring collect
-				// check susIp only after ~41 times in an hour
+				// check susIp only after 8 times in an hour
 				// since the time expire use the existing sus ips data
 				lastRun := time.Now()
 				delay := time.Minute * 8
@@ -46,7 +52,8 @@ func Network(ch chan bool) {
 				val := ConnectionsMonitoring()
 				fmt.Printf("data %+v\n", val)
 				time.Sleep(5 * time.Second)
-				ch <- true
+				payload := ConnectionMonitoringType{}
+				ch <- payload
 				defer wg.Done()
 			}()
 			wg.Wait()
