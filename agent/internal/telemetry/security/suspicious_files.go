@@ -2,8 +2,7 @@ package security
 
 import (
 	"agent/internal/utils"
-	"encoding/json"
-	"fmt"
+	"encoding/base64"
 	"io/fs"
 	"log"
 	"os"
@@ -45,38 +44,24 @@ func DetectSuspiciousFiles() []SuspiciouseFiletype {
 					if err != nil {
 						log.Printf("error reading home directory")
 					}
-					// info, err := d.Info()
+					info, err := d.Info()
 					if err != nil {
 						log.Printf("error reading home directory")
 					}
-
-					jsonData, err := json.Marshal(content)
-					fmt.Println("json", string(jsonData))
-					if err != nil {
-						log.Printf("error reading home directory")
+					encoded := base64.StdEncoding.EncodeToString(content)
+					payload := SuspiciouseFiletype{
+						Name:      d.Name(),
+						Path:      path,
+						Extension: strings.Split(d.Name(), ".")[1],
+						Size:      info.Size(),
+						Mode:      info.Mode(),
+						Content:   encoded,
 					}
-
-					var ContentData string
-					json.Unmarshal(jsonData, &ContentData)
-					// fmt.Println("expected data", string(ContentData))
-					if err != nil {
-						ContentInfo := SuspiciouseFiletype{
-							// Name:      d.Name(),
-							// Path:      path,
-							// Extension: strings.Split(d.Name(), ".")[1],
-							// Size:      info.Size(),
-							// Mode:      info.Mode(),
-							Content: string(content),
-						}
-
-						SuspiciousFile = append(SuspiciousFile, ContentInfo)
-					}
+					SuspiciousFile = append(SuspiciousFile, payload)
 				}
 			}
 		}
 		return nil
 	})
-
-	fmt.Println(SuspiciousFile)
 	return SuspiciousFile
 }
