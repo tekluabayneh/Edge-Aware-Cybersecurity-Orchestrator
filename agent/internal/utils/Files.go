@@ -1,19 +1,12 @@
 package utils
 
 var FilesNameToCheckAgainst = map[string]bool{
-	"exe":  true,
-	"dll":  true,
-	"bat":  true,
-	"ps1":  true,
-	"sh":   true,
-	"app":  true,
-	"bin":  true,
-	"docm": true,
-	"xlsm": true,
-	"pptm": true,
-	"zip":  true,
-	"rar":  true,
-	"7z":   true,
+	"exe": true,
+	"dll": true,
+	"sh":  true,
+	"bin": true,
+	"app": true,
+	"ps1": true,
 }
 
 var SkipDirs = map[string]bool{

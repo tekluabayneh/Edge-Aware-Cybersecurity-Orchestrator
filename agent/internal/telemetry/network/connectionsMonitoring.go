@@ -45,12 +45,6 @@ type ConnectionPatterns []struct {
 	Volume    uint32 `json:"volume"`
 }
 
-type ConnectionMonitoringType struct {
-	ActiveSockets      []ActiveSocket
-	NetworkInterfaces  []networkInterfaces
-	ConnectionPatterns []ConnectionPatterns
-}
-
 func ConnectionsMonitoring() ConnectionMonitoringType {
 	var ConnectionMonitoringData ConnectionMonitoringType
 	var ActiveSocketsData ActiveSocket
