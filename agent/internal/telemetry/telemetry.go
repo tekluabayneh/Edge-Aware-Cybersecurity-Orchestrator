@@ -1,7 +1,7 @@
 package telemetry
 
 import (
-	// "agent/internal/telemetry/integrity"
+	"agent/internal/telemetry/integrity"
 	"agent/internal/telemetry/network"
 	"agent/internal/telemetry/processes"
 	"agent/internal/telemetry/security"
@@ -18,9 +18,9 @@ func Telemetry() {
 	var wg sync.WaitGroup
 	chanSystemInfo := make(chan system.GetSysInfotype)
 	chanSecurity := make(chan security.SecurityReport)
-	chanNetwork := make(chan network.ConnectionMonitoringType)
+	chanNetwork := make(chan network.NetworkSnapshot)
 	chanProcesses := make(chan []processes.ProcInfo)
-	// chanIntegrity := make(chan bool)
+	chanIntegrity := make(chan integrity.IntegritySnapshot)
 
 	for {
 		select {
@@ -33,7 +33,7 @@ func Telemetry() {
 				go security.Security(chanSecurity)
 				go network.Network(chanNetwork)
 				go processes.Processes(chanProcesses)
-				// go integrity.Integrity(chanIntegrity)
+				go integrity.Integrity(chanIntegrity)
 				go system.System(chanSystemInfo)
 
 				// Collect system info
@@ -41,14 +41,13 @@ func Telemetry() {
 				securityr := <-chanSecurity
 				networkr := <-chanNetwork
 				processr := <-chanProcesses
-				// integR := <-chanIntegrity
+				integr := <-chanIntegrity
 
-				//
-				fmt.Println(sysInfo)
-				fmt.Println(securityr)
-				fmt.Println(networkr)
-				fmt.Println(processr)
-				// fmt.Println(integr)
+				fmt.Println("\n", sysInfo)
+				fmt.Println("\n", securityr)
+				fmt.Println("\n", networkr)
+				fmt.Println("\n", processr)
+				fmt.Println("\n", integr)
 
 				// send all alert to analizer
 				defer wg.Done()

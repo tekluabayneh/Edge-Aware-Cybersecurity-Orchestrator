@@ -31,14 +31,14 @@ func System(ch chan GetSysInfotype) {
 			diskInfo := utils.Sysinfo().Disk
 			netWorkInfo := utils.Sysinfo().Network
 
-			values := GetSysInfotype{
+			payload := GetSysInfotype{
 				Uptime:  upTime,
 				Cpu:     cpuInfo,
 				Ram:     ramInfo.UsedPercent,
 				Disk:    math.Round(float64(diskInfo.UsedPercent)),
 				Network: netWorkInfo,
 			}
-			ch <- values
+			ch <- payload
 			wg.Wait()
 		}
 	}
