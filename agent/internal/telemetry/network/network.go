@@ -3,7 +3,6 @@ package network
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -15,7 +14,12 @@ type ConnectionMonitoringType struct {
 	ConnectionPatterns []ConnectionPatterns
 }
 
-func Network(ch chan ConnectionMonitoringType) {
+type NetworkSnapshot struct {
+	ConnectionMonitoring ConnectionMonitoringType
+	AbuseIPDBResponse    map[string]AbuseIPDBResponse
+}
+
+func Network(ch chan NetworkSnapshot) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	var wg sync.WaitGroup
@@ -26,7 +30,6 @@ func Network(ch chan ConnectionMonitoringType) {
 		default:
 			wg.Add(1)
 			go func() {
-				// checkedIpdsCollectin
 				//  connections monitoring collect
 				// check susIp only after 8 times in an hour
 				// since the time expire use the existing sus ips data
@@ -47,14 +50,17 @@ func Network(ch chan ConnectionMonitoringType) {
 					if err != nil {
 						log.Println("Warning: failed to unmarshal suspicious IPs:", err)
 					}
+					val := ConnectionsMonitoring()
+					payload := NetworkSnapshot{
+						ConnectionMonitoring: val,
+						AbuseIPDBResponse:    jsonData,
+					}
 					lastRun = time.Now()
+					ch <- payload
+					time.Sleep(5 * time.Second)
+					defer wg.Done()
+
 				}
-				val := ConnectionsMonitoring()
-				fmt.Printf("data %+v\n", val)
-				time.Sleep(5 * time.Second)
-				payload := ConnectionMonitoringType{}
-				ch <- payload
-				defer wg.Done()
 			}()
 			wg.Wait()
 		}
