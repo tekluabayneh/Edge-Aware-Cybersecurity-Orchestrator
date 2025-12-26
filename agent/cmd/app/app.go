@@ -1,8 +1,9 @@
 package app
 
 import (
-	_ "agent/internal/register"
+	"agent/internal/register"
 	"agent/internal/telemetry"
+	"fmt"
 )
 
 // first the cli cick in
@@ -14,12 +15,12 @@ import (
 func App() {
 
 	// authenticate agent with user
-	// isRegister := register.Register()
-	// if !isRegister {
-	// 	fmt.Println("user not registred")
-	// 	return
-	// }
-	//
+	isRegister := register.Register()
+	if !isRegister {
+		fmt.Println("user not registred")
+		return
+	}
+
 	// if register pass start the app
 	telemetry.Telemetry()
 }
