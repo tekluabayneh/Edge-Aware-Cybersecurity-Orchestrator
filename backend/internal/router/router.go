@@ -88,7 +88,7 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 	router.With(middlewareGlobal.Authorize(db)).Route("/create", func(route chi.Router) {
 		CreateCommand(route, db)
 	})
-	router.With(middlewareGlobal.Authorize(db)).Route("/fetch", func(route chi.Router) {
+	router.With().Route("/fetch", func(route chi.Router) {
 		FeatchCommand(route, db)
 	})
 
