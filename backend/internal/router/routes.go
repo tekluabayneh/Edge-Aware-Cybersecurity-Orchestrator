@@ -76,7 +76,7 @@ func CreateCommand(router chi.Router, db *db.Queries) {
 
 func FeatchCommand(router chi.Router, db *db.Queries) {
 	SingleAlertHandler := &handler.CreateCommdnType{DB: db}
-	router.Get("/fetch", SingleAlertHandler.FetchPendingCommandsHandler)
+	router.Post("/fetch", SingleAlertHandler.FetchPendingCommandsHandler)
 }
 
 func AcknowledgeCommandExecutionHandle(router chi.Router, db *db.Queries) {
