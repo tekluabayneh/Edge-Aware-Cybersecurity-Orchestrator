@@ -16,8 +16,13 @@ type CreateCommdnType struct {
 	DB *db.Queries
 }
 
+type incomingPayload struct {
+	Email string `json:"email"`
+}
+
 type commandPaylod struct {
 	UserId      int64              `json:"user_id"`
+	Email       string             `json:"email"`
 	AgentId     string             `json:"agent_id"`
 	CommandType string             `json:"command_type"`
 	Payload     json.RawMessage    `json:"payload"`
@@ -29,9 +34,10 @@ type commandPaylod struct {
 // Create a new command for a device (from dashboard)
 func (h *CreateCommdnType) CreateCommandHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	email := r.Context().Value("email").(string)
+	var Email incomingPayload
+	json.NewDecoder(r.Body).Decode(&Email)
 
-	user, err := h.DB.GetUserByEmail(ctx, email)
+	user, err := h.DB.GetUserByEmail(ctx, Email.Email)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
 			"message": "user not found",
@@ -80,9 +86,10 @@ func (h *CreateCommdnType) CreateCommandHandler(w http.ResponseWriter, r *http.R
 // Fetch pending commands for a given agent
 func (h *CreateCommdnType) FetchPendingCommandsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	email := r.Context().Value("email").(string)
+	var Email incomingPayload
+	json.NewDecoder(r.Body).Decode(&Email)
 
-	user, err := h.DB.GetUserByEmail(ctx, email)
+	user, err := h.DB.GetUserByEmail(ctx, Email.Email)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
 			"message": "user not found",
@@ -114,7 +121,7 @@ func (h *CreateCommdnType) FetchPendingCommandsHandler(w http.ResponseWriter, r 
 	utils.WriteJSON(w, http.StatusOK, map[string]any{
 		"message": "command Fetched successfully",
 		"command": command,
-		"paylod":  jsonpaylod,
+		"payload": jsonpaylod,
 	})
 
 }
@@ -122,9 +129,10 @@ func (h *CreateCommdnType) FetchPendingCommandsHandler(w http.ResponseWriter, r 
 // Acknowledge command execution from agent
 func (h *CreateCommdnType) AcknowledgeCommandExecutionHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	email := r.Context().Value("email").(string)
+	var Email incomingPayload
+	json.NewDecoder(r.Body).Decode(&Email)
 
-	user, err := h.DB.GetUserByEmail(ctx, email)
+	user, err := h.DB.GetUserByEmail(ctx, Email.Email)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
 			"message": "user not found",
