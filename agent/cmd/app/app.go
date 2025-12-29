@@ -20,7 +20,7 @@ func App() {
 		fmt.Println("user not registred")
 		return
 	}
-
+	//
 	// if register pass start the app
 	telemetry.Telemetry()
 }
