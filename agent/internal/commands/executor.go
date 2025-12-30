@@ -34,6 +34,11 @@ type Response struct {
 	Payload map[string]string `json:"payload"`
 }
 
+type AckResponse struct {
+	Message string `json:"message"`
+	Status  string `json:"status"`
+}
+
 // 1 agent recive commands from where the status is pending
 // 2 the Commands payload has machineId and command to execute them
 // 3 execute the command one by one if they are more than one
@@ -75,6 +80,7 @@ func Commands(ch chan CommandType) {
 
 	var incomingPaylod Response
 	json.NewDecoder(res.Body).Decode(&incomingPaylod)
+
 	isAllCommandApproved := false
 	for cmdName, args := range incomingPaylod.Payload {
 		fmt.Printf("Executing command: %s %v\n", cmdName, args)
@@ -89,5 +95,19 @@ func Commands(ch chan CommandType) {
 		}
 	}
 
+	req, err = http.NewRequestWithContext(ctx, "POST", URL+"/ack/ack", bytes.NewReader(jsonPayload))
+	if err != nil {
+		panic(err)
+	}
+	res, err = http.DefaultClient.Do(req)
+	req.Header.Set("Content-Type", "application/json")
+	if err != nil {
+		panic(err)
+	}
+
+	var AckincomingPaylod AckResponse
+	json.NewDecoder(res.Body).Decode(&AckincomingPaylod)
+
+	fmt.Println(AckincomingPaylod)
 	fmt.Println(isAllCommandApproved)
 }
