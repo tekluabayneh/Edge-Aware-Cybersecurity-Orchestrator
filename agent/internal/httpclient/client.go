@@ -12,10 +12,12 @@ func Fetch(ctx context.Context, Url string, email map[string]any, token string) 
 	params := url.Values{}
 	params.Add("token", token)
 	fullURL := Url + "?" + params.Encode()
-
 	jsonpaylod, _ := json.Marshal(email)
 	bodyToSend := bytes.NewReader(jsonpaylod)
 	req, err := http.NewRequestWithContext(ctx, "POST", fullURL, bodyToSend)
+	if err != nil {
+		return nil, err
+	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {

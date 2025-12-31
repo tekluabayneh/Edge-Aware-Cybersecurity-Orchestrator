@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 
 	"os"
 	"strings"
@@ -142,6 +143,24 @@ func Register() bool {
 			return false
 		}
 	}
+
+	path := filepath.Join("internal/register", "email.txt")
+	err = os.WriteFile(path, []byte(DeviceInfoPaylod.Email), 0644)
+	if err != nil {
+		fmt.Println(utils.ErrorBox.Render("message: =>", "error storing usre email"))
+	}
+	path = filepath.Join("internal/register", "token.txt")
+
+	json, err := json.Marshal(DeviceInfoPaylod)
+	if err != nil {
+		fmt.Println(utils.ErrorBox.Render("message: =>", "error while marshling struct"))
+	}
+
+	err = os.WriteFile(path, []byte(json), 0644)
+	if err != nil {
+		fmt.Println(utils.ErrorBox.Render("message: =>", "error storing usre email"))
+	}
+
 	fmt.Println(utils.SuccessBox.Render("✅ DeviceParing complete!"))
 	return true
 

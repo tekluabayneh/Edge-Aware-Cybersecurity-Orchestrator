@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -16,8 +17,20 @@ type CreateCommdnType struct {
 	DB *db.Queries
 }
 
+type incomingPayload struct {
+	Email string `json:"email"`
+}
+
+type AckResponseType struct {
+	Email   string `json:"email"`
+	Message string `json:"message"`
+	Status  bool   `json:"status"`
+	IsAck   bool   `json:"is_ack"`
+}
+
 type commandPaylod struct {
 	UserId      int64              `json:"user_id"`
+	Email       string             `json:"email"`
 	AgentId     string             `json:"agent_id"`
 	CommandType string             `json:"command_type"`
 	Payload     json.RawMessage    `json:"payload"`
@@ -26,12 +39,21 @@ type commandPaylod struct {
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 }
 
+type notification struct {
+	UserId    int64              `json:"user_id"`
+	Title     string             `json:"title"`
+	Message   string             `json:"message"`
+	IsRead    bool               `json:"is_read"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+}
+
 // Create a new command for a device (from dashboard)
 func (h *CreateCommdnType) CreateCommandHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	email := r.Context().Value("email").(string)
+	var Email incomingPayload
+	json.NewDecoder(r.Body).Decode(&Email)
 
-	user, err := h.DB.GetUserByEmail(ctx, email)
+	user, err := h.DB.GetUserByEmail(ctx, Email.Email)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
 			"message": "user not found",
@@ -80,9 +102,10 @@ func (h *CreateCommdnType) CreateCommandHandler(w http.ResponseWriter, r *http.R
 // Fetch pending commands for a given agent
 func (h *CreateCommdnType) FetchPendingCommandsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	email := r.Context().Value("email").(string)
+	var Email incomingPayload
+	json.NewDecoder(r.Body).Decode(&Email)
 
-	user, err := h.DB.GetUserByEmail(ctx, email)
+	user, err := h.DB.GetUserByEmail(ctx, Email.Email)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
 			"message": "user not found",
@@ -114,7 +137,7 @@ func (h *CreateCommdnType) FetchPendingCommandsHandler(w http.ResponseWriter, r 
 	utils.WriteJSON(w, http.StatusOK, map[string]any{
 		"message": "command Fetched successfully",
 		"command": command,
-		"paylod":  jsonpaylod,
+		"payload": jsonpaylod,
 	})
 
 }
@@ -122,9 +145,10 @@ func (h *CreateCommdnType) FetchPendingCommandsHandler(w http.ResponseWriter, r 
 // Acknowledge command execution from agent
 func (h *CreateCommdnType) AcknowledgeCommandExecutionHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	email := r.Context().Value("email").(string)
+	var Email incomingPayload
+	json.NewDecoder(r.Body).Decode(&Email)
 
-	user, err := h.DB.GetUserByEmail(ctx, email)
+	user, err := h.DB.GetUserByEmail(ctx, Email.Email)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
 			"message": "user not found",
@@ -150,4 +174,47 @@ func (h *CreateCommdnType) AcknowledgeCommandExecutionHandler(w http.ResponseWri
 		"message": "commadn updated ruccessfully",
 		"status":  status,
 	})
+
+}
+
+func (h *CreateCommdnType) AcknowledgeCommandExecutionResponseHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	var AckREsponse AckResponseType
+	json.NewDecoder(r.Body).Decode(&AckREsponse)
+	fmt.Println(AckREsponse.Email)
+	fmt.Println(AckREsponse)
+	user, err := h.DB.GetUserByEmail(ctx, AckREsponse.Email)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
+			"message": "user not found",
+		})
+		return
+	}
+
+	notificationPayload := db.CreateNotificationParams{
+		UserID:  int64(user.ID),
+		Message: AckREsponse.Message,
+		Title:   "check for the command acknowledge",
+		IsRead:  false,
+	}
+
+	err = h.DB.CreateNotification(ctx, notificationPayload)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
+			"message": "user not found",
+		})
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, map[string]any{
+		"message": "commadn updated ruccessfully",
+	})
+
+	// notification send to user notification
+
+	// 1 get the message
+	// 2 get user info
+	// 3 store the notification
+	// formteh frontend there should be api call periodically
+
 }

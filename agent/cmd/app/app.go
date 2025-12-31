@@ -1,9 +1,9 @@
 package app
 
 import (
-	"agent/internal/register"
+	// "agent/internal/register"
 	"agent/internal/telemetry"
-	"fmt"
+	// "fmt"
 )
 
 // first the cli cick in
@@ -13,14 +13,14 @@ import (
 // after succeess agent will send raw data to analizer
 // loop will continue forever
 func App() {
-
-	// authenticate agent with user
-	isRegister := register.Register()
-	if !isRegister {
-		fmt.Println("user not registred")
-		return
-	}
-
+	//
+	// // authenticate agent with user
+	// isRegister := register.Register()
+	// if !isRegister {
+	// 	fmt.Println("user not registred")
+	// 	return
+	// }
+	//
 	// if register pass start the app
 	telemetry.Telemetry()
 }
