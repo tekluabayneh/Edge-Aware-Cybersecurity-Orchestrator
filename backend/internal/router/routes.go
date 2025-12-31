@@ -83,3 +83,8 @@ func AcknowledgeCommandExecutionHandle(router chi.Router, db *db.Queries) {
 	SingleAlertHandler := &handler.CreateCommdnType{DB: db}
 	router.Post("/ack", SingleAlertHandler.AcknowledgeCommandExecutionHandler)
 }
+
+func AcknowledgeCommandExecutionResponseHandle(router chi.Router, db *db.Queries) {
+	SingleAlertHandler := &handler.CreateCommdnType{DB: db}
+	router.Post("/ack", SingleAlertHandler.AcknowledgeCommandExecutionResponseHandler)
+}
