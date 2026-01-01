@@ -39,9 +39,10 @@ type Response struct {
 // 3 execute the command one by one if they are more than one
 // 4 user can't send Commands that need admin to execute that Commands
 
-func Commands(ch chan CommandType) {
+func Commands() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
+
 	URL := os.Getenv("BASE_URL")
 	fullUrl := URL + "/fetch/fetch"
 	path := filepath.Join("internal/register", "email.txt")
@@ -53,24 +54,24 @@ func Commands(ch chan CommandType) {
 	file, err := os.ReadFile(path)
 	Bytesemail := strings.TrimSpace(string(file))
 	if err != nil {
-		panic(err)
+		fmt.Println("READ FILE ERROR:", err)
 	}
 	Emailpayload := map[string]string{
 		"email": Bytesemail,
 	}
 	jsonPayload, err := json.Marshal(Emailpayload)
 	if err != nil {
-		panic(err)
+		fmt.Println("JSON MARSHAL ERROR:", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", fullUrl, bytes.NewReader(jsonPayload))
 	if err != nil {
-		panic(err)
+		fmt.Println("HTTP REQUEST ERROR:", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		panic(err)
+		fmt.Println("HTTP DO ERROR:", err)
 	}
 
 	var incomingPaylod Response
@@ -92,12 +93,12 @@ func Commands(ch chan CommandType) {
 
 	req, err = http.NewRequestWithContext(ctx, "POST", URL+"/ack/ack", bytes.NewReader(jsonPayload))
 	if err != nil {
-		panic(err)
+		fmt.Println("ACK REQUEST ERROR:", err)
 	}
 	res, err = http.DefaultClient.Do(req)
 	req.Header.Set("Content-Type", "application/json")
 	if err != nil {
-		panic(err)
+		fmt.Println("ACK HTTP DO ERROR:", err)
 	}
 
 	var AckResponsePaylod Response
@@ -112,11 +113,11 @@ func Commands(ch chan CommandType) {
 	ackjsonRspnose, err := json.Marshal(ackResponsePayload)
 	req, err = http.NewRequestWithContext(ctx, "POST", URL+"/res/ack", bytes.NewReader(ackjsonRspnose))
 	if err != nil {
-		panic(err)
+		fmt.Println("RES ACK REQUEST ERROR:", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	res, err = http.DefaultClient.Do(req)
 	if err != nil {
-		panic(err)
+		fmt.Println("RES ACK HTTP DO ERROR:", err)
 	}
 }
