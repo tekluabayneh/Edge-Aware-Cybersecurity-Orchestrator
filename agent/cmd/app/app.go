@@ -1,9 +1,11 @@
 package app
 
 import (
-	// "agent/internal/register"
+	"agent/internal/register"
 	"agent/internal/telemetry"
-	// "fmt"
+	"fmt"
+	"os"
+	"strings"
 )
 
 // first the cli cick in
@@ -12,15 +14,30 @@ import (
 // then acknowledge api will be alled witht agent info
 // after succeess agent will send raw data to analizer
 // loop will continue forever
+
 func App() {
-	//
-	// // authenticate agent with user
-	// isRegister := register.Register()
-	// if !isRegister {
-	// 	fmt.Println("user not registred")
-	// 	return
-	// }
-	//
-	// if register pass start the app
+	// check registration status
+	value, err := os.ReadFile("./register")
+	if err != nil {
+		fmt.Println("READ FILE ERROR:", err)
+		value = []byte{}
+	}
+
+	if len(value) < 1 || !strings.Contains(string(value), "registred") {
+		// authenticate agent with user
+		isRegistered := register.Register()
+		if !isRegistered {
+			fmt.Println("User not registered")
+			return
+		}
+
+		err := os.WriteFile("./register", []byte("registred"), 0644)
+		if err != nil {
+			fmt.Println("WRITE FILE ERROR:", err)
+			return
+		}
+	}
+
+	// start the main app
 	telemetry.Telemetry()
 }
