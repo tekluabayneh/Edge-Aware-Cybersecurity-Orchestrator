@@ -2,27 +2,40 @@ package telemetry
 
 import (
 	"agent/internal/commands"
-	// "agent/internal/telemetry/integrity"
-	// "agent/internal/telemetry/network"
-	// "agent/internal/telemetry/processes"
-	// "agent/internal/telemetry/security"
-	// "agent/internal/telemetry/system"
+	"agent/internal/telemetry/integrity"
+	"agent/internal/telemetry/network"
+	"agent/internal/telemetry/processes"
+	"agent/internal/telemetry/security"
+	"agent/internal/telemetry/system"
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"os"
 	"sync"
 	"time"
 )
 
+type TelemetryType struct {
+	SystemInfo system.GetSysInfotype       `json:"system"`
+	Security   security.SecurityReport     `json:"security"`
+	Netwrok    network.NetworkSnapshot     `json:"network"`
+	Processes  []processes.ProcInfo        `json:"processes"`
+	Integrity  integrity.IntegritySnapshot `json:"integrity"`
+}
+
 func Telemetry() {
 	ctx, cancel := context.WithCancel(context.Background())
+	AnalizerBaseURL := os.Getenv("ANALIZER_BASE_URL")
 	defer cancel()
 	var wg sync.WaitGroup
-	// chanSystemInfo := make(chan system.GetSysInfotype)
-	// chanSecurity := make(chan security.SecurityReport)
-	// chanNetwork := make(chan network.NetworkSnapshot)
-	// chanProcesses := make(chan []processes.ProcInfo)
-	// chanIntegrity := make(chan integrity.IntegritySnapshot)
-	chanCommands := make(chan commands.CommandType)
+	SystemInfo := make(chan system.GetSysInfotype)
+	Security := make(chan security.SecurityReport)
+	Network := make(chan network.NetworkSnapshot)
+	Processes := make(chan []processes.ProcInfo)
+	Integrity := make(chan integrity.IntegritySnapshot)
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -31,31 +44,55 @@ func Telemetry() {
 			wg.Add(1)
 			go func() {
 
-				// go security.Security(chanSecurity)
-				// go network.Network(chanNetwork)
-				// go processes.Processes(chanProcesses)
-				// go integrity.Integrity(chanIntegrity)
-				// go system.System(chanSystemInfo)
-				go commands.Commands(chanCommands)
+				go security.Security(Security)
+				go network.Network(Network)
+				go processes.Processes(Processes)
+				go integrity.Integrity(Integrity)
+				go system.System(SystemInfo)
+
+				// execute comamnd periodically
+				go func() {
+					for {
+						time.Sleep(time.Second * 60)
+						fmt.Println("reached 5 minutes")
+						go commands.Commands()
+					}
+				}()
 
 				// Collect system info
-				// sysInfo := <-chanSystemInfo
-				// securityr := <-chanSecurity
-				// networkr := <-chanNetwork
-				// processr := <-chanProcesses
-				// integr := <-chanIntegrity
-				commands := <-chanCommands
-				//
-				// fmt.Println("\n", sysInfo)
-				// fmt.Println("\n", securityr)
-				// fmt.Println("\n", networkr)
-				// fmt.Println("\n", processr)
-				// fmt.Println("\n", integr)
+				sysInfo := <-SystemInfo
+				security := <-Security
+				network := <-Network
+				process := <-Processes
+				integrity := <-Integrity
 
-				// send comamnd to directly user dashboard
-				fmt.Println("\n", commands)
+				// finally send Telemetry to analizer
+				TelementoryPaylod := TelemetryType{
+					SystemInfo: sysInfo,
+					Security:   security,
+					Netwrok:    network,
+					Processes:  process,
+					Integrity:  integrity,
+				}
 
-				// send all alert to analizer
+				jsonpaylod, err := json.Marshal(TelementoryPaylod)
+
+				if err != nil {
+					fmt.Println("JSON MARSHAL ERROR:", err)
+				}
+
+				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL, bytes.NewReader(jsonpaylod))
+				if err != nil {
+					fmt.Println("HTTP REQUEST ERROR:", err)
+				}
+
+				res, err := http.DefaultClient.Do(req)
+				if err != nil {
+					fmt.Println("HTTP DO ERROR:", err)
+				}
+
+				fmt.Println(res)
+
 				defer wg.Done()
 				time.Sleep(time.Second * 5)
 			}()
