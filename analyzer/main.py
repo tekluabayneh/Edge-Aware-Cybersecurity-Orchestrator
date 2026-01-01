@@ -1,7 +1,6 @@
- 
 def main():
-   print("test")
+    print("Hello from analyzer!")
 
 
-main()
-
+if __name__ == "__main__":
+    main()
