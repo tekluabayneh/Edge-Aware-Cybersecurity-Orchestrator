@@ -1,1 +1,11 @@
-{"device_name":"Teklu","agent_id":"3b6b8eb1-6e20-4daa-b2ea-f02c1784e575","agent_token":"a9de7c51-b1e7-4fdf-a9bf-4c9b83fe814f","email":"man@gmail.com","machine_id":"machine_id_70f62db5-b210-49e2-b5ca-b2445247b704_5150a68d-dd86-4ecd-9abb-7618590f66f2","agent_version":"24.04","os":"linux","status":"online","last_seen":"2026-01-01T16:37:09.068952488+09:00"}
+{
+"device_name":"Teklu",
+"agent_id":"3b6b8eb1-6e20-4daa-b2ea-f02c1784e575",
+"agent_token":"a9de7c51-b1e7-4fdf-a9bf-4c9b83fe814f",
+"email":"man@gmail.com",
+"machine_id":"machine_id_70f62db5-b210-49e2-b5ca-b2445247b704_5150a68d-dd86-4ecd-9abb-7618590f66f2",
+"agent_version":"24.04",
+"os":"linux",
+"status":"online",
+"last_seen":"2026-01-01T16:37:09.068952488+09:00"
+}
