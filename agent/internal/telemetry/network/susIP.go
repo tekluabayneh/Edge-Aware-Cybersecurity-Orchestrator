@@ -15,6 +15,7 @@ import (
 // make api call to suspiouse ip and get the ips
 // if since the cota of the ip is 100 a day this function only need to call this api 100 time with in 24hr
 // besically i can say this function only need to called
+
 type AbuseIPDBResponse struct {
 	Data struct {
 		IPAddress            string `json:"ipAddress"`

@@ -18,6 +18,8 @@ import (
 )
 
 type TelemetryType struct {
+	AgetnId    string                      `json:"agent_id"`
+	AgentToken string                      `json:"agent_token"`
 	SystemInfo system.GetSysInfotype       `json:"system"`
 	Security   security.SecurityReport     `json:"security"`
 	Netwrok    network.NetworkSnapshot     `json:"network"`
@@ -68,6 +70,8 @@ func Telemetry() {
 
 				// finally send Telemetry to analizer
 				TelementoryPaylod := TelemetryType{
+					AgetnId:    "",
+					AgentToken: "",
 					SystemInfo: sysInfo,
 					Security:   security,
 					Netwrok:    network,
@@ -81,7 +85,7 @@ func Telemetry() {
 					fmt.Println("JSON MARSHAL ERROR:", err)
 				}
 
-				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL, bytes.NewReader(jsonpaylod))
+				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL+"/rawTelementory", bytes.NewReader(jsonpaylod))
 				if err != nil {
 					fmt.Println("HTTP REQUEST ERROR:", err)
 				}
@@ -90,9 +94,7 @@ func Telemetry() {
 				if err != nil {
 					fmt.Println("HTTP DO ERROR:", err)
 				}
-
 				fmt.Println(res)
-
 				defer wg.Done()
 				time.Sleep(time.Second * 5)
 			}()
