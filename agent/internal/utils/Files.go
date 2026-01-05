@@ -1,14 +1,12 @@
 package utils
 
+// more files can be added to check here
 var FilesNameToCheckAgainst = map[string]bool{
 	"exe": true,
-	"dll": true,
 	"sh":  true,
-	"bin": true,
-	"app": true,
-	"ps1": true,
 }
 
+// here also if cretical fiels can be excluded
 var SkipDirs = map[string]bool{
 	".git":                      true,
 	"node_modules":              true,
