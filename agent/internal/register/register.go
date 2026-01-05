@@ -145,6 +145,7 @@ func Register() bool {
 	}
 
 	path := filepath.Join("internal/register", "email.txt")
+
 	err = os.WriteFile(path, []byte(DeviceInfoPaylod.Email), 0644)
 	if err != nil {
 		fmt.Println(utils.ErrorBox.Render("message: =>", "error storing usre email"))
