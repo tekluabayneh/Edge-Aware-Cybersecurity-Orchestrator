@@ -1,114 +1,82 @@
-from pydantic import BaseModel
-from typing import List, Optional
-from datetime import datetime
+from pydantic import BaseModel, Field, ConfigDict
+from typing import List, Optional, Dict, Any
 
-# -------------------- Process --------------------
-class ProcessInfo(BaseModel):
-    pid: int
-    name: str
-    cpu: float
-    memory: int
-    parent_pid: Optional[int] = None
+class Memory(BaseModel):
+    rss: int
+    vms: int
+    hwm: int = 0
+    data: int = 0
+    stack: int = 0
+    locked: int = 0
+    swap: int = 0
 
-# -------------------- Networking --------------------
-class Address(BaseModel):
-    IP: str
-    Port: int
+class Addr(BaseModel):
+    ip: str
+    port: int
 
 class ActiveSocket(BaseModel):
-    Fd: int
-    Family: int
-    Type: int
-    LocalAddr: Address
-    RemoteAddr: Address
-    Status: str
-    Uids: List[int]
-    Pid: int
+    model_config = ConfigDict(populate_by_name=True)  # Allows fd → Fd
+    fd: int = Field(alias='Fd')
+    family: int = Field(alias='Family')
+    type: int = Field(alias='Type')
+    localaddr: Addr = Field(alias='LocalAddr')
+    remoteaddr: Addr = Field(alias='RemoteAddr')
+    status: str = Field(alias='Status')
+    uids: List[int] = Field(alias='Uids')
+    pid: int = Field(alias='Pid')
+
+class IPAddrItem(BaseModel):
+    addr: str
 
 class NetworkInterface(BaseModel):
-    Name: str
-    Up: bool
-    Down: bool
-    IPAddresses: List[str]
+    model_config = ConfigDict(populate_by_name=True)
+    name: str = Field(alias='Name')
+    up: str = Field(alias='Up')
+    down: str = Field(alias='Down')
+    ipAddresses: List[IPAddrItem] = Field(alias='IPAddresses')
 
 class ConnectionPattern(BaseModel):
-    RemoteIP: str
-    Frequency: int
-    Volume: int
+    model_config = ConfigDict(populate_by_name=True)
+    remoteIp: str = Field(alias='RemoteIP')
+    frequency: int = Field(alias='Frequency')
+    volume: int = Field(alias='Volume')
 
-class AbuseIPDBData(BaseModel):
-    IPAddress: str
-    AbuseConfidenceScore: int
-    TotalReports: int
-    IsWhitelisted: bool
+class ConnectionMonitoring(BaseModel):
+    ActiveSockets: List[List[ActiveSocket]]
+    NetworkInterfaces: List[List[NetworkInterface]]
+    ConnectionPatterns: List[List[ConnectionPattern]]
 
-class AbuseIPDBResponse(BaseModel):
-    data: AbuseIPDBData
+class Network(BaseModel):
+    ConnectionMonitoring: ConnectionMonitoring
+    AbuseIPDBResponse: Optional[Any] = None
 
-class ConnectionMonitoringType(BaseModel):
-    ActiveSockets: List[ActiveSocket]
-    NetworkInterfaces: List[NetworkInterface]
-    ConnectionPatterns: List[ConnectionPattern]
-
-class NetworkInfo(BaseModel):
-    ConnectionMonitoring: ConnectionMonitoringType
-    AbuseIPDBResponse: AbuseIPDBResponse
-
-# -------------------- System --------------------
-class SystemInfo(BaseModel):
-    Uptime: str
-    Cpu: List[float]
-    Ram: float
-    Disk: float
-    Network: int
-
-# -------------------- Security --------------------
-class AntivirusStatus(BaseModel):
-    Running: bool
-    Name: str
-    Detected: Optional[str] = None
-
-class SuspiciousProcess(BaseModel):
+class SuspProcess(BaseModel):
     PID: int
     Name: str
     CPUPercent: float
-    Memory: Optional[int] = None
+    Memory: Memory
 
-class SuspiciousFiletype(BaseModel):
-    Path: str
-    Extension: str
-    Name: str
-    Size: int
-    Mode: Optional[str] = None
-    Content: str
+class CriticalFile(BaseModel):
+    path: str
+    extension: str
+    name: str
+    size: int
+    content: str
 
-class SecurityInfo(BaseModel):
-    Firewall: bool
-    Antivirus: AntivirusStatus
-    MaliciousProcesses: List[SuspiciousProcess]
-    SuspiciousFiles: List[SuspiciousFiletype]
+class Integrity(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    _os: str
+    kernel_version: str
+    patch_level: str
+    critical_files: Dict[str, str]
+    collected_at: int
 
-# -------------------- Integrity --------------------
-
-
-class criticalFiles(): 
-    criticalFiles :str
-
-class IntegrityInfo(BaseModel):
-    OS :           str
-    KernelVersion :str
-    PatchLevel    :str
-    CriticalFiles : criticalFiles
-    CollectedAt   :int
-
-# -------------------- Top-level Payload --------------------
-class TelemetryPayload(BaseModel):
-    agent_id: str
-    agent_token: str
-    SystemInfo: SystemInfo
-    Security: SecurityInfo
-    Network: NetworkInfo
-    Processes: List[ProcessInfo]
-    Integrity: IntegrityInfo
-
-
+# Top-level (add missing as Optional if needed)
+class RawTelemetryPayload(BaseModel):
+    email:str
+    agent_id:str
+    agent_token:str
+    network: Network
+    processes: List[SuspProcess]
+    integrity: Integrity
+    agent_id: Optional[str] = None
