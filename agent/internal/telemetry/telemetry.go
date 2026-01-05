@@ -11,13 +11,27 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 )
 
+type Agent struct {
+	DeviceName   string `json:"device_name"`
+	AgentID      string `json:"agent_id"`
+	AgentToken   string `json:"agent_token"`
+	Email        string `json:"email"`
+	MachineID    string `json:"machine_id"`
+	AgentVersion string `json:"agent_version"`
+	OS           string `json:"os"`
+	Status       string `json:"status"`
+	LastSeen     string `json:"last_seen"`
+}
 type TelemetryType struct {
+	Email      string                      `json:"email"`
 	AgetnId    string                      `json:"agent_id"`
 	AgentToken string                      `json:"agent_token"`
 	SystemInfo system.GetSysInfotype       `json:"system"`
@@ -56,7 +70,6 @@ func Telemetry() {
 				go func() {
 					for {
 						time.Sleep(time.Second * 60)
-						fmt.Println("reached 5 minutes")
 						go commands.Commands()
 					}
 				}()
@@ -67,11 +80,25 @@ func Telemetry() {
 				network := <-Network
 				process := <-Processes
 				integrity := <-Integrity
+				path := filepath.Join("internal/register", "token.txt")
+
+				content, err := ioutil.ReadFile(path)
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+					return
+				}
+				var agent Agent
+				err = json.Unmarshal(content, &agent)
+				if err != nil {
+					fmt.Println("Error parsing JSON:", err)
+					return
+				}
 
 				// finally send Telemetry to analizer
 				TelementoryPaylod := TelemetryType{
-					AgetnId:    "",
-					AgentToken: "",
+					Email:      agent.Email,
+					AgetnId:    agent.AgentID,
+					AgentToken: agent.AgentToken,
 					SystemInfo: sysInfo,
 					Security:   security,
 					Netwrok:    network,
