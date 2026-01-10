@@ -1,12 +1,14 @@
-from fastapi import APIRouter
+from core.interfaces.input import Input
+from fastapi import APIRouter, Request
 from  ..schemas.Telementory import RawTelemetryPayload
+
 router = APIRouter(tags=["ingest"])
 
 
 @router.post("/rawTelementory")
-def get_activity_for_user(payload: RawTelemetryPayload):
-    print("this is paylod man paylod",payload)
-    print("get activity")
-    return {"msg": "get data"}
+async def get_activity_for_user(payload: RawTelemetryPayload, req:Request):
+            Input(payload)
+           
+          
 
 
