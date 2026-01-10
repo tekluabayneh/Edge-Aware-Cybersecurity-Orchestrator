@@ -7,7 +7,7 @@ import (
 )
 
 type FirewallStatus struct {
-	Enabled bool
+	Enabled bool `json:"enabled"`
 }
 
 func CheckFirewall() FirewallStatus {
