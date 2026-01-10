@@ -133,7 +133,6 @@ func Register() bool {
 			fmt.Println(utils.ErrorBox.Render("message: =>", DeviceInfoRespons.Message))
 			fmt.Println("ack: =>", DeviceInfoRespons.Ack)
 			fmt.Println(err)
-			panic(err)
 		}
 
 		// check if the akc tokne api call is response is not StatusOK
@@ -145,6 +144,7 @@ func Register() bool {
 	}
 
 	path := filepath.Join("internal/register", "email.txt")
+
 	err = os.WriteFile(path, []byte(DeviceInfoPaylod.Email), 0644)
 	if err != nil {
 		fmt.Println(utils.ErrorBox.Render("message: =>", "error storing usre email"))

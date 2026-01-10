@@ -1,16 +1,15 @@
 package security
 
 import (
-	"log"
-
 	"github.com/shirou/gopsutil/v3/process"
+	"log"
 )
 
 type SuspiciousProcess struct {
-	PID      int32
-	Name     string
-	Path     string
-	UserName string
+	PID      int32  `json:"pid"`
+	Name     string `json:"name"`
+	Path     string `json:"path"`
+	UserName string `json:"username"`
 }
 
 func DetectMaliciousProcesses() []SuspiciousProcess {

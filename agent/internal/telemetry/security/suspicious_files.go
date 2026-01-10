@@ -2,8 +2,8 @@ package security
 
 import (
 	"agent/internal/utils"
-	"encoding/base64"
 	"io/fs"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -40,7 +40,7 @@ func DetectSuspiciousFiles() []SuspiciouseFiletype {
 			name := strings.Split(d.Name(), ".")
 			if len(name) > 1 {
 				if utils.FilesNameToCheckAgainst[name[1]] {
-					content, err := os.ReadFile(path)
+					content, err := ioutil.ReadFile(path)
 					if err != nil {
 						log.Printf("error reading home directory")
 					}
@@ -48,14 +48,14 @@ func DetectSuspiciousFiles() []SuspiciouseFiletype {
 					if err != nil {
 						log.Printf("error reading home directory")
 					}
-					encoded := base64.StdEncoding.EncodeToString(content)
+
 					payload := SuspiciouseFiletype{
 						Name:      d.Name(),
 						Path:      path,
 						Extension: strings.Split(d.Name(), ".")[1],
 						Size:      info.Size(),
 						Mode:      info.Mode(),
-						Content:   encoded,
+						Content:   string(content),
 					}
 					SuspiciousFile = append(SuspiciousFile, payload)
 				}
@@ -63,5 +63,6 @@ func DetectSuspiciousFiles() []SuspiciouseFiletype {
 		}
 		return nil
 	})
+
 	return SuspiciousFile
 }

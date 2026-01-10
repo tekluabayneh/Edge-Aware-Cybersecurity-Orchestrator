@@ -8,11 +8,11 @@ import (
 )
 
 type GetSysInfotype struct {
-	Uptime  string
-	Cpu     []float64
-	Ram     float64
-	Disk    float64
-	Network int64
+	Uptime  string    `json:"uptime"`
+	Cpu     []float64 `json:"cpu"`
+	Ram     float64   `json:"ram"`
+	Disk    float64   `json:"disk"`
+	Network int64     `json:"network"`
 }
 
 func System(ch chan GetSysInfotype) {

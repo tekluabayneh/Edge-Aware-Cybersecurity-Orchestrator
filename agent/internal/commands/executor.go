@@ -64,12 +64,15 @@ func Commands() {
 		fmt.Println("JSON MARSHAL ERROR:", err)
 	}
 
+	client := &http.Client{
+		Timeout: time.Second * 10,
+	}
 	req, err := http.NewRequestWithContext(ctx, "POST", fullUrl, bytes.NewReader(jsonPayload))
 	if err != nil {
 		fmt.Println("HTTP REQUEST ERROR:", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	res, err := http.DefaultClient.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
 		fmt.Println("HTTP DO ERROR:", err)
 	}

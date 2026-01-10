@@ -2,9 +2,8 @@ package network
 
 import (
 	"encoding/json"
-	"log"
-
 	"github.com/shirou/gopsutil/v3/net"
+	"log"
 )
 
 // Active sockets	Local/remote IP, port, PID, state	Detect suspicious processes and endpoints

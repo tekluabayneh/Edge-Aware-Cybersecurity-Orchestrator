@@ -7,9 +7,9 @@ import (
 )
 
 type AntivirusStatus struct {
-	Running  bool
-	Name     string
-	Detected string
+	Running  bool   `json:"running"`
+	Name     string `json:"name"`
+	Detected string `json:"detected"`
 }
 
 func CheckAntivirus() AntivirusStatus {

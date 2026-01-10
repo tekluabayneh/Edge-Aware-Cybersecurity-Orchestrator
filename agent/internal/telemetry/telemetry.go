@@ -11,18 +11,32 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 )
 
+type Agent struct {
+	DeviceName   string `json:"device_name"`
+	AgentID      string `json:"agent_id"`
+	AgentToken   string `json:"agent_token"`
+	Email        string `json:"email"`
+	MachineID    string `json:"machine_id"`
+	AgentVersion string `json:"agent_version"`
+	OS           string `json:"os"`
+	Status       string `json:"status"`
+	LastSeen     string `json:"last_seen"`
+}
 type TelemetryType struct {
-	AgetnId    string                      `json:"agent_id"`
+	Email      string                      `json:"email"`
+	AgentId    string                      `json:"agent_id"`
 	AgentToken string                      `json:"agent_token"`
-	SystemInfo system.GetSysInfotype       `json:"system"`
+	System     system.GetSysInfotype       `json:"system"`
 	Security   security.SecurityReport     `json:"security"`
-	Netwrok    network.NetworkSnapshot     `json:"network"`
+	Network    network.NetworkSnapshot     `json:"network"`
 	Processes  []processes.ProcInfo        `json:"processes"`
 	Integrity  integrity.IntegritySnapshot `json:"integrity"`
 }
@@ -37,7 +51,6 @@ func Telemetry() {
 	Network := make(chan network.NetworkSnapshot)
 	Processes := make(chan []processes.ProcInfo)
 	Integrity := make(chan integrity.IntegritySnapshot)
-
 	for {
 		select {
 		case <-ctx.Done():
@@ -56,46 +69,71 @@ func Telemetry() {
 				go func() {
 					for {
 						time.Sleep(time.Second * 60)
-						fmt.Println("reached 5 minutes")
 						go commands.Commands()
 					}
 				}()
 
-				// Collect system info
 				sysInfo := <-SystemInfo
 				security := <-Security
 				network := <-Network
 				process := <-Processes
 				integrity := <-Integrity
+				path := filepath.Join("internal/register", "token.txt")
+
+				content, err := ioutil.ReadFile(path)
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+					return
+				}
+				var agent Agent
+				err = json.Unmarshal(content, &agent)
+				if err != nil {
+					fmt.Println("Error parsing JSON:", err)
+					return
+				}
 
 				// finally send Telemetry to analizer
 				TelementoryPaylod := TelemetryType{
-					AgetnId:    "",
-					AgentToken: "",
-					SystemInfo: sysInfo,
+					Email:      agent.Email,
+					AgentId:    agent.AgentID,
+					AgentToken: agent.AgentToken,
+					System:     sysInfo,
 					Security:   security,
-					Netwrok:    network,
+					Network:    network,
 					Processes:  process,
 					Integrity:  integrity,
 				}
 
-				jsonpaylod, err := json.Marshal(TelementoryPaylod)
+				fmt.Println(TelementoryPaylod)
+				jsonPayload, err := json.Marshal(TelementoryPaylod)
 
 				if err != nil {
 					fmt.Println("JSON MARSHAL ERROR:", err)
+					wg.Done()
+					return
 				}
 
-				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL+"/rawTelementory", bytes.NewReader(jsonpaylod))
+				client := &http.Client{Timeout: time.Second * 10}
+				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL+"/rawTelementory", bytes.NewReader(jsonPayload))
 				if err != nil {
 					fmt.Println("HTTP REQUEST ERROR:", err)
+					wg.Done()
+					return
 				}
 
-				res, err := http.DefaultClient.Do(req)
+				req.Header.Set("Content-Type", "application/json")
+				res, err := client.Do(req)
 				if err != nil {
-					fmt.Println("HTTP DO ERROR:", err)
+					fmt.Println("HTTP SEND ERROR:", err)
+					wg.Done()
+					return
 				}
-				fmt.Println(res)
-				defer wg.Done()
+
+				defer res.Body.Close()
+				if res.StatusCode != http.StatusOK {
+					fmt.Printf("Bad response: %d %s\n", res.StatusCode, res.Status)
+				}
+				wg.Done()
 				time.Sleep(time.Second * 5)
 			}()
 			wg.Wait()
