@@ -32,11 +32,11 @@ type Agent struct {
 }
 type TelemetryType struct {
 	Email      string                      `json:"email"`
-	AgetnId    string                      `json:"agent_id"`
+	AgentId    string                      `json:"agent_id"`
 	AgentToken string                      `json:"agent_token"`
-	SystemInfo system.GetSysInfotype       `json:"system"`
+	System     system.GetSysInfotype       `json:"system"`
 	Security   security.SecurityReport     `json:"security"`
-	Netwrok    network.NetworkSnapshot     `json:"network"`
+	Network    network.NetworkSnapshot     `json:"network"`
 	Processes  []processes.ProcInfo        `json:"processes"`
 	Integrity  integrity.IntegritySnapshot `json:"integrity"`
 }
@@ -51,7 +51,6 @@ func Telemetry() {
 	Network := make(chan network.NetworkSnapshot)
 	Processes := make(chan []processes.ProcInfo)
 	Integrity := make(chan integrity.IntegritySnapshot)
-
 	for {
 		select {
 		case <-ctx.Done():
@@ -74,7 +73,6 @@ func Telemetry() {
 					}
 				}()
 
-				// Collect system info
 				sysInfo := <-SystemInfo
 				security := <-Security
 				network := <-Network
@@ -97,32 +95,45 @@ func Telemetry() {
 				// finally send Telemetry to analizer
 				TelementoryPaylod := TelemetryType{
 					Email:      agent.Email,
-					AgetnId:    agent.AgentID,
+					AgentId:    agent.AgentID,
 					AgentToken: agent.AgentToken,
-					SystemInfo: sysInfo,
+					System:     sysInfo,
 					Security:   security,
-					Netwrok:    network,
+					Network:    network,
 					Processes:  process,
 					Integrity:  integrity,
 				}
 
-				jsonpaylod, err := json.Marshal(TelementoryPaylod)
+				fmt.Println(TelementoryPaylod)
+				jsonPayload, err := json.Marshal(TelementoryPaylod)
 
 				if err != nil {
 					fmt.Println("JSON MARSHAL ERROR:", err)
+					wg.Done()
+					return
 				}
 
-				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL+"/rawTelementory", bytes.NewReader(jsonpaylod))
+				client := &http.Client{Timeout: time.Second * 10}
+				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL+"/rawTelementory", bytes.NewReader(jsonPayload))
 				if err != nil {
 					fmt.Println("HTTP REQUEST ERROR:", err)
+					wg.Done()
+					return
 				}
 
-				res, err := http.DefaultClient.Do(req)
+				req.Header.Set("Content-Type", "application/json")
+				res, err := client.Do(req)
 				if err != nil {
-					fmt.Println("HTTP DO ERROR:", err)
+					fmt.Println("HTTP SEND ERROR:", err)
+					wg.Done()
+					return
 				}
-				fmt.Println(res)
-				defer wg.Done()
+
+				defer res.Body.Close()
+				if res.StatusCode != http.StatusOK {
+					fmt.Printf("Bad response: %d %s\n", res.StatusCode, res.Status)
+				}
+				wg.Done()
 				time.Sleep(time.Second * 5)
 			}()
 			wg.Wait()
