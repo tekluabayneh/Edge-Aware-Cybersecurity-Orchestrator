@@ -133,7 +133,6 @@ func Register() bool {
 			fmt.Println(utils.ErrorBox.Render("message: =>", DeviceInfoRespons.Message))
 			fmt.Println("ack: =>", DeviceInfoRespons.Ack)
 			fmt.Println(err)
-			panic(err)
 		}
 
 		// check if the akc tokne api call is response is not StatusOK
