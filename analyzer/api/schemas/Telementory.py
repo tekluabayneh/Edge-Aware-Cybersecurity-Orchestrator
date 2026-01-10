@@ -15,7 +15,7 @@ class Addr(BaseModel):
     port: int
 
 class ActiveSocket(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)  # Allows fd → Fd
+    model_config = ConfigDict(populate_by_name=True)  
     fd: int = Field(alias='Fd')
     family: int = Field(alias='Family')
     type: int = Field(alias='Type')
@@ -71,12 +71,52 @@ class Integrity(BaseModel):
     critical_files: Dict[str, str]
     collected_at: int
 
-# Top-level (add missing as Optional if needed)
+
+class System(BaseModel): 
+    uptime: str
+    cpu:List[float]
+    ram: float
+    disk: float 
+    network:int
+
+#============================================ 
+class AntivirusStatus(BaseModel):
+    running: bool      
+    name: str
+    detected: str
+
+class FirewallStatus(BaseModel):
+    enabled: bool      
+
+class SuspiciousProcess(BaseModel):
+    pid: int
+    name: str
+    path: str
+    username: str      
+
+class SuspiciousFiletype(BaseModel):   
+    path: str
+    extension: str
+    name: str
+    size: int
+    mode: int          
+    content: str
+
+
+class Security(BaseModel):
+    firewall: FirewallStatus                       
+    antivirus: AntivirusStatus                      
+    malicious_processes: List[SuspiciousProcess] = Field(default_factory=list)
+    suspicious_files: List[SuspiciousFiletype] = Field(default_factory=list)
+
+
 class RawTelemetryPayload(BaseModel):
     email:str
     agent_id:str
     agent_token:str
-    network: Network
-    processes: List[SuspProcess]
-    integrity: Integrity
-    agent_id: Optional[str] = None
+    system: System 
+    security: Security 
+    network: Network 
+    processes: List[SuspProcess] 
+    integrity: Integrity 
+
