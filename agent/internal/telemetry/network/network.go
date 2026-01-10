@@ -34,12 +34,13 @@ func Network(ch chan NetworkSnapshot) {
 				// check susIp only after 8 times in an hour
 				// since the time expire use the existing sus ips data
 				lastRun := time.Now()
-				delay := time.Minute * 8
+				delay := time.Second * 1
 				if time.Since(lastRun) < delay.Abs() {
 					susIp, err := FilterSusIp()
 					if err != nil {
 						log.Println("Warning: no suspicious IPs found or failed to fetch", err)
 					}
+
 					jsonValue, err := json.Marshal(susIp)
 					if err != nil {
 						log.Println("Warning: failed to marshal suspicious IPs:", err)
@@ -50,16 +51,17 @@ func Network(ch chan NetworkSnapshot) {
 					if err != nil {
 						log.Println("Warning: failed to unmarshal suspicious IPs:", err)
 					}
+
 					val := ConnectionsMonitoring()
 					payload := NetworkSnapshot{
 						ConnectionMonitoring: val,
 						AbuseIPDBResponse:    jsonData,
 					}
+
 					lastRun = time.Now()
 					ch <- payload
 					time.Sleep(5 * time.Second)
 					defer wg.Done()
-
 				}
 			}()
 			wg.Wait()
