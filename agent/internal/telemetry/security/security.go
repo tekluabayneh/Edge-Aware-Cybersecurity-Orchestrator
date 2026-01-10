@@ -7,10 +7,10 @@ import (
 )
 
 type SecurityReport struct {
-	Firewall           FirewallStatus
-	Antivirus          AntivirusStatus
-	MaliciousProcesses []SuspiciousProcess
-	SuspiciousFiles    []SuspiciouseFiletype
+	Firewall           FirewallStatus        `json:"firewall"`
+	Antivirus          AntivirusStatus       `json:"antivirus"`
+	MaliciousProcesses []SuspiciousProcess   `json:"malicious_processes"`
+	SuspiciousFiles    []SuspiciouseFiletype `json:"suspicious_files"`
 }
 
 func Security(ch chan SecurityReport) {
