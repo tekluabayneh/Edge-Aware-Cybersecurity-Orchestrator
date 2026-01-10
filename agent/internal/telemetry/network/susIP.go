@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// get the machine all ips
+// get the all machine ips
 // check them against suspiouse ip if so report them as suspiouse
 // make api call to suspiouse ip and get the ips
 // if since the cota of the ip is 100 a day this function only need to call this api 100 time with in 24hr
@@ -30,22 +30,32 @@ func CheckIsSusIp(ip string) (map[string]AbuseIPDBResponse, error) {
 	defer cancel()
 
 	// sleep for one second befoere making another api call since ips may be more than one
-	time.Sleep(time.Second * 1)
 	ipString := string(ip)
+
+	client := &http.Client{Timeout: time.Second * 5}
 	FullUrl := "https://api.abuseipdb.com/api/v2/check?ipAddress=" + ipString + "&maxAgeInDays=90"
 	API_KEY := os.Getenv("API_KEY_OF_SUSIP")
+
 	req, err := http.NewRequestWithContext(ctx, "GET", FullUrl, nil)
 	req.Header.Set("Key", API_KEY)
 	req.Header.Set("Accept", "application/json")
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request for IP check: %w", err)
 	}
-	res, err := http.DefaultClient.Do(req)
+
+	res, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute request to AbuseIPDB: %w", err)
 	}
 
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("bad response from AbuseIPDB: %d %s", res.StatusCode, res.Status)
+	}
+
+	defer res.Body.Close()
 	collectIpStatus := map[string]AbuseIPDBResponse{}
+
 	var responseValue AbuseIPDBResponse
 	err = json.NewDecoder(res.Body).Decode(&responseValue)
 	if err != nil {
@@ -70,6 +80,7 @@ func FilterSusIp() (map[string]AbuseIPDBResponse, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to get addresses for interface %s: %w", i.Name, err)
 		}
+
 		for _, addr := range addrs {
 			switch v := addr.(type) {
 			case *net.IPNet:
@@ -83,15 +94,23 @@ func FilterSusIp() (map[string]AbuseIPDBResponse, error) {
 			ipstr := ip.String()
 			collectSusIp[ipstr] = ipstr
 		}
-
-		// call the api based on the ips number/length
-		for _, ip := range collectSusIp {
-			checkedIps, err := CheckIsSusIp(collectSusIp[ip])
-			if err != nil {
-				return nil, fmt.Errorf("failed to check suspicious IP %s: %w", ip, err)
+		// first code need to only run 5 times a day
+		// second it shouln't be blocking
+		// theird it should handle faliour properly
+		// four it should only execute those ips that is found in the collectSusIp and wait for the sleep time
+		go func() {
+			for {
+				time.Sleep(time.Second * 5)
+				// call the api based on the ips number/length
+				for _, ip := range collectSusIp {
+					checkedIps, err := CheckIsSusIp(collectSusIp[ip])
+					if err != nil {
+						fmt.Println("failed to check suspicious IP")
+					}
+					ipsCollectionToReturn[ip] = checkedIps[ip]
+				}
 			}
-			ipsCollectionToReturn[ip] = checkedIps[ip]
-		}
+		}()
 	}
 	return ipsCollectionToReturn, nil
 }
