@@ -92,7 +92,7 @@ func Register() bool {
 		panic("base url is empty")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
 	email := map[string]any{"email": usrePaylod[1]}

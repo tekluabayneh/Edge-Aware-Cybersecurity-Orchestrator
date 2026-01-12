@@ -104,7 +104,6 @@ func Telemetry() {
 					Integrity:  integrity,
 				}
 
-				fmt.Println(TelementoryPaylod)
 				jsonPayload, err := json.Marshal(TelementoryPaylod)
 
 				if err != nil {
