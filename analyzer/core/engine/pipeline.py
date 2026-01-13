@@ -1,18 +1,12 @@
-from core.interfaces.normalizer.integrity import intgerity_normalizer
-from core.interfaces.normalizer.network import netwrok_normalizer
-from core.interfaces.normalizer.processes import processes_normalizer
-from core.interfaces.normalizer.security import security_normalizer
-from core.interfaces.normalizer.system import system_normalizer
+from core.interfaces.input import Input
+from fastapi.encoders import jsonable_encoder
+import json
 
-
-def piplinejob(): 
-    networkValue  =  netwrok_normalizer
-    securityValue =  security_normalizer
-    systemValue =    system_normalizer
-    integrityValue = intgerity_normalizer
-    proccessValue =   processes_normalizer
-
-
-         
-
-   
+def piplinejob(paload): 
+     inputReturnValue = Input(paload) 
+     print(json.dumps(jsonable_encoder(inputReturnValue[0]), indent=2))
+     print(json.dumps(jsonable_encoder(inputReturnValue[1]), indent=2))
+     print(json.dumps(jsonable_encoder(inputReturnValue[2]), indent=2))
+     print(json.dumps(jsonable_encoder(inputReturnValue[3]), indent=2))
+     print(json.dumps(jsonable_encoder(inputReturnValue[4]), indent=2))
+        
