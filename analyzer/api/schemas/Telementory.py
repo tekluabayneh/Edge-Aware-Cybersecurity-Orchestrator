@@ -46,9 +46,18 @@ class ConnectionMonitoring(BaseModel):
     NetworkInterfaces: List[List[NetworkInterface]]
     ConnectionPatterns: List[List[ConnectionPattern]]
 
+
+
+class AbuseIPDBDataItem(BaseModel):
+        IPAddress            :str
+        AbuseConfidenceScore :int   
+        TotalReports         :int  
+        IsWhitelisted        :bool
+
+
 class Network(BaseModel):
     ConnectionMonitoring: ConnectionMonitoring
-    AbuseIPDBResponse: Optional[Any] = None
+    AbuseIPDBResponse: Optional[List[AbuseIPDBDataItem]] = Field(None, alias="data")
 
 class SuspProcess(BaseModel):
     PID: int
