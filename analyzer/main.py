@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from api.api import api_router
 from starlette.middleware.cors import CORSMiddleware
+from core.engine.pipeline import piplinejob
 
 
 @api_router.get("/")
