@@ -48,7 +48,7 @@ class ConnectionMonitoring(BaseModel):
 
 
 
-class AbuseIPDBDataItem(BaseModel):
+class AbuseIPDBResponseList(BaseModel):
         IPAddress            :str
         AbuseConfidenceScore :int   
         TotalReports         :int  
@@ -57,7 +57,7 @@ class AbuseIPDBDataItem(BaseModel):
 
 class Network(BaseModel):
     ConnectionMonitoring: ConnectionMonitoring
-    AbuseIPDBResponse: Optional[List[AbuseIPDBDataItem]] = Field(None, alias="data")
+    AbuseIPDBResponse: Optional[List[AbuseIPDBResponseList]] = Field(None, alias="AbuseIPDBResponse")
 
 class SuspProcess(BaseModel):
     PID: int
