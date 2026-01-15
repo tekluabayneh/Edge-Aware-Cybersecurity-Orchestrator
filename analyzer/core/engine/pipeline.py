@@ -1,47 +1,64 @@
 from core.interfaces.input import Input
 from core.interfaces.output import send_output
-from core.interfaces.rule import apply_rule
+from core.interfaces.output import send_output
 from plugins.integrity.enrich import intgerity_enrich
+from plugins.integrity.rule import set_integrity_rule
+from plugins.network.rule import set_network_rule
+from plugins.processes.enrich import proccess_enrich 
 from plugins.network.enrich import network_enrich 
+from plugins.processes.rule import set_proccess_rule
 from plugins.security.enrich import security_enrich 
+from plugins.security.rule import set_security_rule
 from plugins.system.enrich import system_enrich 
-from fastapi.encoders import jsonable_encoder
-import json
+from plugins.system.rule import set_system_rule 
 
 
 
-def piplinejob(paload): 
-     inputReturnValue = Input(paload) 
-     json_paylod = json.dumps(jsonable_encoder(inputReturnValue))
-     # netwrok_enriched_event = network_enrich(json_paylod) 
-     print(json_paylod)
-     # print(json.dumps(jsonable_encoder(inputReturnValue), indent=2))
-
-     #
-     # system_enriched_event = system_enrich(json_paylod[1]) 
-     # integrity_enriched_event = intgerity_enrich(json_paylod[2]) 
-     # security_enriched_event = security_enrich(json_paylod[3]) 
-     # proccess_enriched_event = proccess_enrich(json_paylod[4]) 
-     #
-     # list_of_enriches = [netwrok_enriched_event, system_enriched_event, integrity_enriched_event, security_enriched_event, proccess_enriched_event]
-     #
-     # for en in list_of_enriches: 
-     #    print(en)
-     #    # ruled_event = apply_rule(en) 
+def piplinejob(payload):
+    data = Input(payload)
+    
+    network_enriched   = network_enrich(data.get("network"))
+    processes_enriched = proccess_enrich(data.get("processes"))
+    system_enriched    = system_enrich(data.get("system"))
+    integrity_enriched = intgerity_enrich(data.get("integrity"))
+    security_enriched  = security_enrich(data.get("security"))
  
+    
+    list_of_enriches = {
+        "network":   network_enriched,
+        "processes": processes_enriched,
+        "system":    system_enriched,
+        "integrity": integrity_enriched,
+        "security":  security_enriched,
+    }
+ 
+    
+    for key, enriched_value in list_of_enriches.items():
+        if key == "network":
+            updated_value = set_network_rule(enriched_value)
+            list_of_enriches["network"] = updated_value   
+            
+        elif key == "system":
+            updated_value = set_system_rule(enriched_value)
+            list_of_enriches["system"] = updated_value
+            
+        elif key == "processes":
+            updated_value = set_proccess_rule(enriched_value)
+            list_of_enriches["processes"] = updated_value
+            
+        elif key == "security":
+            updated_value = set_security_rule(enriched_value)
+            list_of_enriches["security"] = updated_value
+            
+        elif key == "integrity":
+            updated_value = set_integrity_rule(enriched_value)
+            print("check",set_integrity_rule(enriched_value))
+            list_of_enriches["integrity"] = updated_value
+        else:
+            print(f"Unknown category: {key}") 
 
-     # send_output(ruled_event) 
-
-     # update_state(ruled_event) 
+        send_output(list_of_enriches)     
 
 
-
-     #
-     # print(json.dumps(jsonable_encoder(inputReturnValue[0]), indent=2))
-     # print(json.dumps(jsonable_encoder(inputReturnValue[1]), indent=2))
-     # print(json.dumps(jsonable_encoder(inputReturnValue[2]), indent=2))
-     # print(json.dumps(jsonable_encoder(inputReturnValue[3]), indent=2))
-     # print(json.dumps(jsonable_encoder(inputReturnValue[4]), indent=2))
-     #
 
 
