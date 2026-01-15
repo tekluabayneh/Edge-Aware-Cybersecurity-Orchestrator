@@ -1,4 +1,4 @@
 
 
-def system_enrich(event: dict): 
+def system_enrich(event): 
     pass
