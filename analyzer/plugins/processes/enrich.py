@@ -1,4 +1,4 @@
 
 
-def proccess_enrich(event: dict): 
+def proccess_enrich(event): 
     pass
