@@ -47,8 +47,7 @@ class ConnectionMonitoring(BaseModel):
     ConnectionPatterns: List[List[ConnectionPattern]]
 
 
-
-class AbuseIPDBResponseList(BaseModel):
+class AbuseIPDBResponseItem(BaseModel):
         IPAddress            :str
         AbuseConfidenceScore :int   
         TotalReports         :int  
@@ -57,7 +56,7 @@ class AbuseIPDBResponseList(BaseModel):
 
 class Network(BaseModel):
     ConnectionMonitoring: ConnectionMonitoring
-    AbuseIPDBResponse: Optional[List[AbuseIPDBResponseList]] = Field(None, alias="AbuseIPDBResponse")
+    AbuseIPDBResponse: dict[str, AbuseIPDBResponseItem] = Field(default_factory=dict)
 
 class SuspProcess(BaseModel):
     PID: int
