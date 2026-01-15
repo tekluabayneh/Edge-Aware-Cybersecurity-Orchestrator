@@ -1,3 +1,3 @@
 
-def security_enrich(event:dict): 
+def security_enrich(event): 
     pass
