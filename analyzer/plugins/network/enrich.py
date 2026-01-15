@@ -1,5 +1,5 @@
 
 
 
-def network_enrich(event:dict):
+def network_enrich(event):
     pass
