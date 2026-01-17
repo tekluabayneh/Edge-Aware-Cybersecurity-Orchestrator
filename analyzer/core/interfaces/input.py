@@ -1,22 +1,18 @@
 from core.interfaces.normalizer import integrity, network, processes, security, system
 
 
-# send each raw data to their own normalizer
 def Input(payload):
-    networkValue =  network.netwrok_normalizer(payload.network)
-    processesValue =    processes.processes_normalizer(payload.processes)
-    integrityValue =  integrity.intgerity_normalizer(payload.integrity)
-    systemValue = system.system_normalizer(payload.system)
-    securityValue = security.security_normalizer(payload.security)
- 
-
-    return {
-            "networkValue":networkValue, 
-            # "processesValue":processesValue,
-            # "systemValue":systemValue, 
-            # "integrityValue":integrityValue,
-            # "securityValue":securityValue
-            }
-   
-
+     try: 
+      result = {
+        "network":   network.netwrok_normalizer(payload.get("network")),
+        "processes": processes.processes_normalizer(payload.get("processes")),
+        "system":    system.system_normalizer(payload.get("system")),
+        "integrity": integrity.intgerity_normalizer(payload.get("integrity")),
+        "security":  security.security_normalizer(payload.get("security")),
+        } 
+     
+      return result
+     except AttributeError as e: 
+        print("ERROR in Input():", str(e))
+     
 

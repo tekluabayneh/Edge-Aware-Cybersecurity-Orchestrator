@@ -18,12 +18,10 @@ import (
 // besically i can say this function only need to called
 
 type AbuseIPDBResponse struct {
-	Data struct {
-		IPAddress            string `json:"ipAddress"`
-		AbuseConfidenceScore int    `json:"abuseConfidenceScore"`
-		TotalReports         int    `json:"totalReports"`
-		IsWhitelisted        bool   `json:"isWhitelisted"`
-	} `json:"data"`
+	IPAddress            string `json:"ipAddress"`
+	AbuseConfidenceScore int    `json:"abuseConfidenceScore"`
+	TotalReports         int    `json:"totalReports"`
+	IsWhitelisted        bool   `json:"isWhitelisted"`
 }
 
 var (

@@ -1,4 +1,4 @@
 
 
-def intgerity_enrich(): 
+def intgerity_enrich(event): 
     pass 

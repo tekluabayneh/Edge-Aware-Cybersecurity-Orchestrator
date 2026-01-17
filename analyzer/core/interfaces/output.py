@@ -1,5 +1,2 @@
-
-
-
-def send_output(): 
+def send_output(event): 
     pass
