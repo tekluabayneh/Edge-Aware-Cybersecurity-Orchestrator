@@ -105,13 +105,13 @@ func Telemetry() {
 				}
 
 				jsonPayload, err := json.Marshal(TelementoryPaylod)
-
 				if err != nil {
 					fmt.Println("JSON MARSHAL ERROR:", err)
 					wg.Done()
 					return
 				}
 
+				// time.Sleep(time.Minute * 6)
 				client := &http.Client{Timeout: time.Second * 10}
 				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL+"/rawTelementory", bytes.NewReader(jsonPayload))
 				if err != nil {

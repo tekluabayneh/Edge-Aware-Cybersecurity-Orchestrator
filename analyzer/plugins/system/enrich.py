@@ -1,4 +1,2 @@
-
-
 def system_enrich(event): 
-    pass
+     return event 
