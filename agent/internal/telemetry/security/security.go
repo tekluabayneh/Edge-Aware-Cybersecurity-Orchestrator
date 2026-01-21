@@ -25,7 +25,7 @@ func Security(ch chan SecurityReport) {
 		default:
 			wg.Add(1)
 			go func() {
-				time.Sleep(5 * time.Second)
+				time.Sleep(20 * time.Second)
 				ch <- SecurityReport{
 					Firewall:           CheckFirewall(),
 					Antivirus:          CheckAntivirus(),
