@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Dict, Any
 
+
 class Memory(BaseModel):
     rss: int
     vms: int
@@ -48,11 +49,18 @@ class ConnectionMonitoring(BaseModel):
 
 
 class AbuseIPDBResponseItem(BaseModel):
-        IPAddress            :str
-        AbuseConfidenceScore :int   
-        TotalReports         :int  
-        IsWhitelisted        :bool
+    ip_address: str = Field(..., alias="ipAddress")
+    abuse_confidence_score: int = Field(..., alias="abuseConfidenceScore")
+    total_reports: int = Field(..., alias="totalReports")
+    is_whitelisted: bool = Field(..., alias="isWhitelisted")
 
+    class Config:
+        populate_by_name = True
+        from_attributes = True
+
+
+class AbuseIPDBResponse(BaseModel):
+     data: Dict[str, AbuseIPDBResponseItem] = Field(..., alias="AbuseIPDBResponse")
 
 class Network(BaseModel):
     ConnectionMonitoring: ConnectionMonitoring
