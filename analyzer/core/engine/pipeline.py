@@ -23,41 +23,39 @@ def piplinejob(payload):
     system_enriched    = system_enrich(data["system"])
     integrity_enriched = intgerity_enrich(data["integrity"])
     security_enriched  = security_enrich(data["security"])
-    
-    #
-    #
-    # list_of_enriches = {
-    #     "network":   network_enriched,
-    #     "processes": processes_enriched,
-    #     "system":    system_enriched,
-    #     "integrity": integrity_enriched,
-    #     "security":  security_enriched,
-    # }
-    #
+
+    list_of_enriches = {
+        "network":   network_enriched,
+        "processes": processes_enriched,
+        "system":    system_enriched,
+        "integrity": integrity_enriched,
+        "security":  security_enriched,
+    }
+
+    # print(list_of_enriches)
     #
     # for key, enriched_value in list_of_enriches.items():
     #
     #     if key == "network":
     #         updated_value = set_network_rule(enriched_value)
-    #         # list_of_enriches["network"] = updated_value   
+    #         list_of_enriches["network"] = updated_value   
     #     elif key == "system":
     #         updated_value = set_system_rule(enriched_value)
-    #         # list_of_enriches["system"] = updated_value
+    #         list_of_enriches["system"] = updated_value
     #     elif key == "processes":
     #         updated_value = set_proccess_rule(enriched_value)
-    #         # list_of_enriches["processes"] = updated_value
+    #         list_of_enriches["processes"] = updated_value
     #     elif key == "security":
     #         updated_value = set_security_rule(enriched_value)
-    #         # list_of_enriches["security"] = updated_value
+    #         list_of_enriches["security"] = updated_value
     #     elif key == "integrity":
     #         updated_value = set_integrity_rule(enriched_value)
-    #         # list_of_enriches["integrity"] = updated_value
+    #         list_of_enriches["integrity"] = updated_value
     #     else:
     #         print(f"Unknown category: {key}") 
     #
-
-        # send_output(list_of_enriches)     
-
+    #     send_output(list_of_enriches)     
+    #
 
 
 

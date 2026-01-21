@@ -1,8 +1,6 @@
-import json
 import math
 
 def proccess_enrich(event): 
-    # print("Clean payload going to pipeline:\n" + json.dumps(event, indent=2))
     for payload in event.get("payload", []):
         if "CPUPercent" not in payload:
             continue
@@ -23,46 +21,24 @@ def proccess_enrich(event):
             level = "Crazy"
         payload["cpu_load_level"] = level            
 
+        if "Memory" in payload and "rss" in payload["Memory"]:
+            rss_bytes = payload["Memory"]["rss"]
+            rss_mb = rss_bytes / (1024 * 1024)  
+            if rss_mb <= 50:
+                level = "Chill"
+            elif rss_mb <= 200:
+                level = "Light"
+            elif rss_mb <= 500:
+                level = "Normal"
+            elif rss_mb <= 1000:
+                level = "Medium"
+            elif rss_mb <= 2000:
+                level = "Heavy"
+            elif rss_mb <= 4000:
+                level = "Intense"
+            else:
+                level = "Crazy"
+            payload["memory_load_level"] = level  
 
-
-        for key, value in payload.items():
-            if key == "Memory": 
-              for key, value in value.items():
-                    ram = value 
-                    if ram <= 10:
-                        level = "Chill"
-                    elif ram <= 25:
-                        level = "Light"
-                    elif ram <= 40:
-                        level = "Normal"
-                    elif ram <= 55:
-                        level = "Medium"
-                    elif ram <= 70:
-                        level = "Heavy"
-                    elif ram <= 90:
-                        level = "Intense"
-                    else:
-                        level = "Crazy"
-                    payload["load_load_level"] = level            
-
-
-
-# is_system_process → True if under system folders
-#
-# is_suspicious → based on name, path, or hash
-#
-# risk_score → numeric score for potential threat
-#
-# hash → md5/sha256 hash of executable
-#
-# parent_process → PID or name of parent
-#
-# is_running → True/False if currently active
-#
-# privilege_level → admin, user, system
-#
-# tags → e.g., "malware_suspected", "trusted"
-#
-# last_seen → timestamp of last execution
-#
-# resource_usage → CPU/memory if available
+ 
+            return payload
