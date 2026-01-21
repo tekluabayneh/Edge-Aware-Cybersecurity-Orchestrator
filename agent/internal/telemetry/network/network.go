@@ -2,69 +2,47 @@ package network
 
 import (
 	"context"
-	"encoding/json"
 	"log"
-	"sync"
 	"time"
 )
 
 type ConnectionMonitoringType struct {
-	ActiveSockets      []ActiveSocket
-	NetworkInterfaces  []networkInterfaces
-	ConnectionPatterns []ConnectionPatterns
+	ActiveSockets      []ActiveSocket       `json:"ActiveSockets"`
+	NetworkInterfaces  []networkInterfaces  `json:"NetworkInterfaces"`
+	ConnectionPatterns []ConnectionPatterns `json:"ConnectionPatterns"`
 }
-
 type NetworkSnapshot struct {
-	ConnectionMonitoring ConnectionMonitoringType
-	AbuseIPDBResponse    map[string]AbuseIPDBResponse
+	ConnectionMonitoring ConnectionMonitoringType     `json:"ConnectionMonitoring"`
+	AbuseIPDBResponse    map[string]AbuseIPDBResponse `json:"AbuseIPDBResponse"`
 }
 
 func Network(ch chan NetworkSnapshot) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	var wg sync.WaitGroup
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		default:
-			wg.Add(1)
-			go func() {
-				//  connections monitoring collect
-				// check susIp only after 8 times in an hour
-				// since the time expire use the existing sus ips data
-				lastRun := time.Now()
-				delay := time.Second * 1
-				if time.Since(lastRun) < delay.Abs() {
-					susIp, err := FilterSusIp()
-					if err != nil {
-						log.Println("Warning: no suspicious IPs found or failed to fetch", err)
-					}
 
-					jsonValue, err := json.Marshal(susIp)
-					if err != nil {
-						log.Println("Warning: failed to marshal suspicious IPs:", err)
-					}
+	ticker := time.NewTicker(20 * time.Second)
+	defer ticker.Stop()
 
-					jsonData := map[string]AbuseIPDBResponse{}
-					err = json.Unmarshal(jsonValue, &jsonData)
-					if err != nil {
-						log.Println("Warning: failed to unmarshal suspicious IPs:", err)
-					}
+	CollectLocalIPs()
+	StartAbuseIPWorker(ctx)
+	var lastRun time.Time
+	delay := time.Minute * 7
 
-					val := ConnectionsMonitoring()
-					payload := NetworkSnapshot{
-						ConnectionMonitoring: val,
-						AbuseIPDBResponse:    jsonData,
-					}
-
-					lastRun = time.Now()
-					ch <- payload
-					time.Sleep(5 * time.Second)
-					defer wg.Done()
-				}
-			}()
-			wg.Wait()
+	for range ticker.C {
+		// only refresh AbuseIPDB after delay
+		if time.Since(lastRun) < delay {
+			log.Println("Skipping AbuseIPDB fetch (time window not expired)")
+			continue
 		}
+		susIp := GetAbuseIPData()
+		ConnectionsMonitoringData := ConnectionsMonitoring()
+
+		payload := NetworkSnapshot{
+			ConnectionMonitoring: ConnectionsMonitoringData,
+			AbuseIPDBResponse:    susIp,
+		}
+
+		lastRun = time.Now()
+		ch <- payload
 	}
 }
