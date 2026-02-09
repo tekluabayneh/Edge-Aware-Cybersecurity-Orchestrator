@@ -1,13 +1,12 @@
 from fastapi import FastAPI, Request
 from api.api import api_router
 from starlette.middleware.cors import CORSMiddleware
-from core.engine.pipeline import piplinejob
 
 
 @api_router.get("/")
 def check():
     print("check")
-    return {"msg": "work"}
+    return {"status check": "Analyzer status is ok"}
 
 app = FastAPI(title="Analyzer API")
 app.include_router(api_router, prefix="/api/v1")
