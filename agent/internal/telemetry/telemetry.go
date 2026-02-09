@@ -103,16 +103,6 @@ func Telemetry() {
 					Processes:  process,
 					Integrity:  integrity,
 				}
-
-				payloadBytes, err := json.MarshalIndent(TelementoryPaylod, "", "  ")
-				if err != nil {
-					fmt.Println("Error marshaling payload:", err)
-				} else {
-					fmt.Println("=== FULL TELEMETRY PAYLOAD BEING SENT ===")
-					fmt.Println(string(payloadBytes))
-					fmt.Println("=======================================")
-				}
-
 				jsonPayload, err := json.Marshal(TelementoryPaylod)
 				if err != nil {
 					fmt.Println("JSON MARSHAL ERROR:", err)
@@ -120,7 +110,6 @@ func Telemetry() {
 					return
 				}
 
-				// time.Sleep(time.Minute * 6)
 				client := &http.Client{Timeout: time.Second * 10}
 				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL+"/rawTelementory", bytes.NewReader(jsonPayload))
 				if err != nil {
