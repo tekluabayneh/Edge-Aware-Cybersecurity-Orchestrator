@@ -103,7 +103,6 @@ func Telemetry() {
 					Processes:  process,
 					Integrity:  integrity,
 				}
-
 				jsonPayload, err := json.Marshal(TelementoryPaylod)
 				if err != nil {
 					fmt.Println("JSON MARSHAL ERROR:", err)
@@ -111,7 +110,6 @@ func Telemetry() {
 					return
 				}
 
-				// time.Sleep(time.Minute * 6)
 				client := &http.Client{Timeout: time.Second * 10}
 				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL+"/rawTelementory", bytes.NewReader(jsonPayload))
 				if err != nil {
@@ -132,6 +130,7 @@ func Telemetry() {
 				if res.StatusCode != http.StatusOK {
 					fmt.Printf("Bad response: %d %s\n", res.StatusCode, res.Status)
 				}
+
 				wg.Done()
 				time.Sleep(time.Second * 5)
 			}()

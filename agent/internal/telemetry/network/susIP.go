@@ -11,12 +11,6 @@ import (
 	"time"
 )
 
-// get the all machine ips
-// check them against suspiouse ip if so report them as suspiouse
-// make api call to suspiouse ip and get the ips
-// if since the cota of the ip is 100 a day this function only need to call this api 100 time with in 24hr
-// besically i can say this function only need to called
-
 type AbuseIPDBResponse struct {
 	IPAddress            string `json:"ipAddress"`
 	AbuseConfidenceScore int    `json:"abuseConfidenceScore"`
@@ -25,60 +19,70 @@ type AbuseIPDBResponse struct {
 }
 
 var (
-	collectSusIp          = make(map[string]string)
-	ipsCollectionToReturn = make(map[string]AbuseIPDBResponse)
-	mu                    sync.Mutex
+	suspiciousIPs = make(map[string]struct{})
+	abuseCache    = make(map[string]AbuseIPDBResponse)
+	mu            sync.RWMutex
 )
 
-func CheckIsSusIp(ip string) (map[string]AbuseIPDBResponse, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
+func CheckIsSusIp(ctx context.Context, ip string) (AbuseIPDBResponse, error) {
+	client := &http.Client{Timeout: 10 * time.Second}
 
-	// sleep for one second befoere making another api call since ips may be more than one
-	ipString := string(ip)
-
-	client := &http.Client{Timeout: time.Second * 10}
-	FullUrl := "https://api.abuseipdb.com/api/v2/check?ipAddress=" + ipString + "&maxAgeInDays=90"
-	API_KEY := os.Getenv("API_KEY_OF_SUSIP")
-
-	req, err := http.NewRequestWithContext(ctx, "GET", FullUrl, nil)
-	req.Header.Set("Key", API_KEY)
-	req.Header.Set("Accept", "application/json")
-
+	url := "https://api.abuseipdb.com/api/v2/check?ipAddress=" + ip + "&maxAgeInDays=90"
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request for IP check: %w", err)
+		return AbuseIPDBResponse{}, err
 	}
+
+	req.Header.Set("Key", os.Getenv("API_KEY_OF_SUSIP"))
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", "network-monitor")
 
 	res, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute request to AbuseIPDB: %w", err)
-	}
-
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("bad response from AbuseIPDB: %d %s", res.StatusCode, res.Status)
+		return AbuseIPDBResponse{}, err
 	}
 
 	defer res.Body.Close()
-	collectIpStatus := map[string]AbuseIPDBResponse{}
 
-	var responseValue AbuseIPDBResponse
-	err = json.NewDecoder(res.Body).Decode(&responseValue)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode response from AbuseIPDB: %w", err)
+	if res.StatusCode != http.StatusOK {
+		return AbuseIPDBResponse{}, fmt.Errorf("bad response: %s", res.Status)
 	}
 
-	collectIpStatus[ip] = responseValue
-	return collectIpStatus, nil
+	var wrapper struct {
+		Data AbuseIPDBResponse `json:"data"`
+	}
+
+	if err := json.NewDecoder(res.Body).Decode(&wrapper); err != nil {
+		return AbuseIPDBResponse{}, err
+	}
+
+	return wrapper.Data, nil
 }
 
-// first code need to only run 5 times a day
-// second it shouln't be blocking
-// theird it should handle faliour properly
-// four it should only execute those ips that is found in the collectSusIp and wait for the sleep time
-func StartSusIpCheck(ctx context.Context) {
-	const checksPerDay = 5
-	interval := 24 * time.Hour / checksPerDay
-	ticker := time.NewTicker(interval)
+func CollectLocalIPs() error {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return err
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+
+	for _, iface := range ifaces {
+		addrs, _ := iface.Addrs()
+		for _, addr := range addrs {
+			if ipnet, ok := addr.(*net.IPNet); ok {
+				suspiciousIPs[ipnet.IP.String()] = struct{}{}
+			}
+		}
+	}
+
+	return nil
+}
+
+func StartAbuseIPWorker(ctx context.Context) {
+
+	ticker := time.NewTicker(20 * time.Second)
 
 	go func() {
 		defer ticker.Stop()
@@ -87,61 +91,39 @@ func StartSusIpCheck(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			case <-ticker.C:
-				currentIps := make([]string, 0, len(collectSusIp))
-				mu.Lock()
-				for ip := range collectSusIp {
-					currentIps = append(currentIps, ip)
-				}
-				mu.Unlock()
-
-				if len(currentIps) == 0 {
-					fmt.Println("No suspicious IPs to check at", time.Now().Format(time.RFC3339))
-					continue
-				}
-				for _, ip := range currentIps {
-					chechedIP, err := CheckIsSusIp(ip)
-					if err != nil {
-						fmt.Println("failed to check suspicious IP")
-						continue
-					}
-					mu.Lock()
-					ipsCollectionToReturn[ip] = chechedIP[ip]
-					mu.Unlock()
-				}
+				runAbuseChecks(ctx)
 			}
 		}
 	}()
 }
 
-func FilterSusIp() (map[string]AbuseIPDBResponse, error) {
-	iface, err := net.Interfaces()
-	if err != nil {
-		return nil, fmt.Errorf("failed to list network interfaces: %w", err)
+func runAbuseChecks(ctx context.Context) {
+	mu.RLock()
+	ips := make([]string, 0, len(suspiciousIPs))
+	for ip := range suspiciousIPs {
+		ips = append(ips, ip)
 	}
+	mu.RUnlock()
 
-	var ip net.IP
-	for _, i := range iface {
-		addrs, err := i.Addrs()
+	for _, ip := range ips {
+		resp, err := CheckIsSusIp(ctx, ip)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get addresses for interface %s: %w", i.Name, err)
+			fmt.Println("AbuseIPDB error:", err)
+			continue
 		}
-
-		for _, addr := range addrs {
-			switch v := addr.(type) {
-			case *net.IPNet:
-				ip = v.IP
-			case *net.IPAddr:
-				ip = v.IP
-			}
-			if ip == nil {
-				continue
-			}
-			ipstr := ip.String()
-			collectSusIp[ipstr] = ipstr
-		}
-
+		mu.Lock()
+		abuseCache[ip] = resp
+		mu.Unlock()
 	}
+}
 
-	StartSusIpCheck(context.Background())
-	return ipsCollectionToReturn, nil
+func GetAbuseIPData() map[string]AbuseIPDBResponse {
+	mu.RLock()
+	defer mu.RUnlock()
+
+	out := make(map[string]AbuseIPDBResponse)
+	for k, v := range abuseCache {
+		out[k] = v
+	}
+	return out
 }

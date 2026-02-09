@@ -5,6 +5,7 @@ import (
 	"context"
 	"math"
 	"sync"
+	"time"
 )
 
 type GetSysInfotype struct {
@@ -40,6 +41,7 @@ func System(ch chan GetSysInfotype) {
 			}
 			ch <- payload
 			wg.Wait()
+			time.Sleep(20 * time.Second)
 		}
 	}
 }

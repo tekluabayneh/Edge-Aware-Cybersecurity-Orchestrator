@@ -44,7 +44,7 @@ func Processes(ch chan []ProcInfo) {
 					ProcssessData = append(ProcssessData, payload)
 				}
 				ch <- ProcssessData
-				time.Sleep(5 * time.Second)
+				time.Sleep(20 * time.Second)
 				wg.Done()
 			}()
 			wg.Wait()

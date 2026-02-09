@@ -1,4 +1,3 @@
-import json
 import time
 
 
@@ -81,7 +80,6 @@ def intgerity_enrich(event):
     else:
         event["overall_integrity"] = "Healthy"
 
-    print("Clean payload going to pipeline:\n" + json.dumps(event, indent=2))
     return event
 
 

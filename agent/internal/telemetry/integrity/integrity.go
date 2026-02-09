@@ -77,7 +77,7 @@ func Integrity(ch chan IntegritySnapshot) {
 					CollectedAt:   time.Now().Unix(),
 				}
 				ch <- payload
-				time.Sleep(5 * time.Second)
+				time.Sleep(20 * time.Second)
 				defer wg.Done()
 			}()
 			wg.Wait()
