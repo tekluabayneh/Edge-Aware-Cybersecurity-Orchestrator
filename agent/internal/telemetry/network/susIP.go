@@ -81,7 +81,9 @@ func CollectLocalIPs() error {
 }
 
 func StartAbuseIPWorker(ctx context.Context) {
-	ticker := time.NewTicker(20 * time.Minute)
+
+	ticker := time.NewTicker(20 * time.Second)
+
 	go func() {
 		defer ticker.Stop()
 		for {
