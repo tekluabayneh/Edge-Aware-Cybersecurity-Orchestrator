@@ -1,4 +1,3 @@
-import json
 from  tools.RuleData import ALL_CONTENT_KEYWORDS  
 def security_enrich(event): 
     payload = event.get("payload", {})
@@ -121,8 +120,8 @@ def security_enrich(event):
     
         def to_file_mode_string(mode_dec):
             return format(int(mode_dec) & 0o7777, "04o")
-        #
-        #
+        
+        
         file_Mode = file_dict.get("mode", "")
         for key, value in PERMISSION_RISK_EXPLANATIONS.items(): 
          if len(str(file_Mode)) < 5: 
@@ -166,27 +165,26 @@ def security_enrich(event):
 
 
          for proc in malicious_processes:
-            for k, v in proc.items():
+            for k, v in list(proc.items()):
                 if k == "name" and len(v) > 20 and any(x in v for x in ["_", "$", "#", "@"]):
-                    file_dict["proccess_name"] = "name contains nonsense and looks suspicious"
+                    proc["proccess_name"] = "name contains nonsense and looks suspicious"
                 else: 
-                    file_dict["proccess_name"] = "name contains looks good"
+                    proc["proccess_name"] = "name contains looks good"
         
                 if k == "path" and v in ["/dev/shm", "/var/tmp", "/tmp"]:
-                    file_dict["proccess_path"] = "process running from suspicious path"
+                    proc["proccess_path"] = "process running from suspicious path"
                 else: 
-                    file_dict["proccess_path"] = "process running from normal path"
+                    proc["proccess_path"] = "process running from normal path"
         
                 if k == "username" and v not in ["init/systemd", "/init"]:
-                    file_dict["proccess_username"] = "suspicious username"
+                    proc["proccess_username"] = "suspicious username"
                 else: 
-                    file_dict["proccess_username"] = "username is ok"
+                    proc["proccess_username"] = "username is ok"
 
 
 
 
 
 
-    # print("Clean payload going to pipeline:\n" + json.dumps(event, indent=2))
     return event
 
