@@ -1,4 +1,3 @@
-import json
 def set_integrity_rule(event): 
     payload = event.get("payload", {})
     kernel_status  =  payload.get("kernel_status")
