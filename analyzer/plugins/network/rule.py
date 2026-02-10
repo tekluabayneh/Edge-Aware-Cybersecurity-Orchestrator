@@ -1,6 +1,3 @@
-import json
-
-
 def set_network_rule(event): 
     payload = event.get("payload",{})
     ConnectionMonitoring = payload.get("ConnectionMonitoring",{})
@@ -71,6 +68,44 @@ def set_network_rule(event):
              netINterface["networkInterface_rules"] = networkInterface_rules
 
 
+             connectionpattern =  ConnectionPatterns[0]
+             connectionpatterns_rules = []
+             for conn in connectionpattern:
+                 pattern_type = conn.get("pattern_type")
+                 is_suspicious_volume = conn.get("is_suspicious_volume")
+                 traffic_category = conn.get("traffic_category")
+                 potential_scan = conn.get("potential_scan")
+                 remoteIp = conn.get("remoteIp", "Unknown IP")
+                  
+                 if pattern_type == "listening" and is_suspicious_volume != True: 
+                     connectionpatterns_rules.append({
+                    "connectionpattern_status": "",
+                    "message": f"{remoteIp} is listening with normal volume."
+                            })
+                 else: 
+                     connectionpatterns_rules.append({
+                     "connectionpattern_status": "normal",
+                     "message": f"{remoteIp} has suspicious pattern/volume."
+                        })                  
 
-    # print("Clean payload going to pipeline:\n" + json.dumps(NetworkInterfaces, indent=2))
- 
+
+                 if traffic_category == "None" and potential_scan != True: 
+                    connectionpatterns_rules.append({
+                            "connectionpattern_status": "",
+                            "message": f"{remoteIp} traffic category normal and no scan detected."
+                        })
+                 else:
+                        connectionpatterns_rules.append({
+                            "connectionpattern_status": "normal",
+                            "message": f"{remoteIp} traffic suspicious or potential scan detected."
+                    })
+
+
+                 conn["connectionpatterns_rules"] = connectionpatterns_rules
+
+
+
+
+
+
+    
