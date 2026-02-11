@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional, Dict, Any
-
+from typing import List, Dict
 
 class Memory(BaseModel):
     rss: int
