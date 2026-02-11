@@ -1,6 +1,5 @@
 import json
 from core.interfaces.input import Input
-from core.interfaces.normalizer.network import netwrok_normalizer
 from core.interfaces.output import send_output
 from core.interfaces.output import send_output
 from plugins.integrity.enrich import intgerity_enrich
@@ -13,7 +12,6 @@ from plugins.security.enrich import security_enrich
 from plugins.security.rule import set_security_rule
 from plugins.system.enrich import system_enrich 
 from plugins.system.rule import set_system_rule 
-
 
 
 def piplinejob(payload):
