@@ -40,7 +40,8 @@ def set_system_rule(event):
         elif network_status in ["Heavy", "Intense", "Crazy"]:
             system_rules.append("Network usage is very high! Potential network congestion.")
         else:
-            system_rules.append("Network usage status unknown.")
+            system_rules.append("Network usage status unknown.") 
+        event.alerts("")
 
         event["system_rules"] = system_rules
 
