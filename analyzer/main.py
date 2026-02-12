@@ -5,7 +5,6 @@ from starlette.middleware.cors import CORSMiddleware
 
 @api_router.get("/")
 def check():
-    print("check")
     return {"status check": "Analyzer status is ok"}
 
 app = FastAPI(title="Analyzer API")
