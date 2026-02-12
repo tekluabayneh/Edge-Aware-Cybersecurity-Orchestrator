@@ -1,7 +1,4 @@
-import json
-
 from shared.schemas.schema import Event
-
 
 def network_enrich(event):
         payload = event.get("payload",{})
