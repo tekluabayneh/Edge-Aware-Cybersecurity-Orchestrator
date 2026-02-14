@@ -39,9 +39,15 @@ func TelemetryReport(router chi.Router, db *db.Queries) {
 	TelemetryReportHandler := &handler.TelemetryType{DB: db}
 	router.Post("/report", TelemetryReportHandler.ReceiveTelemetry)
 }
+
 func AlertReport(router chi.Router, db *db.Queries) {
 	AlertReportHandler := &handler.AlertType{DB: db}
 	router.Get("/alert", AlertReportHandler.Alerts)
+}
+
+func CreateNewAlert(router chi.Router, db *db.Queries) {
+	AlertReportHandler := &handler.AlertType{DB: db}
+	router.Post("/create", AlertReportHandler.CreateAlert)
 }
 
 func GetSingleAlertByAgentId(router chi.Router, db *db.Queries) {
