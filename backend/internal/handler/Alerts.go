@@ -20,6 +20,24 @@ type alertStatusType struct {
 	Status string `json:"status"`
 }
 
+type NewAlertType struct {
+	Id          int
+	AgentID     string
+	Email       string
+	AgentToken  string
+	AlertType   string
+	Severity    string
+	Message     string
+	RawPayload  map[string]interface{}
+	Status      string
+	RiskLevel   string
+	Summary     string
+	Performance map[string]interface{}
+	Network     map[string]interface{}
+	Security    map[string]interface{}
+	CreatedAt   string
+}
+
 // GET /api/alerts
 func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -311,4 +329,10 @@ func (h *AlertType) DeleteAlertById(w http.ResponseWriter, r *http.Request) {
 		"message": "deleted alert by id",
 	})
 
+}
+
+func (h *AlertType) CreateAlert(w http.ResponseWriter, r *http.Request) {
+	var Alerts NewAlertType
+	json.NewDecoder(r.Body).Decode(&Alerts)
+	fmt.Print(Alerts)
 }
