@@ -1,4 +1,5 @@
-def set_proccess_rule(event): 
+from datetime import datetime, timezone
+def set_proccess_rule(event, alert): 
 
     cpu_load_level = event.get("cpu_load_level")
     memory_load_level = event.get("memory_load_level")
@@ -32,4 +33,20 @@ def set_proccess_rule(event):
     proccess_rules.extend(cpu_rule)
 
 
+    if event.get("cpu_load_level") in ["Heavy", "Intense", "Crazy"] or event.get("memory_load_level") in ["Heavy", "Intense", "Crazy"]:
 
+         alert.append({
+            "alert_type": "system",
+            "severity": "high",
+            "message": f"High resource usage detected (CPU: {event.get('cpu_load_level')}, Memory: {event.get('memory_load_level')})",
+            "raw_payload": "",
+            "status": "open",
+            "risk_level": "high",
+            "summary": "HIGH_RESOURCE_USAGE",
+            "performance": "",
+            "network": "",
+            "security": "",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+
+    return event
