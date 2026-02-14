@@ -4,6 +4,7 @@ from core.engine.pipeline import piplinejob
 from core.context.analyzer_context import AnalyzerContext
 from ..schemas.Telementory import RawTelemetryPayload
 from shared.schemas.schema import Alert   
+from core.interfaces.alert_handler import send_alert
 import uuid
 from typing import Dict, Any
 import json
@@ -61,15 +62,26 @@ async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
             "has_alerts": len(context.alerts) > 0,
         }
 
+        alert_to_send = []
         if context.alerts:
-            response["alerts"] = [alert.to_dict() for alert in context.alerts]
-            response["severity_summary"] = {
-                "critical": sum(1 for a in context.alerts if a.severity == "critical"),
-                "high": sum(1 for a in context.alerts if a.severity == "high"),
-                "medium": sum(1 for a in context.alerts if a.severity == "medium"),
-                "low": sum(1 for a in context.alerts if a.severity == "low"),
-            }
-        return response
+            for alert in context.alerts:
+                    duplicate = any(
+                        a["message"] == alert["message"] and
+                        a["severity"] == alert["severity"] and
+                        a["alert_type"] == alert["alert_type"] and
+                        a["risk_level"] == alert["risk_level"]
+                        for a in alert_to_send
+                                )
+                    if duplicate: 
+                         continue 
+                    else: 
+                        alert["agent_id"] = payload.agent_id 
+                        alert["agent_token"] = payload.agent_token 
+                        alert["email"] = payload.email 
+                        alert_to_send.append(alert)
+
+        for uniqe_alert in alert_to_send: 
+            send_alert(uniqe_alert)
 
     except Exception as e:
         context.logger.exception("Pipeline failed during ingest")
