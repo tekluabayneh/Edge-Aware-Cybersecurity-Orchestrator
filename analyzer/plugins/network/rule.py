@@ -126,13 +126,13 @@ def set_network_rule(event, alert):
                             "alert_type": "network",
                             "severity": "warning",
                             "message": f"Suspicious traffic or possible scan detected from {remoteIp}",
-                            "raw_payload": "",
+                            "raw_payload":{}, 
                             "status": "open",
                             "risk_level": "medium",
                             "summary": "SUSPICIOUS_TRAFFIC_PATTERN",
-                            "performance": "",
-                            "network": "",
-                            "security": "",
+                            "performance":{}, 
+                            "network":{}, 
+                            "security":{}, 
                             "created_at": datetime.now(timezone.utc).isoformat()
                         })
         
