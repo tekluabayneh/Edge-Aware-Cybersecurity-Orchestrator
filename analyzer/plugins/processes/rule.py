@@ -39,13 +39,13 @@ def set_proccess_rule(event, alert):
             "alert_type": "system",
             "severity": "high",
             "message": f"High resource usage detected (CPU: {event.get('cpu_load_level')}, Memory: {event.get('memory_load_level')})",
-            "raw_payload": "",
+            "raw_payload":{}, 
             "status": "open",
             "risk_level": "high",
             "summary": "HIGH_RESOURCE_USAGE",
-            "performance": "",
-            "network": "",
-            "security": "",
+            "performance":{}, 
+            "network":{}, 
+            "security":{}, 
             "created_at": datetime.now(timezone.utc).isoformat()
         })
 
