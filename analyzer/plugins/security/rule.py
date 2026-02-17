@@ -130,13 +130,13 @@ def set_security_rule(event, alert):
             "alert_type": "security",
             "severity": event.get("overall_security"),
             "message": f"Security state is {event.get('overall_security')}",
-            "raw_payload": "",
+            "raw_payload":{}, 
             "status": "open",
             "risk_level": "high",
             "summary": "OVERALL_SECURITY_RISK",
-            "performance": "",
-            "network": "",
-            "security": "",
+            "performance":{}, 
+            "network":{} ,
+            "security":{},
             "created_at": datetime.now(timezone.utc).isoformat()
         })
 
