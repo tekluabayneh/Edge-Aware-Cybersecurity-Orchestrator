@@ -1,12 +1,14 @@
 package telemetry
 
 import (
+	handler "agent/internal"
 	"agent/internal/commands"
 	"agent/internal/telemetry/integrity"
 	"agent/internal/telemetry/network"
 	"agent/internal/telemetry/processes"
 	"agent/internal/telemetry/security"
 	"agent/internal/telemetry/system"
+	"agent/internal/utils"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -58,7 +60,18 @@ func Telemetry() {
 		default:
 			wg.Add(1)
 			go func() {
+				Ticker := time.NewTicker(10 * time.Hour)
+				defer Ticker.Stop()
+				for {
+					handler.GetJwt()
+					<-Ticker.C
+				}
+			}()
 
+			go func() {
+				// this files must be run all the time or must be invocked all the time just after 20 minute
+				// and it shold not be blocked and it shold run in ti's own process and should not block other proccess
+				// and alsos after teh main telemetry started it shoild not also block them cuz this fuctin shold run while teh telemetry is also working it's own job or may be put it inside the the telemetry so it cannot be blocked
 				go security.Security(Security)
 				go network.Network(Network)
 				go processes.Processes(Processes)
@@ -112,6 +125,11 @@ func Telemetry() {
 
 				client := &http.Client{Timeout: time.Second * 10}
 				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL+"/rawTelementory", bytes.NewReader(jsonPayload))
+				token, err := utils.Getjwt()
+				if err != nil {
+					token = ""
+				}
+				req.Header.Add("Authorization", "Bearer "+token)
 				if err != nil {
 					fmt.Println("HTTP REQUEST ERROR:", err)
 					wg.Done()
@@ -130,7 +148,6 @@ func Telemetry() {
 				if res.StatusCode != http.StatusOK {
 					fmt.Printf("Bad response: %d %s\n", res.StatusCode, res.Status)
 				}
-
 				wg.Done()
 				time.Sleep(time.Second * 5)
 			}()
