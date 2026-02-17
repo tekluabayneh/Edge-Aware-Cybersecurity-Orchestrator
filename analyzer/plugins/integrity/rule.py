@@ -35,13 +35,13 @@ def set_integrity_rule(event, alert):
             "alert_type": "integrity",
             "severity": "high",
             "message": "System integrity is degraded. Kernel, patches, or system state require attention.",
-            "raw_payload":"" ,
+            "raw_payload":{}, 
             "status": "open",
             "risk_level": "high",
             "summary": "SYSTEM_INTEGRITY_ISSUE",
-            "performance":"" ,
-            "network":"" ,
-            "security":"", 
+            "performance":{},
+            "network":{},
+            "security":{},
             "created_at": datetime.now(timezone.utc).isoformat()
         })
 
