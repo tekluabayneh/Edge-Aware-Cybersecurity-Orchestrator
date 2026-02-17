@@ -1,4 +1,5 @@
-def set_security_rule(event): 
+from datetime import datetime, timezone
+def set_security_rule(event, alert): 
     securityPaylod  = event.get("payload")
     malicious_processes = securityPaylod.get("malicious_processes", {}) 
     suspicious_files =  securityPaylod.get("suspicious_files", {}) 
@@ -109,4 +110,35 @@ def set_security_rule(event):
             else:
                 malicious_processe_rules.append("Process username could not be determined.")
 
+    all_statuses = [] 
 
+    for ruls_group in security_rules:
+         for rule in ruls_group: 
+             all_statuses.append(rule["status"])
+    
+
+    if "critical" in all_statuses:
+        event["overall_security"] = "Critical"
+    elif "warning" in all_statuses:
+        event["overall_security"] = "Medium"
+    else:
+        event["overall_security"] = "Chill"
+
+
+    if event.get("overall_security") in ["Medium", "Critical"]:
+        alert.append({
+            "alert_type": "security",
+            "severity": event.get("overall_security"),
+            "message": f"Security state is {event.get('overall_security')}",
+            "raw_payload":{}, 
+            "status": "open",
+            "risk_level": "high",
+            "summary": "OVERALL_SECURITY_RISK",
+            "performance":{}, 
+            "network":{} ,
+            "security":{},
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+
+
+    return event

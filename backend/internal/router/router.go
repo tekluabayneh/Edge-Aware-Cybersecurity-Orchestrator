@@ -73,6 +73,11 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 	router.With(middlewareGlobal.Authorize(db)).Route("/alert", func(route chi.Router) {
 		UpdateAlertByID(route, db)
 	})
+
+	router.With(middlewareGlobal.Authorize(db)).Route("/newAlert", func(route chi.Router) {
+		CreateNewAlert(route, db)
+	})
+
 	router.With(middlewareGlobal.Authorize(db)).Route("/update", func(route chi.Router) {
 		UpdateAllAlertToRead(route, db)
 	})

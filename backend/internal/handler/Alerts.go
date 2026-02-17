@@ -11,13 +11,31 @@ import (
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/utils"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type AlertType struct {
 	DB *db.Queries
 }
+
 type alertStatusType struct {
 	Status string `json:"status"`
+}
+
+type NewAlertRequest struct {
+	AgentID     string                 `json:"AgentID"`
+	Email       string                 `json:"Email"`
+	AgentToken  string                 `json:"AgentToken"`
+	AlertType   string                 `json:"AlertType"`
+	Severity    string                 `json:"Severity"`
+	Message     pgtype.Text            `json:"Message"`
+	RawPayload  map[string]interface{} `json:"RawPayload"`
+	Status      string                 `json:"Status"`
+	RiskLevel   pgtype.Text            `json:"RiskLevel"`
+	Summary     pgtype.Text            `json:"Summary"`
+	Performance map[string]interface{} `json:"Performance"`
+	Network     map[string]interface{} `json:"Network"`
+	Security    map[string]interface{} `json:"Security"`
 }
 
 // GET /api/alerts
@@ -311,4 +329,71 @@ func (h *AlertType) DeleteAlertById(w http.ResponseWriter, r *http.Request) {
 		"message": "deleted alert by id",
 	})
 
+}
+
+func (h *AlertType) CreateAlert(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	var Alerts NewAlertRequest
+	err := json.NewDecoder(r.Body).Decode(&Alerts)
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
+		return
+	}
+
+	_, err = h.DB.GetAgentByAgentToken(ctx, Alerts.AgentToken)
+	if errors.Is(err, sql.ErrNoRows) {
+		if utils.CheckError(w, err, http.StatusNotFound, "agent not found") {
+			return
+		}
+	}
+
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
+		return
+	}
+
+	rawJsonpaylod, err := json.Marshal(Alerts.RawPayload)
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error, faild to marshal alert rawpaylod") {
+		return
+	}
+
+	jsonPerformance, err := json.Marshal(Alerts.Performance)
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error, faild to marshal alert performance") {
+		return
+	}
+
+	jsonNetwork, err := json.Marshal(Alerts.Network)
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error, faild to marshal alert netwrok") {
+		return
+	}
+
+	jsonSecurity, err := json.Marshal(Alerts.Security)
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error, faild to marshal alert security") {
+		return
+	}
+
+	fmt.Println("agent_id", Alerts.AgentID)
+	params := db.CreateAlertParams{
+		AgentID:     Alerts.AgentID,
+		AgentToken:  Alerts.AgentID,
+		Message:     Alerts.Message,
+		AlertType:   Alerts.AlertType,
+		Severity:    Alerts.Severity,
+		RawPayload:  rawJsonpaylod,
+		Status:      Alerts.Status,
+		RiskLevel:   Alerts.RiskLevel,
+		Summary:     Alerts.Summary,
+		Performance: jsonPerformance,
+		Network:     jsonNetwork,
+		Security:    jsonSecurity,
+	}
+
+	err = h.DB.CreateAlert(ctx, params)
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, map[string]string{
+		"message": "alert create successfully",
+	})
+
+	fmt.Print(Alerts)
 }

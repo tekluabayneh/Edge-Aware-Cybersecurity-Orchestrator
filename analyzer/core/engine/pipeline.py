@@ -33,19 +33,19 @@ def piplinejob(payload):
     
     for key, enriched_value in list_of_enriches.items():
         if key == "network":
-            updated_value = set_network_rule(enriched_value)
+            updated_value = set_network_rule(enriched_value, payload.alerts)
             list_of_enriches["network"] = updated_value   
         elif key == "system":
-            updated_value = set_system_rule(enriched_value)
+            updated_value = set_system_rule(enriched_value, payload.alerts)
             list_of_enriches["system"] = updated_value
         elif key == "processes":
-            updated_value = set_proccess_rule(enriched_value)
+            updated_value = set_proccess_rule(enriched_value,payload.alerts)
             list_of_enriches["processes"] = updated_value
         elif key == "security":
-            updated_value = set_security_rule(enriched_value)
+            updated_value = set_security_rule(enriched_value,payload.alerts)
             list_of_enriches["security"] = updated_value
         elif key == "integrity":
-            updated_value = set_integrity_rule(enriched_value)
+            updated_value = set_integrity_rule(enriched_value, payload.alerts)
             list_of_enriches["integrity"] = updated_value
         else:
             print(f"Unknown category: {key}") 

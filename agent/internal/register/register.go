@@ -33,6 +33,19 @@ type DeviceInfo struct {
 	LastSeen     time.Time `json:"last_seen"`
 }
 
+type DeviceInfoStore struct {
+	DeviceName   string    `json:"device_name"`
+	AgentID      string    `json:"agent_id"`
+	AgentToken   string    `json:"agent_token"`
+	Password     string    `json:"password"`
+	Email        string    `json:"email"`
+	MachineID    string    `json:"machine_id"`
+	AgentVersion string    `json:"agent_version"`
+	OS           string    `json:"os"`
+	Status       string    `json:"status"`
+	LastSeen     time.Time `json:"last_seen"`
+}
+
 type PairingResponse struct {
 	AgentID    string `json:"agent_id"`
 	AgentToken string `json:"agent_token"`
@@ -45,10 +58,10 @@ type PairingAckResponse struct {
 }
 
 func askForToken() ([]string, error) {
-	var token, email string
+	var token, password, email string
 	reader := bufio.NewReader(os.Stdin)
 
-	for token == "" || email == "" {
+	for token == "" || email == "" || password == "" {
 		if token == "" {
 			fmt.Println(utils.PromptBox.Render("Please copy your token from the user dashboard and enter it below:"))
 			fmt.Println(utils.PromptBox.Render(" Token "))
@@ -76,9 +89,24 @@ func askForToken() ([]string, error) {
 				fmt.Println(utils.ErrorBox.Render("Email cannot be empty."))
 			}
 		}
+
+		if password == "" {
+			fmt.Println(utils.PromptBox.Render("Please enter the password you used to register in the dashboard:"))
+			fmt.Println(utils.PromptBox.Render(" password "))
+			fmt.Print("> ")
+			input, err := reader.ReadString('\n')
+			if err != nil {
+				return []string{}, err
+			}
+			password = strings.TrimSpace(input)
+			if password == "" {
+				fmt.Println(utils.ErrorBox.Render("password cannot be empty."))
+			}
+		}
+
 	}
 
-	return []string{token, email}, nil
+	return []string{token, email, password}, nil
 }
 
 func Register() bool {
@@ -143,15 +171,28 @@ func Register() bool {
 		}
 	}
 
-	path := filepath.Join("internal/register", "email.txt")
+	// if the device paring success make device acknowlaege api call
+	store := DeviceInfoStore{
+		DeviceName:   utils.StaticSysInfo().HostName,
+		Email:        usrePaylod[1],
+		Password:     usrePaylod[2],
+		AgentID:      responsPaylod.AgentID,
+		AgentToken:   responsPaylod.AgentToken,
+		MachineID:    utils.StaticSysInfo().MachineID,
+		AgentVersion: utils.StaticSysInfo().AgentVersion,
+		Status:       utils.StaticSysInfo().Status,
+		LastSeen:     time.Now(),
+		OS:           utils.StaticSysInfo().OS,
+	}
 
+	path := filepath.Join("internal/register", "email.txt")
 	err = os.WriteFile(path, []byte(DeviceInfoPaylod.Email), 0644)
 	if err != nil {
 		fmt.Println(utils.ErrorBox.Render("message: =>", "error storing usre email"))
 	}
-	path = filepath.Join("internal/register", "token.txt")
 
-	json, err := json.Marshal(DeviceInfoPaylod)
+	path = filepath.Join("internal/register", "token.txt")
+	json, err := json.Marshal(store)
 	if err != nil {
 		fmt.Println(utils.ErrorBox.Render("message: =>", "error while marshling struct"))
 	}

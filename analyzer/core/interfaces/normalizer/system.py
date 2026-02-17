@@ -1,6 +1,6 @@
 from fastapi.encoders import jsonable_encoder
 from shared.schemas.schema import Event
-
+import json
 
 def system_normalizer(systemPaylod):
      system_normalizer_result = { 

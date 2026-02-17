@@ -1,4 +1,6 @@
-def set_network_rule(event): 
+import json
+from datetime import datetime, timezone
+def set_network_rule(event, alert): 
     payload = event.get("payload",{})
     ConnectionMonitoring = payload.get("ConnectionMonitoring",{})
     ActiveSockets =  ConnectionMonitoring.get("ActiveSockets", {})
@@ -58,6 +60,7 @@ def set_network_rule(event):
                       "message": "Suspicious network interface configuration detected",
                       "severity": "danger"
                         })
+
              else: 
                     networkInterface_rules.append({
                   "interface_status": "normal",
@@ -66,6 +69,23 @@ def set_network_rule(event):
                   })
 
              netINterface["networkInterface_rules"] = networkInterface_rules
+           # aadd alert based on overall_servcity
+
+             if suspicious == True  and risk_level in ["High", "High_risk"] and ip_count > 100:
+                alert.append({
+                    "alert_type": "network",
+                    "severity": "warning",
+                    "message": "Network interface exposed to public internet",
+                    "raw_payload": "",
+                    "status": "open",
+                    "risk_level": "medium",
+                    "summary": "EXTERNAL_INTERFACE",
+                    "performance": "",
+                    "network": "",
+                    "security": "",
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                })
+
 
 
              connectionpattern =  ConnectionPatterns[0]
@@ -79,33 +99,41 @@ def set_network_rule(event):
                   
                  if pattern_type == "listening" and is_suspicious_volume != True: 
                      connectionpatterns_rules.append({
-                    "connectionpattern_status": "",
+                    "connectionpattern_status": "normal",
                     "message": f"{remoteIp} is listening with normal volume."
                             })
                  else: 
                      connectionpatterns_rules.append({
-                     "connectionpattern_status": "normal",
-                     "message": f"{remoteIp} has suspicious pattern/volume."
-                        })                  
-
-
+                        "connectionpattern_status": "suspicious",
+                        "message": f"{remoteIp} has suspicious pattern/volume."
+                            })                  
+                     
                  if traffic_category == "None" and potential_scan != True: 
                     connectionpatterns_rules.append({
-                            "connectionpattern_status": "",
+                            "connectionpattern_status": "normal",
                             "message": f"{remoteIp} traffic category normal and no scan detected."
                         })
                  else:
-                        connectionpatterns_rules.append({
-                            "connectionpattern_status": "normal",
+                    connectionpatterns_rules.append({
+                            "connectionpattern_status": "suspicious",
                             "message": f"{remoteIp} traffic suspicious or potential scan detected."
                     })
 
-
                  conn["connectionpatterns_rules"] = connectionpatterns_rules
-
-
-
-
-
-
-    
+                 
+                 if is_suspicious_volume and traffic_category != "None" and potential_scan:
+                        alert.append({
+                            "alert_type": "network",
+                            "severity": "warning",
+                            "message": f"Suspicious traffic or possible scan detected from {remoteIp}",
+                            "raw_payload":{}, 
+                            "status": "open",
+                            "risk_level": "medium",
+                            "summary": "SUSPICIOUS_TRAFFIC_PATTERN",
+                            "performance":{}, 
+                            "network":{}, 
+                            "security":{}, 
+                            "created_at": datetime.now(timezone.utc).isoformat()
+                        })
+        
+    return event

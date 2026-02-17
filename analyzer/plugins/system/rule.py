@@ -1,4 +1,5 @@
-def set_system_rule(event):
+from datetime import datetime, timezone
+def set_system_rule(event, alert):
         system_rules = []
         cpu_status = event.get("overall_cpu", "")
         if cpu_status in ["Chill", "Light"]:
@@ -40,7 +41,23 @@ def set_system_rule(event):
         elif network_status in ["Heavy", "Intense", "Crazy"]:
             system_rules.append("Network usage is very high! Potential network congestion.")
         else:
-            system_rules.append("Network usage status unknown.")
-
+            system_rules.append("Network usage status unknown.") 
+ 
+  
         event["system_rules"] = system_rules
-
+        if event.get("overall_network") not in ["Chill", "Normal" ,"Medium"]:
+            alert.append({
+                "alert_type": "system",
+                "severity": "overall_cpu",
+                "message": f"CPU usage exceeded threshold {event.get('overall_cpu')}",
+                "raw_payload":{}, 
+                "status": "open",
+                "risk_level": "high",
+                "summary": "HIGH_CPU_USAGE",
+                "performance":{},
+                "network":{}, 
+                "security":{}, 
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+ 
+        return event
