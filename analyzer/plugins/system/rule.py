@@ -50,13 +50,13 @@ def set_system_rule(event, alert):
                 "alert_type": "system",
                 "severity": "overall_cpu",
                 "message": f"CPU usage exceeded threshold {event.get('overall_cpu')}",
-                "raw_payload": "",
+                "raw_payload":{}, 
                 "status": "open",
                 "risk_level": "high",
                 "summary": "HIGH_CPU_USAGE",
-                "performance": "",
-                "network": "",
-                "security": "",
+                "performance":{},
+                "network":{}, 
+                "security":{}, 
                 "created_at": datetime.now(timezone.utc).isoformat()
             })
  
