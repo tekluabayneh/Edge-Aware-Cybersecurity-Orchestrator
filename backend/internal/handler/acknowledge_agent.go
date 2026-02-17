@@ -37,7 +37,7 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 		})
 		return
 	}
-	fmt.Println(AgentValue.Email)
+
 	AgentValue.Email = strings.TrimSpace(AgentValue.Email)
 	if AgentValue.Email == "" {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]any{
