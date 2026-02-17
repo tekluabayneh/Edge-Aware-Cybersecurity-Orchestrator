@@ -37,7 +37,6 @@ func App() {
 			return
 		}
 	}
-
 	// start the main app
 	telemetry.Telemetry()
 }
