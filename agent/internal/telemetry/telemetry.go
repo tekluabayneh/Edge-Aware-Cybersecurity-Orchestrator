@@ -36,6 +36,7 @@ type TelemetryType struct {
 	Email      string                      `json:"email"`
 	AgentId    string                      `json:"agent_id"`
 	AgentToken string                      `json:"agent_token"`
+	MachineID  string                      `json:"machine_id"`
 	System     system.GetSysInfotype       `json:"system"`
 	Security   security.SecurityReport     `json:"security"`
 	Network    network.NetworkSnapshot     `json:"network"`
@@ -45,30 +46,67 @@ type TelemetryType struct {
 
 func Telemetry() {
 	ctx, cancel := context.WithCancel(context.Background())
-	AnalizerBaseURL := os.Getenv("ANALIZER_BASE_URL")
 	defer cancel()
+
+	AnalizerBaseURL := os.Getenv("ANALIZER_BASE_URL")
+	if AnalizerBaseURL == "" {
+		fmt.Println("ANALIZER_BASE_URL not set")
+		return
+	}
+
 	var wg sync.WaitGroup
+
 	SystemInfo := make(chan system.GetSysInfotype)
 	Security := make(chan security.SecurityReport)
 	Network := make(chan network.NetworkSnapshot)
 	Processes := make(chan []processes.ProcInfo)
 	Integrity := make(chan integrity.IntegritySnapshot)
+
+	MainTicker := time.NewTicker(1 * time.Minute)
+	defer MainTicker.Stop()
+
+	go func() {
+		Ticker := time.NewTicker(10 * time.Hour)
+		defer Ticker.Stop()
+
+		// for the first time call it
+		handler.GetJwt()
+		for {
+			select {
+			case <-Ticker.C:
+				// after ten hour reached call the function again
+				handler.GetJwt()
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+
+	go func() {
+		commandTicker := time.NewTicker(60 * time.Second)
+		defer commandTicker.Stop()
+
+		for {
+			select {
+			case <-commandTicker.C:
+				go commands.Commands()
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+
 	for {
 		select {
 		case <-ctx.Done():
+			wg.Wait()
 			return
-		default:
+
+		case <-MainTicker.C:
 			wg.Add(1)
-			go func() {
-				Ticker := time.NewTicker(10 * time.Hour)
-				defer Ticker.Stop()
-				for {
-					handler.GetJwt()
-					<-Ticker.C
-				}
-			}()
 
 			go func() {
+				defer wg.Done()
 				// this files must be run all the time or must be invocked all the time just after 20 minute
 				// and it shold not be blocked and it shold run in ti's own process and should not block other proccess
 				// and alsos after teh main telemetry started it shoild not also block them cuz this fuctin shold run while teh telemetry is also working it's own job or may be put it inside the the telemetry so it cannot be blocked
@@ -77,14 +115,6 @@ func Telemetry() {
 				go processes.Processes(Processes)
 				go integrity.Integrity(Integrity)
 				go system.System(SystemInfo)
-
-				// execute comamnd periodically
-				go func() {
-					for {
-						time.Sleep(time.Second * 60)
-						go commands.Commands()
-					}
-				}()
 
 				sysInfo := <-SystemInfo
 				security := <-Security
@@ -110,6 +140,7 @@ func Telemetry() {
 					Email:      agent.Email,
 					AgentId:    agent.AgentID,
 					AgentToken: agent.AgentToken,
+					MachineID:  agent.MachineID,
 					System:     sysInfo,
 					Security:   security,
 					Network:    network,
@@ -119,7 +150,6 @@ func Telemetry() {
 				jsonPayload, err := json.Marshal(TelementoryPaylod)
 				if err != nil {
 					fmt.Println("JSON MARSHAL ERROR:", err)
-					wg.Done()
 					return
 				}
 
@@ -132,7 +162,6 @@ func Telemetry() {
 				req.Header.Add("Authorization", "Bearer "+token)
 				if err != nil {
 					fmt.Println("HTTP REQUEST ERROR:", err)
-					wg.Done()
 					return
 				}
 
@@ -140,7 +169,6 @@ func Telemetry() {
 				res, err := client.Do(req)
 				if err != nil {
 					fmt.Println("HTTP SEND ERROR:", err)
-					wg.Done()
 					return
 				}
 
@@ -148,10 +176,8 @@ func Telemetry() {
 				if res.StatusCode != http.StatusOK {
 					fmt.Printf("Bad response: %d %s\n", res.StatusCode, res.Status)
 				}
-				wg.Done()
 				time.Sleep(time.Second * 5)
 			}()
-			wg.Wait()
 		}
 	}
 }
