@@ -2,7 +2,6 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -20,11 +19,9 @@ func Getjwt() (string, error) {
 	}
 	//
 	token := strings.TrimSpace(string(content))
-	fmt.Println(token)
 	if token == "" {
 		log.Println("received empty token from server")
 		return "", errors.New("error while reading file")
 	}
 	return token, nil
 }
-

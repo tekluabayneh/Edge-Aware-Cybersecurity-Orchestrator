@@ -33,9 +33,6 @@ type storedUserInfoType struct {
 	LastSeen     time.Time `json:"last_seen"`
 }
 
-// get credential put it in the files rotate it if possible and put it in all route header so they can access
-// get credential put it in the files rotate it if possible and put it in all route header so they can access
-// get credential put it in the files rotate it if possible and put it in all route header so they can access
 func GetJwt() {
 	ctx := context.TODO()
 	client := http.Client{Timeout: 10 * time.Second}

@@ -153,10 +153,12 @@ func Register() bool {
 		OS:           utils.StaticSysInfo().OS,
 	}
 
+	fmt.Println(DeviceInfoPaylod)
 	var DeviceInfoRespons PairingAckResponse
 	// if the token vlidation api response ok, proccede to the token acknowlaege api call
 	if res.StatusCode == 200 {
 		res, err := httpclient.InitiateParing(ctx, baseUrl+"/Token/ack", DeviceInfoPaylod)
+		print(err)
 		if err != nil {
 			fmt.Println(utils.ErrorBox.Render("message: =>", DeviceInfoRespons.Message))
 			fmt.Println("ack: =>", DeviceInfoRespons.Ack)
