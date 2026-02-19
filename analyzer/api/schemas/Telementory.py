@@ -129,6 +129,7 @@ class RawTelemetryPayload(BaseModel):
     email:str
     agent_id:str
     agent_token:str
+    machine_id:str
     system: System 
     security: Security 
     network: Network 
