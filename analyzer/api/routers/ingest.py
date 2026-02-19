@@ -15,12 +15,22 @@ router = APIRouter(tags=["ingest"])
 async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
     """
     Ingest raw telemetry from agent → normalize → analyze → return alerts if any
-    """
+    """ 
+
+    header = req.headers.get("Authorization")
+    if not header: 
+        print("heaer is empty")
+        return
+
+    token = header.split(" ")[1]
+    print(token)
+
     # 1. Prepare clean payload dictionary (good, you're already doing this)
     payload_dict: Dict[str, Any] = {
         "email": payload.email,
         "agent_id": payload.agent_id,
         "agent_token": payload.agent_token,
+        "machine_id": payload.machine_id,
         "processes": [proc.model_dump(mode='json') for proc in payload.processes],
         "network": payload.network.model_dump(mode='json') if payload.network else {},
         "system": payload.system.model_dump(mode='json') if payload.system else {},
@@ -37,9 +47,11 @@ async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
 
     # Attach user/agent info (make it a proper dict or object if you want later)
     context.user = {
+        "token": token,
         "email": payload.email,
         "agent_id": payload.agent_id,
         "agent_token": payload.agent_token,  
+        "machine_id": payload.machine_id,  
         "ip": req.client.host,              
     }
 
@@ -75,13 +87,14 @@ async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
                     if duplicate: 
                          continue 
                     else: 
-                        alert["agent_id"] = payload.agent_id 
-                        alert["agent_token"] = payload.agent_token 
+                        alert["agent_id"] = payload.agent_token 
+                        alert["agent_token"] = payload.agent_token
+                        alert["machine_id"] = payload.machine_id
                         alert["email"] = payload.email 
                         alert_to_send.append(alert)
 
         for uniqe_alert in alert_to_send: 
-            send_alert(uniqe_alert)
+            send_alert(uniqe_alert, token)
 
     except Exception as e:
         context.logger.exception("Pipeline failed during ingest")
