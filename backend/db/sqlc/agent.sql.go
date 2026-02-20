@@ -12,11 +12,12 @@ import (
 )
 
 const createAgent = `-- name: CreateAgent :exec
-INSERT INTO agents(user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO agents(user_id, device_name, agent_id, agent_token, machine_id, agent_version, os, status, last_seen) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 `
 
 type CreateAgentParams struct {
 	UserID       int64
+	DeviceName   string
 	AgentID      string
 	AgentToken   string
 	MachineID    string
@@ -29,6 +30,7 @@ type CreateAgentParams struct {
 func (q *Queries) CreateAgent(ctx context.Context, arg CreateAgentParams) error {
 	_, err := q.db.Exec(ctx, createAgent,
 		arg.UserID,
+		arg.DeviceName,
 		arg.AgentID,
 		arg.AgentToken,
 		arg.MachineID,
@@ -41,7 +43,7 @@ func (q *Queries) CreateAgent(ctx context.Context, arg CreateAgentParams) error 
 }
 
 const getAgentByAgentToken = `-- name: GetAgentByAgentToken :one
-SELECT id, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE agent_token = $1
+SELECT id, device_name, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE agent_token = $1
 `
 
 func (q *Queries) GetAgentByAgentToken(ctx context.Context, agentToken string) (Agent, error) {
@@ -49,6 +51,7 @@ func (q *Queries) GetAgentByAgentToken(ctx context.Context, agentToken string) (
 	var i Agent
 	err := row.Scan(
 		&i.ID,
+		&i.DeviceName,
 		&i.UserID,
 		&i.AgentID,
 		&i.AgentToken,
@@ -63,7 +66,7 @@ func (q *Queries) GetAgentByAgentToken(ctx context.Context, agentToken string) (
 }
 
 const getAgentById = `-- name: GetAgentById :one
-SELECT id, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE id = $1
+SELECT id, device_name, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE id = $1
 `
 
 func (q *Queries) GetAgentById(ctx context.Context, id int64) (Agent, error) {
@@ -71,6 +74,7 @@ func (q *Queries) GetAgentById(ctx context.Context, id int64) (Agent, error) {
 	var i Agent
 	err := row.Scan(
 		&i.ID,
+		&i.DeviceName,
 		&i.UserID,
 		&i.AgentID,
 		&i.AgentToken,
@@ -85,7 +89,7 @@ func (q *Queries) GetAgentById(ctx context.Context, id int64) (Agent, error) {
 }
 
 const getAgentByUserId = `-- name: GetAgentByUserId :one
-SELECT id, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE user_id = $1
+SELECT id, device_name, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE user_id = $1
 `
 
 func (q *Queries) GetAgentByUserId(ctx context.Context, userID int64) (Agent, error) {
@@ -93,6 +97,7 @@ func (q *Queries) GetAgentByUserId(ctx context.Context, userID int64) (Agent, er
 	var i Agent
 	err := row.Scan(
 		&i.ID,
+		&i.DeviceName,
 		&i.UserID,
 		&i.AgentID,
 		&i.AgentToken,
@@ -107,7 +112,7 @@ func (q *Queries) GetAgentByUserId(ctx context.Context, userID int64) (Agent, er
 }
 
 const getAllAgent = `-- name: GetAllAgent :one
-SELECT id, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at FROM agents LIMIT  50
+SELECT id, device_name, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at FROM agents LIMIT  50
 `
 
 func (q *Queries) GetAllAgent(ctx context.Context) (Agent, error) {
@@ -115,6 +120,7 @@ func (q *Queries) GetAllAgent(ctx context.Context) (Agent, error) {
 	var i Agent
 	err := row.Scan(
 		&i.ID,
+		&i.DeviceName,
 		&i.UserID,
 		&i.AgentID,
 		&i.AgentToken,
