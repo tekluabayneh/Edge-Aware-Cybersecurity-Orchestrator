@@ -16,6 +16,8 @@ async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
     """
     Ingest raw telemetry from agent → normalize → analyze → return alerts if any
     """ 
+    print(payload.agent_id)
+    print(payload.agent_token)
 
     header = req.headers.get("Authorization")
     if not header: 
@@ -61,7 +63,7 @@ async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
 
     try:
         # 3. Run the pipeline — passing context instead of just dict
-        piplinejob(context) 
+        piplinejob(context, token) 
 
         # 4. Prepare response based on what happened in the pipeline
         response = {
@@ -87,7 +89,7 @@ async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
                     if duplicate: 
                          continue 
                     else: 
-                        alert["agent_id"] = payload.agent_token 
+                        alert["agent_id"] = payload.agent_id
                         alert["agent_token"] = payload.agent_token
                         alert["machine_id"] = payload.machine_id
                         alert["email"] = payload.email 
