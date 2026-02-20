@@ -147,6 +147,7 @@ func Telemetry() {
 					Processes:  process,
 					Integrity:  integrity,
 				}
+
 				jsonPayload, err := json.Marshal(TelementoryPaylod)
 				if err != nil {
 					fmt.Println("JSON MARSHAL ERROR:", err)
