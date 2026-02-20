@@ -8,6 +8,7 @@ import (
 
 type Agent struct {
 	UserID       int64              `json:"user_id"`
+	DeviceName   string             `json:"device_name"`
 	AgentToken   string             `json:"agent_token"`
 	AgentId      string             `json:"agent_id"`
 	Email        string             `json:"email"`
@@ -19,7 +20,7 @@ type Agent struct {
 }
 
 func RequiredFieldsSet(a Agent) bool {
-	fields := []any{a.Os, a.AgentToken, a.MachineID, a.LastSeen, a.AgentVersion, a.Status, a.AgentId, a.UserID}
+	fields := []any{a.Os, a.AgentToken, a.DeviceName, a.MachineID, a.LastSeen, a.AgentVersion, a.Status, a.AgentId, a.UserID}
 	for _, f := range fields {
 		if f == "" {
 			return false
