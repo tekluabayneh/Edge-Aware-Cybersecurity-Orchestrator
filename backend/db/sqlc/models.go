@@ -10,6 +10,7 @@ import (
 
 type Agent struct {
 	ID           int64
+	DeviceName   string
 	UserID       int64
 	AgentID      string
 	AgentToken   string

@@ -22,21 +22,6 @@ type alertStatusType struct {
 	Status string `json:"status"`
 }
 
-//	type NewAlertRequest struct {
-//		AgentID     string                 `json:"AgentID"`
-//		Email       string                 `json:"Email"`
-//		AgentToken  string                 `json:"AgentToken"`
-//		AlertType   string                 `json:"AlertType"`
-//		Severity    string                 `json:"Severity"`
-//		Message     pgtype.Text            `json:"Message"`
-//		RawPayload  map[string]interface{} `json:"RawPayload"`
-//		Status      string                 `json:"Status"`
-//		RiskLevel   pgtype.Text            `json:"RiskLevel"`
-//		Summary     pgtype.Text            `json:"Summary"`
-//		Performance map[string]interface{} `json:"Performance"`
-//		Network     map[string]interface{} `json:"Network"`
-//		Security    map[string]interface{} `json:"Security"`
-//	}
 type NewAlertRequest struct {
 	AgentID     string                 `json:"agent_id"`
 	Email       string                 `json:"email"`
@@ -361,6 +346,7 @@ func (h *AlertType) CreateAlert(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
 	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error!") {
 		return
 	}
@@ -417,7 +403,6 @@ func (h *AlertType) CreateAlert(w http.ResponseWriter, r *http.Request) {
 		Security:    jsonSecurity,
 	}
 
-	fmt.Println(params)
 	err = h.DB.CreateAlert(ctx, params)
 	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
 		fmt.Println(err)
@@ -427,6 +412,4 @@ func (h *AlertType) CreateAlert(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, map[string]string{
 		"message": "alert create successfully",
 	})
-
-	fmt.Print(Alerts)
 }

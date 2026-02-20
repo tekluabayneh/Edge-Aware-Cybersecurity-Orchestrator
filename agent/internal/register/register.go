@@ -153,7 +153,6 @@ func Register() bool {
 		OS:           utils.StaticSysInfo().OS,
 	}
 
-	fmt.Println(DeviceInfoPaylod)
 	var DeviceInfoRespons PairingAckResponse
 	// if the token vlidation api response ok, proccede to the token acknowlaege api call
 	if res.StatusCode == 200 {

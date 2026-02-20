@@ -5,7 +5,7 @@ SELECT * FROM agents LIMIT  50;
 SELECT * from agents WHERE id = $1;
 
 -- name: CreateAgent :exec
-INSERT INTO agents(user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+INSERT INTO agents(user_id, device_name, agent_id, agent_token, machine_id, agent_version, os, status, last_seen) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
 
 -- name: GetAgentByAgentToken :one
 SELECT * from agents WHERE agent_token = $1;

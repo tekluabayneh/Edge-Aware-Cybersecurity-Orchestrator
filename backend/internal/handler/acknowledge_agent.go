@@ -15,6 +15,7 @@ import (
 
 type Agent struct {
 	UserID       int64              `json:"user_id"`
+	DeviceName   string             `json:"device_name"`
 	AgentToken   string             `json:"agent_token"`
 	AgentId      string             `json:"agent_id"`
 	Email        string             `json:"email"`
@@ -28,7 +29,7 @@ type Agent struct {
 func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var AgentValue Agent
-	fmt.Println("val val", AgentValue)
+
 	err := json.NewDecoder(r.Body).Decode(&AgentValue)
 	if err != nil {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]any{
@@ -45,7 +46,6 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 			"ack":     false,
 		})
 		return
-
 	}
 
 	user, err := h.DB.GetUserByEmail(ctx, AgentValue.Email)
@@ -65,11 +65,14 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 			"message": "missing required info",
 			"ack":     false,
 		})
+
+		fmt.Println(err)
 		return
 	}
 
 	AgentInfo := db.CreateAgentParams{
 		UserID:       int64(user.ID),
+		DeviceName:   AgentValue.DeviceName,
 		AgentToken:   AgentValue.AgentToken,
 		AgentID:      AgentValue.AgentId,
 		MachineID:    AgentValue.MachineID,
@@ -79,12 +82,14 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 		LastSeen:     AgentValue.LastSeen,
 	}
 
+	fmt.Println(AgentInfo)
 	err = h.DB.CreateAgent(ctx, AgentInfo)
 	if err != nil {
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]any{
 			"message": "internal server error",
 			"ack":     false,
 		})
+		fmt.Println(err)
 		return
 	}
 
@@ -92,5 +97,4 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 		"message": "agent info created successfully",
 		"ack":     true,
 	})
-
 }

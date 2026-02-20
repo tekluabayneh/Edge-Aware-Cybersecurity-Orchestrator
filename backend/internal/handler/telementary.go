@@ -105,7 +105,7 @@ func (h *TelemetryType) ReceiveTelemetry(w http.ResponseWriter, r *http.Request)
 	}
 
 	utils.WriteJSON(w, http.StatusOK, map[string]string{
-		"message": "alert created successfully",
+		"message": "telemetry created successfully",
 	})
 
 }
