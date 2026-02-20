@@ -14,7 +14,7 @@ from plugins.system.enrich import system_enrich
 from plugins.system.rule import set_system_rule 
 
 
-def piplinejob(payload):
+def piplinejob(payload, token):
     data = Input(payload)
     network_enriched = network_enrich(data["network"])
     processes_enriched = proccess_enrich(data["processes"])
@@ -50,7 +50,7 @@ def piplinejob(payload):
         else:
             print(f"Unknown category: {key}") 
 
-        send_output(list_of_enriches)     
+        send_output(list_of_enriches, token)     
 
 
 
