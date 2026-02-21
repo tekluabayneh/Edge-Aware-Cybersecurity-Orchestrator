@@ -3,6 +3,7 @@ import Routers from "./router";
 import { Link, useLocation } from "react-router-dom";
 import { Shield, Activity, } from "lucide-react";
 import { navigationItems } from "./data/filters";
+import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   const location = useLocation()
@@ -63,6 +64,7 @@ const App = () => {
         }  flex-1 pr-3 relative z-10`}
       >
         <Routers />
+        <Toaster/>
       </main>
 
       {/* Background Effects */}
