@@ -11,7 +11,7 @@ const Landing = lazy(() => import("./pages/Landing/landing"));
 const Auth = lazy(() => import("./pages/Auth/Auth"));
 const Download = lazy(() => import("./pages/Download/download"));
 const Device = lazy(() => import("./pages/DeviceParing/Paring"));
-
+const NotFound = lazy(() => import("./pages/NotFound/Notfound"))
 const Routers = () => {
   return (
     <>
@@ -24,6 +24,7 @@ const Routers = () => {
           <Route path="/auth" element={<Auth />} />
           <Route path="/Profile" element={<Profiles />} />
           <Route path="/Alerts" element={<Alerts />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
       {/* Footer */}

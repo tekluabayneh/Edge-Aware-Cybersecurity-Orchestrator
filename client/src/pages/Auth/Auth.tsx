@@ -3,10 +3,27 @@ import { Shield, Lock, Sparkles, Zap, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 import Login from "../../components/form/Login";
 import Register from "../../components/form/Register";
-
+import { FaGoogle, FaGithub } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 export default function Auth() {
     const [isSignUp, setIsSignUp] = useState(false);
+    const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
+     const navigator = useNavigate()
 
+    if(!BASE_URL){
+      console.log("base url is empty")
+       return
+    }
+
+
+    // === OAuth Handlers ===
+    const GoogleOAuth = () => {
+        window.location.href = BASE_URL + "/api/oauth/google";
+    };
+
+    const GithubOAuth = () => {
+        window.location.href = BASE_URL + "/api/oauth/github";
+    };
     return (
         <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center p-4">
             {/* Animated Background */}
@@ -116,6 +133,13 @@ export default function Auth() {
                                 Enter your credentials to access your dashboard
                             </p>
                         </div>
+
+                        <div className="text-gray-300 flex px-1 overflow-hidden items-center justify-center gap-20 font-light bg-gradient-to-r from-violet-500/20 to-purple-600/20 rounded-2xl border border-violet-500/30 py-2 mb-2">
+                            <FaGoogle onClick={GoogleOAuth} className="w-7 h-7 text-blue-500 cursor-pointer" />
+                            <FaGithub onClick={GithubOAuth} className="w-7 h-7 text-white cursor-pointer" />
+                        </div>
+
+
 
                         {/* From */}
                         {!isSignUp ? <Login />:<Register />}

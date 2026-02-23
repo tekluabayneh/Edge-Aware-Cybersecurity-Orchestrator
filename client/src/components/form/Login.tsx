@@ -22,7 +22,7 @@ const Login =  () => {
     const SubmiteForm = async(data:FormDataType) => {
              try {
                  setisLoading(true)
-                 const response = await axios.post(`${BASE_URL}/auth/l/login`,data)
+                 const response = await axios.post(`${BASE_URL}/api/auth/l/login`,data)
                  toast.success(response.data.message);
                  console.log(response.data)
                  setisLoading(false)
