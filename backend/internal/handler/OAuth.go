@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"os"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	OAuth "github.com/edge-aware-cyberSecurity/internal/OAuthConfig"
@@ -80,11 +81,27 @@ func (h *OAuthHandler) GitHubCallbackHandler(w http.ResponseWriter, r *http.Requ
 		Photo: githubUser.Avatar,
 	}
 
+	FRONT_END_URL := os.Getenv("FRONT_END_URL")
+	if FRONT_END_URL == "" {
+		return
+	}
+
+	jwtToken, err := utils.GenerateToken(newUser.Email)
+	if err != nil {
+		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"message": "error generating token",
+			"detail":  err.Error(),
+		})
+		return
+	}
+
 	// redirect to the dashboard if user exists
 	if user.Email != "" {
 		utils.WriteJSON(w, http.StatusOK, map[string]string{
 			"message": "user login successfully",
 		})
+		fullUrl := FRONT_END_URL + jwtToken
+		http.Redirect(w, r, fullUrl+"/dashboard", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -97,13 +114,17 @@ func (h *OAuthHandler) GitHubCallbackHandler(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
+		fullUrl := FRONT_END_URL + jwtToken
+		http.Redirect(w, r, fullUrl+"/dashboard", http.StatusTemporaryRedirect)
+
 		utils.WriteJSON(w, http.StatusOK, map[string]string{
 			"message": "user registered successfully",
 		})
-
 	}
 
 }
+
+////////////////////////////////////////////////////////////////////////////////////
 
 func (h *OAuthHandler) GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
@@ -129,11 +150,28 @@ func (h *OAuthHandler) GoogleCallbackHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	FRONT_END_URL := os.Getenv("FRONT_END_URL")
+	if FRONT_END_URL == "" {
+		return
+	}
+
+	jwtToken, err := utils.GenerateToken(GoogleUserInfo.Email)
+	if err != nil {
+		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"message": "error generating token",
+			"detail":  err.Error(),
+		})
+		return
+	}
+
 	// redirect to the dashboard if user exists
 	if user.Email != "" {
 		utils.WriteJSON(w, http.StatusOK, map[string]string{
 			"message": "user login successfully",
 		})
+
+		fullUrl := FRONT_END_URL + jwtToken
+		http.Redirect(w, r, fullUrl+"/dashboard", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -153,9 +191,12 @@ func (h *OAuthHandler) GoogleCallbackHandler(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
+		fullUrl := FRONT_END_URL + jwtToken
+		http.Redirect(w, r, fullUrl+"/dashboard", http.StatusTemporaryRedirect)
+
 		utils.WriteJSON(w, http.StatusOK, map[string]string{
 			"message": "user registered successfully",
 		})
-
+		return
 	}
 }
