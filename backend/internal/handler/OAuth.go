@@ -97,11 +97,8 @@ func (h *OAuthHandler) GitHubCallbackHandler(w http.ResponseWriter, r *http.Requ
 
 	// redirect to the dashboard if user exists
 	if user.Email != "" {
-		utils.WriteJSON(w, http.StatusOK, map[string]string{
-			"message": "user login successfully",
-		})
-		fullUrl := FRONT_END_URL + jwtToken
-		http.Redirect(w, r, fullUrl+"/dashboard", http.StatusTemporaryRedirect)
+		fullUrl := FRONT_END_URL + "/Dashboard" + "?token=" + jwtToken
+		http.Redirect(w, r, fullUrl, http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -114,12 +111,8 @@ func (h *OAuthHandler) GitHubCallbackHandler(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		fullUrl := FRONT_END_URL + jwtToken
-		http.Redirect(w, r, fullUrl+"/dashboard", http.StatusTemporaryRedirect)
-
-		utils.WriteJSON(w, http.StatusOK, map[string]string{
-			"message": "user registered successfully",
-		})
+		fullUrl := FRONT_END_URL + "/Dashboard" + "?token=" + jwtToken
+		http.Redirect(w, r, fullUrl, http.StatusTemporaryRedirect)
 	}
 
 }
@@ -166,15 +159,12 @@ func (h *OAuthHandler) GoogleCallbackHandler(w http.ResponseWriter, r *http.Requ
 
 	// redirect to the dashboard if user exists
 	if user.Email != "" {
-		utils.WriteJSON(w, http.StatusOK, map[string]string{
-			"message": "user login successfully",
-		})
-
-		fullUrl := FRONT_END_URL + jwtToken
-		http.Redirect(w, r, fullUrl+"/dashboard", http.StatusTemporaryRedirect)
+		fullUrl := FRONT_END_URL + "/Dashboard" + "?token=" + jwtToken
+		http.Redirect(w, r, fullUrl, http.StatusTemporaryRedirect)
 		return
 	}
 
+	// if user oot registered before register the user
 	if errors.Is(err, sql.ErrNoRows) && user.Email == "" {
 		newUser := db.CreateUserParams{
 			Name:  GoogleUserInfo.Name,
@@ -191,12 +181,7 @@ func (h *OAuthHandler) GoogleCallbackHandler(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		fullUrl := FRONT_END_URL + jwtToken
-		http.Redirect(w, r, fullUrl+"/dashboard", http.StatusTemporaryRedirect)
-
-		utils.WriteJSON(w, http.StatusOK, map[string]string{
-			"message": "user registered successfully",
-		})
-		return
+		fullUrl := FRONT_END_URL + "/Dashboard" + "?token=" + jwtToken
+		http.Redirect(w, r, fullUrl, http.StatusTemporaryRedirect)
 	}
 }
