@@ -47,15 +47,27 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 	if utils.CheckError(w, err, http.StatusBadRequest, "user not found") {
 		return
 	}
+
+	agent, err := h.DB.GetAgentByUserId(ctx, int64(user.ID))
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
+			"message": "agent not found",
+		})
+		return
+	}
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server errors") {
+		return
+	}
+
 	// Get all alerts for the user
-	alerts, err := h.DB.GetAllAlert(ctx, string(user.ID))
+	alerts, err := h.DB.GetAllAlert(ctx, string(agent.AgentID))
 	if len(alerts) < 1 {
 		utils.WriteJSON(w, http.StatusNotFound, map[string]string{
 			"message": "alert not found",
 		})
 		return
 	}
-	if utils.CheckError(w, err, http.StatusBadRequest, "agent not found") {
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
 		return
 	}
 
@@ -78,7 +90,7 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 
 			var tmp []map[string]any
 			err := json.Unmarshal(fieldBytes, &tmp)
-			if utils.CheckError(w, err, http.StatusBadRequest, "agent not found") {
+			if utils.CheckError(w, err, http.StatusBadRequest, "faild to unmarshale data") {
 				return
 			}
 
@@ -105,6 +117,7 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 		"message": "alerts fetched successfully",
 		"alert":   allAlerts,
 	})
+
 }
 
 // GET /api/alerts/:agent_id
