@@ -24,7 +24,6 @@ const Register = () => {
             setisLoading(true)
             const response = await axios.post(`${BASE_URL}/api/auth/r/register`, data)
             toast.success(response.data.message);
-            console.log(response.data)
             setisLoading(false)
             navigator("/paring")
         } catch (err) {
