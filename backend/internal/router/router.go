@@ -136,6 +136,18 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 			Verify2FA(route, db)
 		})
 
+		api.With(middlewareGlobal.Authorize(db)).Route("/getAll", func(route chi.Router) {
+			GetAllNotification(route, db)
+		})
+
+		api.With(middlewareGlobal.Authorize(db)).Route("/updateSingle", func(route chi.Router) {
+			UpdatesingleNotification(route, db)
+		})
+
+		api.With(middlewareGlobal.Authorize(db)).Route("/updatAll", func(route chi.Router) {
+			UpdateAllNotification(route, db)
+		})
+
 	})
 	return router
 }

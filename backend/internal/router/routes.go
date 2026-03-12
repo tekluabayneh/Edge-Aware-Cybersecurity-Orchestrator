@@ -4,6 +4,7 @@ import (
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	AuthPath "github.com/edge-aware-cyberSecurity/internal/auth"
 	"github.com/edge-aware-cyberSecurity/internal/handler"
+	"github.com/edge-aware-cyberSecurity/internal/handler/notification"
 	"github.com/edge-aware-cyberSecurity/internal/handler/otp"
 	"github.com/go-chi/chi"
 )
@@ -26,6 +27,7 @@ func DeviceParing(router chi.Router, db *db.Queries) {
 	DeviceParingHandler := &handler.DevicePairingType{DB: db}
 	router.Post("/DeviceParing", DeviceParingHandler.DevicePairing)
 }
+
 func GenerateToken(router chi.Router, db *db.Queries) {
 	DeviceParingTokenHandler := &handler.DevicePairingType{DB: db}
 	router.Post("/token", DeviceParingTokenHandler.GenerateTokenHandler)
@@ -129,4 +131,19 @@ func Confirm2FA(router chi.Router, db *db.Queries) {
 func Verify2FA(router chi.Router, db *db.Queries) {
 	TowFaeHandler := &otp.TowFaType{DB: db}
 	router.Post("/verify", TowFaeHandler.Verify2FA)
+}
+
+func GetAllNotification(router chi.Router, db *db.Queries) {
+	NotificationHandler := &notification.NotificationType{DB: db}
+	router.Get("/get", NotificationHandler.GetAllNotification)
+}
+
+func UpdateAllNotification(router chi.Router, db *db.Queries) {
+	NotificationHandler := &notification.NotificationType{DB: db}
+	router.Post("/update", NotificationHandler.UpdateAllNotification)
+}
+
+func UpdatesingleNotification(router chi.Router, db *db.Queries) {
+	NotificationHandler := &notification.NotificationType{DB: db}
+	router.Post("/updateSingle", NotificationHandler.UpdateSingleNotification)
 }
