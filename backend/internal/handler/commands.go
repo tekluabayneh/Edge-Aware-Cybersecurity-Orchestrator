@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -181,8 +180,6 @@ func (h *CreateCommdnType) AcknowledgeCommandExecutionResponseHandler(w http.Res
 	ctx := r.Context()
 	var AckREsponse AckResponseType
 	json.NewDecoder(r.Body).Decode(&AckREsponse)
-	fmt.Println(AckREsponse.Email)
-	fmt.Println(AckREsponse)
 	user, err := h.DB.GetUserByEmail(ctx, AckREsponse.Email)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
@@ -209,12 +206,4 @@ func (h *CreateCommdnType) AcknowledgeCommandExecutionResponseHandler(w http.Res
 	utils.WriteJSON(w, http.StatusOK, map[string]any{
 		"message": "commadn updated ruccessfully",
 	})
-
-	// notification send to user notification
-
-	// 1 get the message
-	// 2 get user info
-	// 3 store the notification
-	// formteh frontend there should be api call periodically
-
 }
