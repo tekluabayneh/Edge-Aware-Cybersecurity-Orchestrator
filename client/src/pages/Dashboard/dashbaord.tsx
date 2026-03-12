@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
 import type { AlertType } from '../../types/Alert'
-
-
 import { Shield, Activity, Eye, AlertCircle, AlertTriangleIcon } from 'lucide-react'
 import MetricCard from '../../components/dashboard/MatricCard'
 import SecurityScore from '../../components/dashboard/Security'
@@ -9,7 +7,7 @@ import RecentAlerts from '../../components/dashboard/RecentAlert'
 import SystemHealth from '../../components/dashboard/SystemHealth'
 import GetAllAlerts from '../../hooks/fetchAlerts'
 import { useQuery } from '@tanstack/react-query'
-
+import NotificationBell from '../../components/Notification/Notification'
 
 export default function Dashboard() {
     const [alerts, setAlerts] = useState<AlertType[]>([])
@@ -72,7 +70,7 @@ export default function Dashboard() {
                         Real-time overview of your security posture
                     </p>
                 </div>
-                <p className='cursor-pointer'>{AlertTriangleIcon}</p>
+                {<NotificationBell />}
             </div>
 
             {/* Metrics Grid */}
@@ -117,6 +115,6 @@ export default function Dashboard() {
                     <SecurityScore />
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

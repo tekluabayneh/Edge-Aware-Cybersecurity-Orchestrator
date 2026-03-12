@@ -61,7 +61,7 @@ func askForToken() ([]string, error) {
 	var token, password, email string
 	reader := bufio.NewReader(os.Stdin)
 
-	for token == "" || email == "" || password == "" {
+	for token == "" || email == "" || password == "" || len(password) < 6 {
 		if token == "" {
 			fmt.Println(utils.PromptBox.Render("Please copy your token from the user dashboard and enter it below:"))
 			fmt.Println(utils.PromptBox.Render(" Token "))
@@ -90,7 +90,7 @@ func askForToken() ([]string, error) {
 			}
 		}
 
-		if password == "" {
+		if password == "" || len(password) < 6 {
 			fmt.Println(utils.PromptBox.Render("Please enter the password you used to register in the dashboard:"))
 			fmt.Println(utils.PromptBox.Render(" password "))
 			fmt.Print("> ")

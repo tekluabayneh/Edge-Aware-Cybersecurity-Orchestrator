@@ -30,30 +30,48 @@ func (q *Queries) CreateNotification(ctx context.Context, arg CreateNotification
 	return err
 }
 
-const getAllNotifications = `-- name: GetAllNotifications :one
-SELECT id, user_id, title, message, is_read, created_at FROM  notifications LIMIT 50
+const getAllNotifications = `-- name: GetAllNotifications :many
+SELECT id, user_id, title, message, is_read, created_at FROM notifications WHERE user_id = $1 AND is_read = false ORDER BY id DESC LIMIT 50
 `
 
-func (q *Queries) GetAllNotifications(ctx context.Context) (Notification, error) {
-	row := q.db.QueryRow(ctx, getAllNotifications)
-	var i Notification
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.Title,
-		&i.Message,
-		&i.IsRead,
-		&i.CreatedAt,
-	)
-	return i, err
+func (q *Queries) GetAllNotifications(ctx context.Context, userID int64) ([]Notification, error) {
+	rows, err := q.db.Query(ctx, getAllNotifications, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Notification
+	for rows.Next() {
+		var i Notification
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Title,
+			&i.Message,
+			&i.IsRead,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getNotificationById = `-- name: GetNotificationById :one
-SELECT id, user_id, title, message, is_read, created_at from notifications WHERE id = $1
+SELECT id, user_id, title, message, is_read, created_at from notifications WHERE id = $1 AND user_id = $2
 `
 
-func (q *Queries) GetNotificationById(ctx context.Context, id int64) (Notification, error) {
-	row := q.db.QueryRow(ctx, getNotificationById, id)
+type GetNotificationByIdParams struct {
+	ID     int64
+	UserID int64
+}
+
+func (q *Queries) GetNotificationById(ctx context.Context, arg GetNotificationByIdParams) (Notification, error) {
+	row := q.db.QueryRow(ctx, getNotificationById, arg.ID, arg.UserID)
 	var i Notification
 	err := row.Scan(
 		&i.ID,
@@ -66,31 +84,25 @@ func (q *Queries) GetNotificationById(ctx context.Context, id int64) (Notificati
 	return i, err
 }
 
+const updateAllNotificationByUserId = `-- name: UpdateAllNotificationByUserId :exec
+UPDATE notifications SET is_read = true WHERE user_id = $1
+`
+
+func (q *Queries) UpdateAllNotificationByUserId(ctx context.Context, userID int64) error {
+	_, err := q.db.Exec(ctx, updateAllNotificationByUserId, userID)
+	return err
+}
+
 const updateNotificationById = `-- name: UpdateNotificationById :exec
-UPDATE notifications
-SET
-    user_id       = COALESCE($1, user_id),
-    title = COALESCE($2, title),
-    message = COALESCE($3, message),
-    is_read = COALESCE($4, is_read)
-WHERE id = $5
+UPDATE notifications SET is_read = true WHERE user_id = $1 AND id = $2
 `
 
 type UpdateNotificationByIdParams struct {
-	UserID  int64
-	Title   string
-	Message string
-	IsRead  bool
-	ID      int64
+	UserID int64
+	ID     int64
 }
 
 func (q *Queries) UpdateNotificationById(ctx context.Context, arg UpdateNotificationByIdParams) error {
-	_, err := q.db.Exec(ctx, updateNotificationById,
-		arg.UserID,
-		arg.Title,
-		arg.Message,
-		arg.IsRead,
-		arg.ID,
-	)
+	_, err := q.db.Exec(ctx, updateNotificationById, arg.UserID, arg.ID)
 	return err
 }

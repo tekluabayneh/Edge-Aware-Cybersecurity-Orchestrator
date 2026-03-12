@@ -1,17 +1,15 @@
--- name: GetAllNotifications :one
-SELECT * FROM  notifications LIMIT 50;
+-- name: GetAllNotifications :many
+SELECT * FROM notifications WHERE user_id = $1 AND is_read = false ORDER BY id DESC LIMIT 50;
 
 -- name: GetNotificationById :one
-SELECT * from notifications WHERE id = $1;
+SELECT * from notifications WHERE id = $1 AND user_id = $2;
 
 -- name: CreateNotification :exec
 INSERT INTO notifications(user_id, title, message, is_read) VALUES ($1, $2, $3, $4);
 
 -- name: UpdateNotificationById :exec
-UPDATE notifications
-SET
-    user_id       = COALESCE($1, user_id),
-    title = COALESCE($2, title),
-    message = COALESCE($3, message),
-    is_read = COALESCE($4, is_read)
-WHERE id = $5;
+UPDATE notifications SET is_read = true WHERE user_id = $1 AND id = $2;
+
+-- name: UpdateAllNotificationByUserId :exec
+UPDATE notifications SET is_read = true WHERE user_id = $1;
+

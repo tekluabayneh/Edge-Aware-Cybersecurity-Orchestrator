@@ -6,7 +6,7 @@ VALUES ($1, $2, $3);
 SELECT * FROM user_2fa_tokens WHERE user_id = $1;
 
 -- name: Is2FAEnabled :one
-SELECT isEnabled, firstTime FROM user_2fa_tokens WHERE user_id = $1;
+SELECT isEnabled FROM user_2fa_tokens WHERE user_id = $1;
 
 -- name: UpdateIs2FAEnabled :exec
 UPDATE user_2fa_tokens SET isEnabled = $1 WHERE user_id = $2;
