@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -32,6 +33,7 @@ func (h *DevicePairingType) GenerateTokenHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
+	fmt.Println(DeviceCount)
 	if DeviceCount > 10 {
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
 			"message": "Device paring is limited you have gone your free limit",
@@ -53,6 +55,8 @@ func (h *DevicePairingType) GenerateTokenHandler(w http.ResponseWriter, r *http.
 		Time:  t,
 		Valid: true,
 	}
+
+	fmt.Println(AllUserToken)
 
 	if time.Now().After(AllUserToken.ExpiresAt.Time) {
 		err = h.DB.DeleteUsedToken(ctx, UserEmail)
@@ -81,7 +85,7 @@ func (h *DevicePairingType) GenerateTokenHandler(w http.ResponseWriter, r *http.
 		UserEmail: user.Email,
 		ExpiresAt: expires,
 	}
-
+	fmt.Println(paringDeviceData)
 	err = h.DB.CreateParingToken(ctx, paringDeviceData)
 	if err != nil {
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
@@ -95,5 +99,4 @@ func (h *DevicePairingType) GenerateTokenHandler(w http.ResponseWriter, r *http.
 		"message": "paring token created",
 		"token":   token,
 	})
-
 }
