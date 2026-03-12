@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
+	notify "github.com/edge-aware-cyberSecurity/internal/handler/notification"
 	"github.com/edge-aware-cyberSecurity/internal/utils"
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -346,6 +347,8 @@ func (h *AlertType) DeleteAlertById(w http.ResponseWriter, r *http.Request) {
 
 func (h *AlertType) CreateAlert(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+
+	email := r.Context().Value("email").(string)
 	var Alerts NewAlertRequest
 	err := json.NewDecoder(r.Body).Decode(&Alerts)
 	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error crashed whie decoding body") {
@@ -418,6 +421,21 @@ func (h *AlertType) CreateAlert(w http.ResponseWriter, r *http.Request) {
 	err = h.DB.CreateAlert(ctx, params)
 	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
 		return
+	}
+
+	if Alerts.RiskLevel.Valid && Alerts.RiskLevel.String == "high" {
+		notificationParams := db.CreateNotificationParams{
+			UserID:  int64(user.ID),
+			Title:   Alerts.Summary.String,
+			Message: Alerts.Message.String,
+			IsRead:  false,
+		}
+
+		err = h.DB.CreateNotification(ctx, notificationParams)
+		if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
+			return
+		}
+		notify.Notify(email, email, Alerts.Summary.String)
 	}
 
 	utils.WriteJSON(w, http.StatusOK, map[string]string{
