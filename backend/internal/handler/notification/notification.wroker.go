@@ -8,7 +8,6 @@ import (
 )
 
 func EmailSender(senderName string, senderEmail string, recipientEmail string, subject string, htmlContent string) error {
-
 	apiKey := os.Getenv("BREVO_API_KEY")
 
 	cfg := sib_api_v3_sdk.NewConfiguration()
