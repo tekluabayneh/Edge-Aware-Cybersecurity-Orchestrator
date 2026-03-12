@@ -96,7 +96,7 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 			CreateCommand(route, db)
 		})
 
-		api.With().Route("/fetch", func(route chi.Router) {
+		api.With(middlewareGlobal.Authorize(db)).Route("/fetch", func(route chi.Router) {
 			FeatchCommand(route, db)
 		})
 
@@ -107,7 +107,35 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 		api.With().Route("/res", func(route chi.Router) {
 			AcknowledgeCommandExecutionResponseHandle(route, db)
 		})
-	})
 
+		api.With(middlewareGlobal.Authorize(db)).Route("/user", func(route chi.Router) {
+			UPdateUserProfile(route, db)
+		})
+
+		api.With(middlewareGlobal.Authorize(db)).Route("/get", func(route chi.Router) {
+			GetUserProfile(route, db)
+		})
+
+		api.With(middlewareGlobal.Authorize(db)).Route("/list", func(route chi.Router) {
+			GetAllAgent(route, db)
+		})
+
+		api.With(middlewareGlobal.Authorize(db)).Route("/data", func(route chi.Router) {
+			GetLatestTelemetryData(route, db)
+		})
+
+		api.With(middlewareGlobal.Authorize(db)).Route("/send", func(route chi.Router) {
+			Enable2FA(route, db)
+		})
+
+		api.With(middlewareGlobal.Authorize(db)).Route("/check", func(route chi.Router) {
+			Confirm2FA(route, db)
+		})
+
+		api.With(middlewareGlobal.Authorize(db)).Route("/verify2fa", func(route chi.Router) {
+			Verify2FA(route, db)
+		})
+
+	})
 	return router
 }
