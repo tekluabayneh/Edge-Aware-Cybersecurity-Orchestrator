@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -16,8 +17,8 @@ type JwtType struct {
 }
 
 type userinfotype struct {
-	Message string
-	Token   string
+	Message string `json:"message"`
+	Token   string `json:"token"`
 }
 
 type storedUserInfoType struct {
@@ -92,7 +93,21 @@ func GetJwt() {
 		return
 	}
 
+	// if the fiels does not exist creat the fiels and append it
 	tokenpath := filepath.Join("internal/register", "Jwttoken.txt")
+	_, err = os.Stat(tokenpath)
+	if os.IsNotExist(err) {
+		_, err := os.Create(tokenpath)
+		if err != nil {
+			fmt.Println("error creating Jwttoken file")
+			return
+		}
+	} else if err != nil {
+		fmt.Println("error creating Jwttoken file")
+	}
+
+	// check if it exist if not creat the file if does exist just use that
+
 	if err := os.WriteFile(tokenpath, []byte(userinfo.Token), 0644); err != nil {
 		log.Printf("failed to write token file %s: %v", tokenpath, err)
 		return
