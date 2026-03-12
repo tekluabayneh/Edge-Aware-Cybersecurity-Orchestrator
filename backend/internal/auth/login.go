@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
@@ -28,20 +29,22 @@ func (h *AuthLoginHandlerType) Login(w http.ResponseWriter, r *http.Request) {
 	formData, ok := r.Context().Value(middleware.LoginFromDataKey).(middleware.FormType)
 	if !ok {
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
-			"message": "internal server error",
+			"message": "internal server error!",
 		})
 		return
 	}
 
 	user, err := h.DB.GetUserByEmail(ctx, formData.Email)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		fmt.Println(err)
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
-			"message": "internal server error",
+			"message": "internal server error!",
 		})
 		return
 	}
 
 	if err != nil && user.Email == "" {
+		fmt.Println(err)
 		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
 			"message": "user does not exists",
 		})
@@ -66,7 +69,16 @@ func (h *AuthLoginHandlerType) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	User2FAInfo, err := h.DB.Get2FAByUser(ctx, int64(user.ID))
-	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
+	if errors.Is(err, sql.ErrNoRows) {
+		utils.WriteJSON(w, http.StatusOK, map[string]any{
+			"message":   "user login successfully",
+			"token":     token,
+			"IsEnabled": false,
+		})
+		return
+	}
+
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server erro1r") {
 		return
 	}
 
@@ -76,4 +88,5 @@ func (h *AuthLoginHandlerType) Login(w http.ResponseWriter, r *http.Request) {
 		"token":     token,
 		"IsEnabled": User2FAInfo.Isenabled,
 	})
+
 }
