@@ -3,6 +3,7 @@ import ActivityLog from '../../components/profile/ActivityLog'
 import SecurityPreferences from '../../components/profile/SecurityPreferance'
 import { FechUserProfile } from '../../hooks/fetchUserProfile'
 import { useQuery } from '@tanstack/react-query'
+import NotificationBell from '../../components/Notification/Notification'
 
 export default function Profile() {
     const { data, isLoading, error } = useQuery({
@@ -22,11 +23,15 @@ export default function Profile() {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold text-white">User Profile</h1>
-                <p className="text-gray-400">
-                    Manage your account settings and preferences
-                </p>
+            <div className="flex flex-row justify-between align-center p-2  gap-2">
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-3xl font-bold text-white">User Profile</h1>
+                    <p className="text-gray-400">
+                        Manage your account settings and preferences
+                    </p>
+
+                </div>
+                {<NotificationBell />}
             </div>
 
             {/* Profile Grid */}

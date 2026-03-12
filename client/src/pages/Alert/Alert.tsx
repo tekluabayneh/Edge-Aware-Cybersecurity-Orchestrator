@@ -5,6 +5,7 @@ import AlertCard from '../../components/alert/AlertCard'
 import type { AlertType } from '../../types/Alert'
 import GetAllAlerts from '../../hooks/fetchAlerts'
 import { useQuery } from '@tanstack/react-query'
+import NotificationBell from '../../components/Notification/Notification'
 
 export default function Alerts() {
     const [filteredAlerts, setFilteredAlerts] = useState<AlertType[]>([])
@@ -65,14 +66,18 @@ export default function Alerts() {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                    <AlertTriangle className="w-8 h-8 text-cyan-400" />
-                    Security Alerts
-                </h1>
-                <p className="text-gray-400">
-                    Monitor and manage security threats in real-time
-                </p>
+            <div className="flex flex-row justify-between align-center p-2 gap-2">
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                        <AlertTriangle className="w-8 h-8 text-cyan-400" />
+                        Security Alerts
+                    </h1>
+                    <p className="text-gray-400">
+                        Monitor and manage security threats in real-time
+                    </p>
+
+                </div>
+                {<NotificationBell />}
             </div>
 
             {/* Stats Banner */}
