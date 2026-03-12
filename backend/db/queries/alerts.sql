@@ -1,5 +1,5 @@
 -- name: GetAllAlert :many
-SELECT * FROM alerts WHERE agent_id = $1;
+SELECT * FROM alerts WHERE agent_id = $1 ORDER BY id DESC LIMIT 50;
 
 -- name: GetAlertById :one
 SELECT * from alerts WHERE agent_id = $1;
@@ -20,10 +20,9 @@ INSERT INTO alerts (
   summary,
   performance,
   network,
-  security,
-  created_at
+  security
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
 );
 
 -- name: UpdateSingleAlert :exec

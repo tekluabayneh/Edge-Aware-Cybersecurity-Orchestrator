@@ -134,6 +134,42 @@ func (q *Queries) GetAllAgent(ctx context.Context) (Agent, error) {
 	return i, err
 }
 
+const getAllAgentByUserId = `-- name: GetAllAgentByUserId :many
+SELECT id, device_name, user_id, agent_id, agent_token, machine_id, agent_version, os, status, last_seen, created_at from agents WHERE user_id = $1
+`
+
+func (q *Queries) GetAllAgentByUserId(ctx context.Context, userID int64) ([]Agent, error) {
+	rows, err := q.db.Query(ctx, getAllAgentByUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Agent
+	for rows.Next() {
+		var i Agent
+		if err := rows.Scan(
+			&i.ID,
+			&i.DeviceName,
+			&i.UserID,
+			&i.AgentID,
+			&i.AgentToken,
+			&i.MachineID,
+			&i.AgentVersion,
+			&i.Os,
+			&i.Status,
+			&i.LastSeen,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserDeviceCount = `-- name: GetUserDeviceCount :one
 SELECT COUNT(*) from agents WHERE user_id = $1
 `

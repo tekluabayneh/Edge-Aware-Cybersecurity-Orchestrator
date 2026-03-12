@@ -16,6 +16,10 @@ SELECT COUNT(*) from agents WHERE user_id = $1;
 -- name: GetAgentByUserId :one 
 SELECT * from agents WHERE user_id = $1;
 
+-- name: GetAllAgentByUserId :many
+SELECT * from agents WHERE user_id = $1;
+
+
 -- name: UpdateSingleAgent :exec
 UPDATE agents
 SET
@@ -28,3 +32,4 @@ SET
     status        = COALESCE($7, status),
     last_seen     = COALESCE($8, last_seen)
 WHERE id = $9;
+

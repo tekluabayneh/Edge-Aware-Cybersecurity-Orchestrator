@@ -75,13 +75,16 @@ type PairingToken struct {
 }
 
 type User struct {
-	ID        int32
-	Name      string
-	Photo     pgtype.Text
-	Phone     pgtype.Text
-	Email     string
-	Password  string
-	CreatedAt pgtype.Timestamptz
+	ID                int32
+	Name              string
+	Photo             pgtype.Text
+	Phone             pgtype.Text
+	Email             string
+	TwoFa             pgtype.Bool
+	Notification      pgtype.Bool
+	AlertNotification pgtype.Bool
+	Password          string
+	CreatedAt         pgtype.Timestamptz
 }
 
 type UserSession struct {
