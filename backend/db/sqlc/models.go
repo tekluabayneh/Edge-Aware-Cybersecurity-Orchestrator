@@ -29,6 +29,19 @@ type AgentQueue struct {
 	CreatedAt pgtype.Timestamptz
 }
 
+type AgentTelemetryLatest struct {
+	AgentID       string
+	MachineID     string
+	AgentToken    pgtype.Text
+	LastUpdated   pgtype.Timestamptz
+	SystemData    []byte
+	SecurityData  []byte
+	ProcessesData []byte
+	IntegrityData []byte
+	NetworkData   []byte
+	ExpiresAt     pgtype.Timestamptz
+}
+
 type Alert struct {
 	ID          int64
 	AgentID     string
@@ -75,13 +88,23 @@ type PairingToken struct {
 }
 
 type User struct {
+	ID                int32
+	Name              string
+	Photo             pgtype.Text
+	Phone             pgtype.Text
+	Email             string
+	TwoFa             pgtype.Bool
+	Notification      pgtype.Bool
+	AlertNotification pgtype.Bool
+	Password          string
+	CreatedAt         pgtype.Timestamptz
+}
+
+type User2faToken struct {
 	ID        int32
-	Name      string
-	Photo     pgtype.Text
-	Phone     pgtype.Text
-	Email     string
-	Password  string
-	CreatedAt pgtype.Timestamptz
+	UserID    int64
+	FaSecret  string
+	Isenabled pgtype.Bool
 }
 
 type UserSession struct {

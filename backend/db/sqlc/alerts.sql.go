@@ -24,10 +24,9 @@ INSERT INTO alerts (
   summary,
   performance,
   network,
-  security,
-  created_at
+  security
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
 )
 `
 
@@ -44,7 +43,6 @@ type CreateAlertParams struct {
 	Performance []byte
 	Network     []byte
 	Security    []byte
-	CreatedAt   pgtype.Timestamptz
 }
 
 func (q *Queries) CreateAlert(ctx context.Context, arg CreateAlertParams) error {
@@ -61,7 +59,6 @@ func (q *Queries) CreateAlert(ctx context.Context, arg CreateAlertParams) error 
 		arg.Performance,
 		arg.Network,
 		arg.Security,
-		arg.CreatedAt,
 	)
 	return err
 }
@@ -140,7 +137,7 @@ func (q *Queries) GetAlertById(ctx context.Context, agentID string) (Alert, erro
 }
 
 const getAllAlert = `-- name: GetAllAlert :many
-SELECT id, agent_id, agent_token, alert_type, severity, message, raw_payload, status, risk_level, summary, performance, network, security, created_at FROM alerts WHERE agent_id = $1
+SELECT id, agent_id, agent_token, alert_type, severity, message, raw_payload, status, risk_level, summary, performance, network, security, created_at FROM alerts WHERE agent_id = $1 ORDER BY id DESC LIMIT 50
 `
 
 func (q *Queries) GetAllAlert(ctx context.Context, agentID string) ([]Alert, error) {

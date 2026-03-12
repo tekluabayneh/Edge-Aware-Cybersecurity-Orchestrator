@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -65,8 +64,6 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 			"message": "missing required info",
 			"ack":     false,
 		})
-
-		fmt.Println(err)
 		return
 	}
 
@@ -82,14 +79,12 @@ func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Re
 		LastSeen:     AgentValue.LastSeen,
 	}
 
-	fmt.Println(AgentInfo)
 	err = h.DB.CreateAgent(ctx, AgentInfo)
 	if err != nil {
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]any{
 			"message": "internal server error",
 			"ack":     false,
 		})
-		fmt.Println(err)
 		return
 	}
 

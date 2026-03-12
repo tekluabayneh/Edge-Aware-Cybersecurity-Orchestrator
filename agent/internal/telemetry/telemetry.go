@@ -153,7 +153,6 @@ func Telemetry() {
 					fmt.Println("JSON MARSHAL ERROR:", err)
 					return
 				}
-
 				client := &http.Client{Timeout: time.Second * 10}
 				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL+"/rawTelementory", bytes.NewReader(jsonPayload))
 				token, err := utils.Getjwt()

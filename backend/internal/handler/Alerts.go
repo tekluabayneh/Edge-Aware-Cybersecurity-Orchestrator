@@ -47,11 +47,10 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 	if utils.CheckError(w, err, http.StatusBadRequest, "user not found") {
 		return
 	}
-
 	agent, err := h.DB.GetAgentByUserId(ctx, int64(user.ID))
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, sql.ErrNoRows) {
 		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
-			"message": "agent not found",
+			"message": "agent not found so No Alert",
 		})
 		return
 	}
@@ -74,9 +73,10 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 	var allAlerts []map[string]any
 	for _, alert := range alerts {
 		fields := []string{"Network", "Performance", "Security", "RawPayload"}
-		unmarshaledData := make(map[string][]map[string]any)
+		unmarshaledData := make(map[string]any)
 
-		val := reflect.ValueOf(alert)
+		val := reflect.Indirect(reflect.ValueOf(alert))
+
 		for _, field := range fields {
 			f := val.FieldByName(field)
 			if !f.IsValid() {
@@ -84,13 +84,12 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 			}
 
 			fieldBytes, ok := f.Interface().([]byte)
-			if !ok {
+			if !ok || len(fieldBytes) == 0 {
 				continue
 			}
 
-			var tmp []map[string]any
-			err := json.Unmarshal(fieldBytes, &tmp)
-			if utils.CheckError(w, err, http.StatusBadRequest, "faild to unmarshale data") {
+			var tmp any
+			if err := json.Unmarshal(fieldBytes, &tmp); err != nil {
 				return
 			}
 
@@ -109,6 +108,7 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 			"agent_token": alert.AgentToken,
 			"risk_level":  alert.RiskLevel,
 			"status":      alert.Status,
+			"CreatedAt":   alert.CreatedAt,
 		}
 		allAlerts = append(allAlerts, alertMap)
 	}
@@ -117,7 +117,6 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 		"message": "alerts fetched successfully",
 		"alert":   allAlerts,
 	})
-
 }
 
 // GET /api/alerts/:agent_id
@@ -418,7 +417,6 @@ func (h *AlertType) CreateAlert(w http.ResponseWriter, r *http.Request) {
 
 	err = h.DB.CreateAlert(ctx, params)
 	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
-		fmt.Println(err)
 		return
 	}
 

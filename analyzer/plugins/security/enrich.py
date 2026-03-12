@@ -1,3 +1,4 @@
+from requests import delete
 from  tools.RuleData import ALL_CONTENT_KEYWORDS  
 def security_enrich(event): 
     payload = event.get("payload", {})
@@ -101,9 +102,9 @@ def security_enrich(event):
                 file_dict["file_risk"]  = "high_risk" 
         else: 
             file_dict["file contain"] = ["clean (basic keyword check)"]
+          
+        file_dict.pop("content", None)
 
-
-# amke oabject with their name so you can get them from therer and put enrich for them for therer ok 
         PERMISSION_RISK_EXPLANATIONS = {
         "4755": "SUID root – runs as root. Only safe on real system tools, everywhere else = backdoor risk.",
         "4750": "SUID + group writable – attacker in group overwrites → instant root.",
@@ -185,6 +186,6 @@ def security_enrich(event):
 
 
 
-
+# look over the data and remove teh content dues to some files are exesive to store and also not ndded
     return event
 

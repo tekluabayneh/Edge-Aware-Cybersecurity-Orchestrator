@@ -65,9 +65,15 @@ func (h *AuthLoginHandlerType) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	User2FAInfo, err := h.DB.Get2FAByUser(ctx, int64(user.ID))
+	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
+		return
+	}
+
 	// send success message with token
-	utils.WriteJSON(w, http.StatusOK, map[string]string{
-		"message": "user login successfully",
-		"token":   token,
+	utils.WriteJSON(w, http.StatusOK, map[string]any{
+		"message":   "user login successfully",
+		"token":     token,
+		"IsEnabled": User2FAInfo.Isenabled,
 	})
 }

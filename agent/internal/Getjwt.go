@@ -65,7 +65,7 @@ func GetJwt() {
 		return
 	}
 
-	url := BASEURL + "/auth/l/login"
+	url := BASEURL + "/api/auth/l/login"
 
 	req, err := http.NewRequestWithContext(ctx, "POST", url, data)
 	if err != nil {

@@ -42,6 +42,7 @@ func (h *DevicePairingType) GenerateTokenHandler(w http.ResponseWriter, r *http.
 	// if user has token that is used or expired delete it
 	AllUserToken, err := h.DB.GetAllTokenRelatedToUserByEmail(ctx, user.Email)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
 			"message": "internal server error",
 		})
@@ -63,11 +64,15 @@ func (h *DevicePairingType) GenerateTokenHandler(w http.ResponseWriter, r *http.
 		}
 	}
 
+	// rmeove the old one and generate the new token
 	if err == nil && len(AllUserToken.Token) > 0 {
-		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
-			"message": "you already have token",
-		})
-		return
+		err = h.DB.DeleteUsedToken(ctx, UserEmail)
+		if err != nil {
+			utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+				"message": "internal server error",
+			})
+			return
+		}
 	}
 
 	paringDeviceData := db.CreateParingTokenParams{

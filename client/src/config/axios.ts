@@ -12,7 +12,7 @@ api.interceptors.request.use(async (config) => {
     if (!token) {
         return
     }
-    if (token) {
+    if (token?.value) {
         config.headers.Authorization = `Bearer ${token.value}`;
     }
     return config

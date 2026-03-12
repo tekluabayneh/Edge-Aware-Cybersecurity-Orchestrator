@@ -3,9 +3,12 @@
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
-  photo TEXT ,
+  photo TEXT,
   phone TEXT,
   email TEXT UNIQUE NOT NULL,
+  two_fa BOOLEAN DEFAULT false,
+  notification BOOLEAN DEFAULT false,
+  alert_notification BOOLEAN DEFAULT false,
   password TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -13,7 +16,5 @@ CREATE TABLE users (
 
 -- +goose Down
 -- +goose StatementBegin
-
 DROP TABLE users;
-
 -- +goose StatementEnd

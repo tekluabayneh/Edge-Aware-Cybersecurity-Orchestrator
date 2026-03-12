@@ -21,8 +21,12 @@ def piplinejob(payload, token):
     system_enriched    = system_enrich(data["system"])
     integrity_enriched = intgerity_enrich(data["integrity"])
     security_enriched  = security_enrich(data["security"])
-
+    print(payload.user)
     list_of_enriches = {
+        "email": payload.user.get("email"),
+        "agent_id": payload.user.get("agent_id"),
+        "agent_token": payload.user.get("agent_token"),
+        "machine_id": payload.user.get("machine_id"),
         "network":   network_enriched,
         "processes": processes_enriched,
         "system":    system_enriched,
@@ -49,8 +53,16 @@ def piplinejob(payload, token):
             list_of_enriches["integrity"] = updated_value
         else:
             print(f"Unknown category: {key}") 
+ 
+    required_keys = {"network", "system", "processes", "security", "integrity"}
 
-        send_output(list_of_enriches, token)     
+     # 1. Check if all keys exist AND none of the values are None
+    if all(list_of_enriches.get(k) is not None for k in required_keys):
+        send_output(list_of_enriches, token)
+    else:
+        # Find out exactly which one is missing/None
+        missing = [k for k in required_keys if list_of_enriches.get(k) is None]
+        print(f"Still waiting for data from: {missing}")    
 
 
 

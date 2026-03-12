@@ -31,7 +31,11 @@ const Login = () => {
                 return
             }
             cookieStore.set("token", token)
-            navigator("/dashboard")
+            if (!response.data.IsEnabled) {
+                navigator("/Dashboard")
+            } else {
+                navigator("/Verify2Fa")
+            }
         } catch (err) {
             setisLoading(false)
             if (err instanceof AxiosError) {

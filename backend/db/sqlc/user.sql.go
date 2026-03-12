@@ -12,34 +12,32 @@ import (
 )
 
 const createUser = `-- name: CreateUser :exec
-INSERT INTO users (name, email, photo, phone, password) VALUES ($1, $2, $3, $4, $5)
+INSERT INTO users (name, email, password, photo) VALUES ($1, $2, $3, $4)
 `
 
 type CreateUserParams struct {
 	Name     string
 	Email    string
-	Photo    pgtype.Text
-	Phone    pgtype.Text
 	Password string
+	Photo    pgtype.Text
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	_, err := q.db.Exec(ctx, createUser,
 		arg.Name,
 		arg.Email,
-		arg.Photo,
-		arg.Phone,
 		arg.Password,
+		arg.Photo,
 	)
 	return err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, name, photo, phone, email, password, created_at FROM users WHERE id = $1
+SELECT id, name, photo, phone, email, two_fa, notification, alert_notification, password, created_at from users WHERE email = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
-	row := q.db.QueryRow(ctx, getUser, id)
+func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUser, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -47,6 +45,9 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 		&i.Photo,
 		&i.Phone,
 		&i.Email,
+		&i.TwoFa,
+		&i.Notification,
+		&i.AlertNotification,
 		&i.Password,
 		&i.CreatedAt,
 	)
@@ -54,7 +55,7 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, name, photo, phone, email, password, created_at from users WHERE email = $1
+SELECT id, name, photo, phone, email, two_fa, notification, alert_notification, password, created_at from users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -66,8 +67,43 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.Photo,
 		&i.Phone,
 		&i.Email,
+		&i.TwoFa,
+		&i.Notification,
+		&i.AlertNotification,
 		&i.Password,
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const updateUserProfile = `-- name: UpdateUserProfile :exec
+UPDATE users 
+SET
+    photo = COALESCE($1, photo),
+    phone = COALESCE($2, phone),
+    two_fa = COALESCE($3, two_fa),
+    notification = COALESCE($4, notification),
+    alert_notification  = COALESCE($5, alert_notification)
+WHERE email = $6
+`
+
+type UpdateUserProfileParams struct {
+	Photo             pgtype.Text
+	Phone             pgtype.Text
+	TwoFa             pgtype.Bool
+	Notification      pgtype.Bool
+	AlertNotification pgtype.Bool
+	Email             string
+}
+
+func (q *Queries) UpdateUserProfile(ctx context.Context, arg UpdateUserProfileParams) error {
+	_, err := q.db.Exec(ctx, updateUserProfile,
+		arg.Photo,
+		arg.Phone,
+		arg.TwoFa,
+		arg.Notification,
+		arg.AlertNotification,
+		arg.Email,
+	)
+	return err
 }

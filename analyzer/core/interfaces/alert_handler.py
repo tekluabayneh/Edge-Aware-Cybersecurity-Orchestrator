@@ -17,6 +17,11 @@ def send_alert(alert, token):
             "Authorization":"Bearer " + token
             })
 
+        if response.status_code == 200:
+            print("Success:", response.json().get("message", "No message key found"))
+        else:
+            print("Error Body:", response.json())
+
         response.raise_for_status()
     except Exception as e:
         print(f"Failed to send alert: {e}")
