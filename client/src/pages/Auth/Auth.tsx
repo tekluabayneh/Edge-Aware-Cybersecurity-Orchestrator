@@ -4,15 +4,13 @@ import { motion } from "framer-motion";
 import Login from "../../components/form/Login";
 import Register from "../../components/form/Register";
 import { FaGoogle, FaGithub } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 export default function Auth() {
     const [isSignUp, setIsSignUp] = useState(false);
-    const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
-     const navigator = useNavigate()
+    const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 
-    if(!BASE_URL){
-      console.log("base url is empty")
-       return
+    if (!BASE_URL) {
+        console.log("base url is empty")
+        return
     }
 
 
@@ -142,7 +140,7 @@ export default function Auth() {
 
 
                         {/* From */}
-                        {!isSignUp ? <Login />:<Register />}
+                        {!isSignUp ? <Login /> : <Register />}
                         {/* form end */}
 
                         <div className="mt-8 pt-6 border-t  border-gray-700">
