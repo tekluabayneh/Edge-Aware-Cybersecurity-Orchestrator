@@ -11,7 +11,7 @@ import json
 
 router = APIRouter(tags=["ingest"])
 
-@router.post("/rawTelementory")
+@router.post("rawTelementory")
 async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
     """
     Ingest raw telemetry from agent → normalize → analyze → return alerts if any

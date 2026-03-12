@@ -8,7 +8,7 @@ def send_output(event, token):
     if BASEURL is None: 
         return 
 
-        response = requests.post(f"{BASEURL}/telementary/report", json=event,  headers={
+        response = requests.post(f"{BASEURL}/api/telementary/report", json=event,  headers={
             "Content-Type": "application/json",
             "Authorization":"Bearer " + token
             })

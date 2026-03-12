@@ -44,7 +44,7 @@ func Commands() {
 	defer cancel()
 
 	URL := os.Getenv("BASE_URL")
-	fullUrl := URL + "/fetch/fetch"
+	fullUrl := URL + "/api/fetch/fetch"
 	path := filepath.Join("internal/register", "email.txt")
 
 	if _, err := os.Stat(path); err != nil {
@@ -94,7 +94,7 @@ func Commands() {
 		}
 	}
 
-	req, err = http.NewRequestWithContext(ctx, "POST", URL+"/ack/ack", bytes.NewReader(jsonPayload))
+	req, err = http.NewRequestWithContext(ctx, "POST", URL+"/api/ack/ack", bytes.NewReader(jsonPayload))
 	if err != nil {
 		fmt.Println("ACK REQUEST ERROR:", err)
 	}
@@ -114,7 +114,7 @@ func Commands() {
 	}
 	// ack Response message back
 	ackjsonRspnose, err := json.Marshal(ackResponsePayload)
-	req, err = http.NewRequestWithContext(ctx, "POST", URL+"/res/ack", bytes.NewReader(ackjsonRspnose))
+	req, err = http.NewRequestWithContext(ctx, "POST", URL+"/api/res/ack", bytes.NewReader(ackjsonRspnose))
 	if err != nil {
 		fmt.Println("RES ACK REQUEST ERROR:", err)
 	}

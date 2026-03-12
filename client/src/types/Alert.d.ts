@@ -34,3 +34,11 @@ export type DeviceType = {
   last_seen:string,
   created_at:string,
 }
+
+type FormDataType ={
+    password:string,
+    email: string
+}
+type RegisterRequest = FormDataType & {
+  username: string;
+};

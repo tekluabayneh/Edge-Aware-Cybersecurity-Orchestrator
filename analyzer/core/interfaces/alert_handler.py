@@ -12,7 +12,7 @@ def send_alert(alert, token):
             return
 
 
-        response = requests.post(f"{BASE_URL}/newAlert/create", json=alert,  headers={
+        response = requests.post(f"{BASE_URL}/api/newAlert/create", json=alert,  headers={
             "Content-Type": "application/json",
             "Authorization":"Bearer " + token
             })
