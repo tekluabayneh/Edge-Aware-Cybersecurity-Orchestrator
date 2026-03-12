@@ -6,5 +6,3 @@ router = APIRouter(tags=["activity"])
 def get_activity_for_user():
     print("get activity")
     return {"msg": "get activity"}
-
-
