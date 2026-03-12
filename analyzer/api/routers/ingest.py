@@ -11,23 +11,18 @@ import json
 
 router = APIRouter(tags=["ingest"])
 
-@router.post("rawTelementory")
+@router.post("/rawTelementory")
 async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
     """
     Ingest raw telemetry from agent → normalize → analyze → return alerts if any
     """ 
-    print(payload.agent_id)
-    print(payload.agent_token)
-
     header = req.headers.get("Authorization")
     if not header: 
-        print("heaer is empty")
         return
 
     token = header.split(" ")[1]
-    print(token)
 
-    # 1. Prepare clean payload dictionary (good, you're already doing this)
+    # 1. Prepare clean payload dictionary 
     payload_dict: Dict[str, Any] = {
         "email": payload.email,
         "agent_id": payload.agent_id,
@@ -47,7 +42,7 @@ async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
     context.request_id = str(uuid.uuid4())
     context.start_time = getattr(req.state, "start_time", None)
 
-    # Attach user/agent info (make it a proper dict or object if you want later)
+    # Attach user/agent info 
     context.user = {
         "token": token,
         "email": payload.email,
@@ -57,15 +52,13 @@ async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
         "ip": req.client.host,              
     }
 
-    # Put the actual telemetry data into context (pipeline will use this)
+    # Put the actual telemetry data into context 
     context.input_data = payload_dict
     context.raw_payload = payload.model_dump()  
 
     try:
-        # 3. Run the pipeline — passing context instead of just dict
         piplinejob(context, token) 
 
-        # 4. Prepare response based on what happened in the pipeline
         response = {
             "status": "success",
             "request_id": context.request_id,
