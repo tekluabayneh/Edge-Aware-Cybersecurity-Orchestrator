@@ -7,7 +7,6 @@ type StateType = {
 }
 
 const Alerts = await GetAllAlerts()
-console.log("thisis the data", Alerts)
 
 const AlertFilters: React.FC<StateType> = ({ setActiveFilter }) => {
     return (
