@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 export default function RecentAlerts() {
     const [alerts, setAlerts] = useState<AlertType[]>([])
 
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ["userAlert"],
         queryFn: GetAllAlerts
     });
@@ -42,9 +42,6 @@ export default function RecentAlerts() {
         )
     }
 
-    if (error) return <p className="text-red-500">Something went wrong</p>;
-
-
     return (
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
             <div className="flex justify-between items-center mb-6">
@@ -58,6 +55,8 @@ export default function RecentAlerts() {
                 >
                     View All →
                 </Link>
+
+
             </div>
             <div className="space-y-3">
                 {alerts?.slice(0, 5).map((alert, idx) => (
