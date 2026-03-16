@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import NotificationBell from '../../components/Notification/Notification'
 
 export default function Profile() {
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ["userProfile"],
         queryFn: FechUserProfile
     });
@@ -18,7 +18,6 @@ export default function Profile() {
             </div>
         )
     }
-    if (error) return <p>Something went wrong</p>;
 
     return (
         <div className="space-y-8">
