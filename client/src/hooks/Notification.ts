@@ -18,8 +18,10 @@ export const FetchAllNotification = async (): NotificationType => {
     } catch (error) {
         if (error instanceof AxiosError) {
             toast.error(error.response?.data.message);
+            return []
         } else {
             toast.error("operation failed");
+            return []
         }
     }
 
@@ -33,8 +35,10 @@ export const MarkRadSingleNotification = async () => {
     } catch (error) {
         if (error instanceof AxiosError) {
             toast.error(error.response?.data.message);
+            return []
         } else {
             toast.error("operation failed");
+            return []
         }
     }
 
@@ -48,8 +52,10 @@ export const MarkRadAlllNotification = async (id: number) => {
     } catch (error) {
         if (error instanceof AxiosError) {
             toast.error(error.response?.data.message);
+            return []
         } else {
             toast.error("operation failed");
+            return []
         }
     }
 
