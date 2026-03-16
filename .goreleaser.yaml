@@ -4,7 +4,7 @@ project_name: agent
 
 builds:
   - id: agent
-    main: ./cmd/app/app.go
+    main: ./agent/cmd/app/app.go 
     binary: agent
 
     goos:
