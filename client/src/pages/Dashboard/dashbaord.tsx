@@ -20,7 +20,7 @@ export default function Dashboard() {
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ["userAlert"],
         queryFn: GetAllAlerts
     });
@@ -38,26 +38,54 @@ export default function Dashboard() {
     }
 
 
-    const activeAlerts = alerts.filter((a) => a.status === 'active').length
-    const criticalAlerts = alerts.filter((a) => a.risk_level === 'critical').length
-    const analyzedEvenCount = alerts.length
+    const activeAlerts = alerts?.filter((a) => a.status === 'active').length
+    const criticalAlerts = alerts?.filter((a) => a.risk_level === 'critical').length
+    const analyzedEvenCount = alerts?.length
+
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="text-gray-400">Loading alerts...</div>
+            <div className="space-y-8 animate-pulse">
+                {/* Header skeleton */}
+                <div className="flex justify-between p-2">
+                    <div className="space-y-2">
+                        <div className="h-8 w-64 bg-gray-700 rounded"></div>
+                        <div className="h-4 w-80 bg-gray-700 rounded"></div>
+                    </div>
+                    <div className="h-10 w-10 bg-gray-700 rounded-full"></div>
+                </div>
+
+                {/* Metrics skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="p-6 bg-gray-800 rounded-xl space-y-3">
+                            <div className="h-4 w-24 bg-gray-700 rounded"></div>
+                            <div className="h-8 w-16 bg-gray-700 rounded"></div>
+                            <div className="h-3 w-12 bg-gray-700 rounded"></div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Main content skeleton */}
+                <div className="grid lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 space-y-6">
+                        <div className="h-48 bg-gray-800 rounded-xl"></div>
+                        <div className="h-48 bg-gray-800 rounded-xl"></div>
+                    </div>
+                    <div className="h-96 bg-gray-800 rounded-xl"></div>
+                </div>
             </div>
         )
     }
 
-    if (!data) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="text-gray-400">Opps! you don't have alerts yet</div>
-            </div>
-        )
-    }
+    //
+    // if (!data) {
+    //     return (
+    //         <div className="flex items-center justify-center h-screen">
+    //             <div className="text-gray-400">Opps! you don't have alerts yet</div>
+    //         </div>
+    //     )
+    // }
 
-    if (error) return <p className="text-red-500">Something went wrong</p>;
 
     return (
         <div className="space-y-8">
@@ -77,28 +105,28 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <MetricCard
                     title="Active Threats"
-                    value={activeAlerts}
+                    value={activeAlerts ?? 0}
                     change="-12%"
                     trend="down"
                     icon={AlertCircle}
                 />
                 <MetricCard
                     title="Critical Alerts"
-                    value={criticalAlerts}
+                    value={criticalAlerts ?? 0}
                     change="+5%"
                     trend="up"
                     icon={Shield}
                 />
                 <MetricCard
                     title="Systems Monitored"
-                    value="24"
+                    value={analyzedEvenCount ?? 0}
                     change="+2"
                     trend="up"
                     icon={Activity}
                 />
                 <MetricCard
                     title="Events Analyzed"
-                    value={analyzedEvenCount}
+                    value={analyzedEvenCount ?? 0}
                     change="+8%"
                     trend="up"
                     icon={Eye}
