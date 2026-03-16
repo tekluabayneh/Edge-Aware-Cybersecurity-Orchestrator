@@ -1,8 +1,6 @@
 import toast from "react-hot-toast"
 import api from "../config/axios"
 import { AxiosError } from "axios"
-import { useNavigate } from "react-router-dom"
-
 
 export const FetchDeviceList = async (): DeviceType => {
     try {
@@ -14,8 +12,10 @@ export const FetchDeviceList = async (): DeviceType => {
             if (error.status == 401 || error.status == 400) {
                 window.location.href = "/Auth"
             }
+            return []
         } else {
             toast.error("operation failed");
+            return []
         }
     }
 
@@ -31,8 +31,10 @@ export const GenerateParingToken = async (): DeviceType => {
             if (error.status == 401 || error.status == 400) {
                 window.location.href = "/Auth"
             }
+            return []
         } else {
             toast.error("operation failed");
+            return []
         }
     }
 
