@@ -1,9 +1,13 @@
 package notification
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
 
-func Notify(userName string, ReciverEmail string, message string) {
-	SenerEmail := "edageaware@gmail.com"
+	"github.com/sendinblue/APIv3-go-library/lib"
+)
+
+func Notify(userName string, ReciverEmail string, message string) (lib.CreateSmtpEmail, *http.Response, error) {
 
 	html := fmt.Sprintf(`
 <div style="font-family: Arial, sans-serif; background-color:#f7f8fa; padding:30px;">
@@ -46,5 +50,6 @@ func Notify(userName string, ReciverEmail string, message string) {
 </div>
 `, userName, message)
 
-	EmailSender(userName, ReciverEmail, SenerEmail, "Agent Security Alert", html)
+	smtRes, res, err := EmailSender(userName, ReciverEmail, ReciverEmail, "Agent Security Alert", html)
+	return smtRes, res, err
 }
