@@ -39,7 +39,7 @@ func Send2FaEmail(to string, otp string) error {
   </p>
 </div>`
 
-	err := notification.EmailSender(senderName, senderEmail, to, subject, html)
+	_, _, err := notification.EmailSender(senderName, senderEmail, to, subject, html)
 	if err != nil {
 		return err
 	}
