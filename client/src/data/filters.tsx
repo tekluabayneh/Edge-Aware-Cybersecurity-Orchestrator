@@ -1,6 +1,7 @@
 import { Server, BluetoothConnected, Cpu, HardDrive, Network } from "lucide-react";
 import {
-    Monitor, Apple, Smartphone,
+    Monitor as WindowsIcon,
+    Apple, Smartphone,
     LayoutDashboard,
     AlertTriangle,
     User,
@@ -38,27 +39,31 @@ export const recentActivities = [
 ];
 
 
+
 export const downloadButtons = [
     {
-        os: "Window",
-        icon: Monitor,
+        os: "Windows",
+        icon: WindowsIcon,
         color: "from-blue-500 to-cyan-500",
-        hoverColor: "hover:shadow-blue-500/50",
-        downloadUrl: "#",
+        hoverColor: "hover:shadow-cyan-500/50",
+        downloadUrl: "/downloads/agent-windows.exe",
+        githubRelease: "https://github.com/yourrepo/releases/tag/v1.0.0",
     },
     {
         os: "macOS",
         icon: Apple,
         color: "from-purple-500 to-pink-500",
         hoverColor: "hover:shadow-purple-500/50",
-        downloadUrl: "#",
+        downloadUrl: "/downloads/agent-macos.dmg",
+        githubRelease: "https://github.com/yourrepo/releases/tag/v1.0.0",
     },
     {
         os: "Linux",
         icon: Smartphone,
         color: "from-orange-500 to-red-500",
         hoverColor: "hover:shadow-orange-500/50",
-        downloadUrl: "#",
+        downloadUrl: "/downloads/agent-linux.tar.gz",
+        githubRelease: "https://github.com/yourrepo/releases/tag/v1.0.0",
     },
 ];
 
@@ -116,3 +121,37 @@ export const flipVariants = {
         },
     }),
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
