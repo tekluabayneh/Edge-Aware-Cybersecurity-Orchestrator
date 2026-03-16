@@ -45,10 +45,6 @@ export default function SecurityPreferences({ user }: { user: userInfoType | nul
     async function UPdate2FA(flag: boolean) {
         try {
             const res = await api.post("/api/send/2fa", flag ? { Enable: "enable" } : { Enable: "disable" })
-            // if the enabling the 2fa is first time the backend will send qr code and url so redirect user to page wherer they can form that code and redirect them back to dashboard page 
-            console.log(res.data?.data?.otpUrl)
-            console.log(res.data?.data?.qr)
-
             if (res.data?.data?.otpUrl != undefined || res.data?.data?.rq != undefined) {
                 navigator("/EnableQr", {
                     state: {
