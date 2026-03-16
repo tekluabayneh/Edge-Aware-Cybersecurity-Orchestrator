@@ -50,7 +50,7 @@ export default function PairDevice() {
                         </div>
 
                         <div className="flex items-center justify-center gap-3 mb-6">
-                            {pairingToken.length > 0 ?
+                            {pairingToken?.length > 0 ?
                                 <button
                                     onClick={handleCopy}
                                     className="inline-flex cursor-pointer items-center gap-2 px-6 py-3 bg-white text-black rounded-lg hover:bg-gray-200 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
