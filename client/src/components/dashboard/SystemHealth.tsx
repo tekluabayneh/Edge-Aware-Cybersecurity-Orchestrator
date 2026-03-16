@@ -25,7 +25,7 @@ export default function SystemHealth() {
             network: { icon: Network, bar: "from-purple-500 to-purple-600", iconColor: "text-purple-400" },
         };
 
-        const SysInfo = Object.entries(data?.data[0]?.system?.payload || {}).filter(([key,]) => iconMap[key])
+        const SysInfo = Object.entries(data?.data?.[0]?.system?.payload || {}).filter(([key,]) => iconMap[key])
             .map(
                 ([key, value]) => ({
                     name: key,

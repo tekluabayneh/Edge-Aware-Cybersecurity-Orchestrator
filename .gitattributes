@@ -1,7 +1,2 @@
 client/* linguist-vendored
-client/src/hooks/* linguist-vendored
-client/src/components/* linguist-vendored
-client/src/pages/* linguist-vendored
-analyzer/* linguist-vendored
-backend/db/sqlc/* linguist-generated
-backend/vendor/* linguist-vendored
+client/** linguist-vendored

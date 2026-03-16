@@ -13,14 +13,15 @@ export default function SecurityScore() {
     });
 
     useEffect(() => {
-        const antivirus = data?.data[0]?.security?.payload.antivirus?.running
-        const firewall = data?.data[0]?.security?.payload.firewall?.enabled
-        const network = data?.data[0]?.network?.is_up_and_running
+
+        const antivirus = data?.data?.[0]?.security?.payload?.antivirus?.running ?? false
+        const firewall = data?.data?.[0]?.security?.payload?.firewall?.enabled ?? false
+        const network = data?.data?.[0]?.network?.is_up_and_running ?? false
 
 
         const checks = [antivirus, firewall, network];
         const trueCount = checks.filter(Boolean).length;
-        let overAllScore = Math.round((trueCount / checks.length) * 100)
+        const overAllScore = Math.round((trueCount / checks?.length) * 100)
         setscore(overAllScore);
     }, [data, setscore]);
 

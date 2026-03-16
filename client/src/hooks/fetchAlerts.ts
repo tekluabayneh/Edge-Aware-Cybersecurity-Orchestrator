@@ -11,8 +11,10 @@ export const GetAllAlerts = async () => {
             if (error.status == 401 || error.status == 400) {
                 window.location.href = "/Auth"
             }
+            return []
         } else {
             toast.error("operation failed");
+            return []
         }
     }
 }

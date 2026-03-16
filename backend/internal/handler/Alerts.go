@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
+	"strings"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	notify "github.com/edge-aware-cyberSecurity/internal/handler/notification"
@@ -423,7 +424,8 @@ func (h *AlertType) CreateAlert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if Alerts.RiskLevel.Valid && Alerts.RiskLevel.String == "high" {
+	// and also chech if user allowd
+	if strings.ToLower(params.Severity) == "critical" && user.Notification.Bool {
 		notificationParams := db.CreateNotificationParams{
 			UserID:  int64(user.ID),
 			Title:   Alerts.Summary.String,
@@ -435,7 +437,13 @@ func (h *AlertType) CreateAlert(w http.ResponseWriter, r *http.Request) {
 		if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
 			return
 		}
-		notify.Notify(email, email, Alerts.Summary.String)
+
+		smtRes, res, err := notify.Notify(email, email, Alerts.Summary.String)
+		if err != nil {
+			fmt.Println(smtRes)
+			fmt.Println(res)
+			fmt.Println("err sending alert email")
+		}
 	}
 
 	utils.WriteJSON(w, http.StatusOK, map[string]string{

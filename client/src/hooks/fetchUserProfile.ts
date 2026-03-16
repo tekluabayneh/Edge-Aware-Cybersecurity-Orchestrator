@@ -39,8 +39,10 @@ export const FechUserProfile = async (): UserResponse => {
             if (error.status == 401 || error.status == 400) {
                 window.location.href = "/Auth"
             }
+            return []
         } else {
             toast.error("operation failed");
+            return []
         }
     }
 
@@ -59,8 +61,10 @@ export const UpdateUserProfile = async (usreinfo: ProfileInfo): userInfoType => 
             if (error.status == 401 || error.status == 400) {
                 window.location.href = "/Auth"
             }
+            return []
         } else {
             toast.error("operation failed");
+            return []
         }
     }
 }
