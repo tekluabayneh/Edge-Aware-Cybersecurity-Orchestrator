@@ -24,8 +24,16 @@ const Register = () => {
             setisLoading(true)
             const response = await axios.post(`${BASE_URL}/api/auth/r/register`, data)
             toast.success(response.data.message);
-            setisLoading(false)
+
+            const loginRes = await axios.post(`${BASE_URL}/api/auth/l/login`, {
+                email: data.email,
+                password: data.password
+            })
+
+            await cookieStore.set("token", loginRes.data.token)
+
             navigator("/paring")
+            setisLoading(false)
         } catch (err) {
             setisLoading(false)
             if (err instanceof AxiosError) {
