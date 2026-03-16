@@ -15,17 +15,17 @@ export default function NotificationBell() {
     const [notifications, setNotifications] = useState<NotificationType[] | []>([]);
     const ref = useRef(null);
 
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ["allNotification"],
         queryFn: FetchAllNotification
     });
 
     useEffect(() => {
-        if (data?.notification) {
-            setNotifications(data?.notification)
+        if (!data) {
+            setNotifications([])
             return
         }
-        setNotifications([])
+        setNotifications(data?.notification)
     }, [data, setNotifications])
 
 
@@ -46,7 +46,6 @@ export default function NotificationBell() {
     };
 
     const markAllRead = async () => {
-        console.log("mar read all ")
         MarkRadAlllNotification()
     };
 
@@ -66,9 +65,6 @@ export default function NotificationBell() {
         )
     }
 
-    if (error) return <p className="text-red-500">Something went wrong</p>;
-
-
     return (
         <div className="relative" ref={ref}>
             {/* Bell button */}
@@ -77,9 +73,9 @@ export default function NotificationBell() {
                 className="relative p-2 rounded-xl hover:bg-slate-100 transition-colors focus:outline-none"
             >
                 <Bell className="h-5 w-5 cursor-pointer text-slate-600" />
-                {notifications.length > 0 && (
+                {notifications?.length > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white ring-2 ring-white">
-                        {notifications.length > 9 ? "9+" : notifications.length}
+                        {notifications?.length > 9 ? "9+" : notifications?.length}
                     </span>
                 )}
             </button>
@@ -90,7 +86,7 @@ export default function NotificationBell() {
                     {/* Header */}
                     <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
                         <span className="text-sm font-semibold text-slate-900">Notifications</span>
-                        {notifications.length > 0 && (
+                        {notifications?.length > 0 && (
                             <button
                                 onClick={markAllRead}
                                 className="text-xs text-slate-400 hover:text-slate-700 transition-colors"
@@ -102,29 +98,29 @@ export default function NotificationBell() {
 
                     {/* List */}
                     <div className="max-h-96 overflow-y-auto">
-                        {notifications.length === 0 ? (
+                        {notifications?.length === 0 || !notifications ? (
                             <div className="flex flex-col items-center justify-center py-10 gap-2">
                                 <Inbox className="h-6 w-6 text-slate-300" />
                                 <p className="text-sm text-slate-400">You're all caught up!</p>
                             </div>
                         ) : (
-                            notifications.map((n) => {
-                                const cfg = typeStyles[n.type] || typeStyles.info;
+                            notifications?.map((n) => {
+                                const cfg = typeStyles[n?.type] || typeStyles?.info;
                                 const Icon = cfg.icon;
                                 return (
                                     <div
-                                        key={n.IDJ}
-                                        className={`flex gap-3 px-4 py-3 border-b border-slate-100 last:border-0 ${!n.is_read ? "bg-slate-50" : "bg-white"}`}
+                                        key={n.ID}
+                                        className={`flex gap-3 px-4 py-3 border-b border-slate-100 last:border-0 ${!n.IsRead ? "bg-slate-50" : "bg-white"}`}
                                     >
                                         <div className={`shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${cfg.bgClass}`}>
                                             <Icon className={`h-4 w-4 ${cfg.iconClass}`} />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-start justify-between gap-2">
-                                                <p className={`text-sm leading-snug ${!n.is_read ? "font-semibold text-slate-900" : "font-medium text-slate-500"}`}>
+                                                <p className={`text-sm leading-snug ${!n.IsRead ? "font-semibold text-slate-900" : "font-medium text-slate-500"}`}>
                                                     {n.Title}
                                                 </p>
-                                                {!n.is_read && (
+                                                {!n.IsRead && (
                                                     <button onClick={() => markRead(n.ID, n.UserID)} className="shrink-0 cursor-pointer p-1 rounded hover:bg-slate-200 transition-colors">
                                                         <Check className="h-3 w-3 text-slate-400" />
                                                     </button>
