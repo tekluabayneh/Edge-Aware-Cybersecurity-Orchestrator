@@ -7,9 +7,9 @@ gomod:
 
 builds:
   - id: agent
+    dir: ./agent/
     main: ./main.go
     binary: agent
-    dir: ./agent/
     goos:
       - linux
       - darwin
@@ -25,9 +25,7 @@ archives:
     builds:
       - agent
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-    formats:
-      - tar.gz
-    allow_different_formats: true
+    format: tar.gz
     format_overrides:
       - goos: windows
         format: zip
