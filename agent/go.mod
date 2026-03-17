@@ -3,7 +3,6 @@ module agent
 go 1.25.4
 
 require (
-	github.com/StackExchange/wmi v1.2.1
 	github.com/charmbracelet/lipgloss v1.1.1-0.20250404203927-76690c660834
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1

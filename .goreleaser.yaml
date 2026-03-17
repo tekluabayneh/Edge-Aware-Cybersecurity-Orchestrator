@@ -4,8 +4,9 @@ project_name: agent
 
 builds:
   - id: agent
-    main: ./agent/main.go
+    main: ./main.go
     binary: agent
+    dir: ./agent/
 
     goos:
       - linux
