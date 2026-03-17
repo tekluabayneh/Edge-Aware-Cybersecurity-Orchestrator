@@ -2,21 +2,21 @@ version: 2
 
 project_name: agent
 
+gomod:
+  dir: ./agent
+
 builds:
   - id: agent
     main: ./main.go
     binary: agent
     dir: ./agent/
-
     goos:
       - linux
       - darwin
       - windows
-
     goarch:
       - amd64
       - arm64
-
     env:
       - CGO_ENABLED=0
 
@@ -24,14 +24,15 @@ archives:
   - id: agent
     builds:
       - agent
-
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-
+    formats:
+      - tar.gz
+    allow_different_formats: true
     format_overrides:
       - goos: windows
         format: zip
 
 release:
   github:
-    owner: "{{ .Env.GITHUB_REPOSITORY_OWNER }}"
-    name: "{{ .ProjectName }}"
+    owner: tekluabayneh
+    name: Edge-Aware-Cybersecurity-Orchestrator
