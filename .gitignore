@@ -67,3 +67,7 @@ desktop/build/
 agent/internal/register/Jwttoken.txt
 agent/internal/register/token.txt
 agent/internal/register/email.txt
+
+agent/register
+
+**/register
