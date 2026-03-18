@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"agent/internal/utils"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -60,13 +61,19 @@ func GetJwt() {
 
 	data := bytes.NewReader(jsondata)
 
-	BASEURL := os.Getenv("BASE_URL")
-	if BASEURL == "" {
-		log.Println("BASE_URL environment variable is empty")
-		return
+	// BASEURL := os.Getenv("BASE_URL")
+	///////////////////////////////////////// fetch the url isntade of from env////////////////////////////////////////////////
+	// if BASEURL == "" {
+	// 	log.Println("BASE_URL environment variable is empty")
+	// 	return
+	// }
+
+	baseurl, err := utils.FetchEnv()
+	if err != nil {
+		log.Printf("failed to request env file: %v", err)
 	}
 
-	url := BASEURL + "/api/auth/l/login"
+	url := baseurl.BASE_URL + "/api/auth/l/login"
 
 	req, err := http.NewRequestWithContext(ctx, "POST", url, data)
 	if err != nil {
