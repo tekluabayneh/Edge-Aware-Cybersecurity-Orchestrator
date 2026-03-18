@@ -115,9 +115,9 @@ func Register() bool {
 		fmt.Println("Token cannot be empty. Please try again.")
 	}
 
-	baseUrl := os.Getenv("BASE_URL")
-	if baseUrl == "" {
-		panic("base url is empty")
+	baseUrl, err := utils.FetchEnv()
+	if err != nil {
+		fmt.Println("error while fetching env files")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
@@ -125,7 +125,7 @@ func Register() bool {
 
 	email := map[string]any{"email": usrePaylod[1]}
 
-	res, err := httpclient.Fetch(ctx, baseUrl+"/api/DeviceParing", email, usrePaylod[0])
+	res, err := httpclient.Fetch(ctx, baseUrl.BASE_URL+"/api/DeviceParing", email, usrePaylod[0])
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
@@ -156,7 +156,7 @@ func Register() bool {
 	var DeviceInfoRespons PairingAckResponse
 	// if the token vlidation api response ok, proccede to the token acknowlaege api call
 	if res.StatusCode == 200 {
-		res, err := httpclient.InitiateParing(ctx, baseUrl+"/api/Token/ack", DeviceInfoPaylod)
+		res, err := httpclient.InitiateParing(ctx, baseUrl.BASE_URL+"/api/Token/ack", DeviceInfoPaylod)
 		print(err)
 		if err != nil {
 			fmt.Println(utils.ErrorBox.Render("message: =>", DeviceInfoRespons.Message))
