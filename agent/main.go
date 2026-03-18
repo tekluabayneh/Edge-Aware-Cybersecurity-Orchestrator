@@ -4,6 +4,8 @@ import (
 	"agent/cmd/app"
 	"agent/internal/utils"
 	"fmt"
+	"os"
+	"path/filepath"
 )
 
 //
@@ -11,6 +13,20 @@ import (
 //
 
 func main() {
+	// creaet all the files
+	fileTocreate := []string{"token.text", "email.text"}
+	for _, v := range fileTocreate {
+		Filepath := filepath.Join("internal/register", v)
+		if _, err := os.Stat(Filepath); os.IsNotExist(err) {
+			f, err := os.Create(Filepath)
+			if err != nil {
+				fmt.Printf("Error creating file %s: %v\n", v, err)
+			}
+			f.Close()
+			fmt.Printf("Successfully created: %s\n", v)
+		}
+	}
+
 	_, err := utils.FetchEnv()
 	if err != nil {
 
