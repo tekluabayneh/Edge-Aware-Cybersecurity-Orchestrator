@@ -1,12 +1,12 @@
 package network
 
 import (
+	"agent/internal/utils"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"sync"
 	"time"
 )
@@ -32,8 +32,13 @@ func CheckIsSusIp(ctx context.Context, ip string) (AbuseIPDBResponse, error) {
 	if err != nil {
 		return AbuseIPDBResponse{}, err
 	}
+	API_KEY_SUSIP, err := utils.FetchEnv()
+	if err != nil {
+		fmt.Println("error:", err)
+	}
 
-	req.Header.Set("Key", os.Getenv("API_KEY_OF_SUSIP"))
+	req.Header.Set("Key", API_KEY_SUSIP.API_KEY_OF_SUSIP)
+	////////////////////////////////////////////instade of env get it from backend ///////////////////////////////////////////////////////
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "network-monitor")
 
