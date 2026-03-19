@@ -1,59 +1,42 @@
-version: 2
+name: Release
 
-project_name: agent
+on:
+  push:
+    tags:
+      - "v*"
 
-gomod:
-  dir: ./agent
+permissions:
+  contents: write
 
-builds:
-  - id: agent
-    dir: ./agent
-    main: ./main.go
-    binary: agent
-    goos:
-      - linux
-      - darwin
-      - windows
-    goarch:
-      - amd64
-      - arm64
-    env:
-      - CGO_ENABLED=0
+jobs:
+  release:
+    runs-on: windows-latest
 
-    hooks:
-      post:
-        - cmd: >
-            {{- if and (eq .Os "windows") (eq .Runtime.Goos "windows") -}}
-            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} "{{ .Dir }}/../installer.iss"
-            {{- end -}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-# ✅ Linux packages
-nfpms:
-  - id: agent-linux
-    package_name: agent
-    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}"
-    formats:
-      - deb
-      - rpm
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
 
-    bindir: /usr/bin
+      - name: Install Inno Setup
+        run: choco install innosetup
 
-    scripts:
-      postinstall: scripts/postinstall.sh
+      - name: Cache Go (optional but faster)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
-# ✅ Archives
-archives:
-  - id: agent
-    builds:
-      - agent
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-    format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
-
-# ✅ GitHub release
-release:
-  github:
-    owner: tekluabayneh
-    name: Edge-Aware-Cybersecurity-Orchestrator
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -27,7 +27,6 @@ builds:
             iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} "{{ .Dir }}/../installer.iss"
             {{- end -}}
 
-# ✅ Linux packages (.deb / .rpm)
 nfpms:
   - id: agent-linux
     package_name: agent
@@ -36,14 +35,11 @@ nfpms:
       - deb
       - rpm
 
-    contents:
-      - src: agent
-        dst: /usr/bin/agent
+    bindir: /usr/bin
 
     scripts:
-      postinstall: "{{ .Dir }}/../scripts/postinstall.sh"
+      postinstall: scripts/postinstall.sh
 
-# ✅ Archives (.tar.gz / .zip)
 archives:
   - id: agent
     builds:
@@ -54,9 +50,7 @@ archives:
       - goos: windows
         format: zip
 
-# ✅ GitHub release
 release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
-    
