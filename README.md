@@ -75,11 +75,12 @@ scripts/: Post-install automation for Linux environments.
 installer.iss: Inno Setup configuration for Windows production builds.
 
 🧠 Database Schema
-Detailed schema relations can be viewed here: DrawSQL Diagram
+Detailed schema relations can be viewed here:
+https://drawsql.app/teams/man-21/diagrams/edage-aware-security-db/embed
 
 🧑‍💻 Author
-Teklu Abayneh (Abera Kuraleo)
-Cybersecurity Enthusiast | Full-Stack Developer | Edge Systems Engineer
+Teklu Abayneh 
+Cybersecurity Enthusiast | Full-Stack Engineer| Edge Systems Engineer
 
 <!-- https://drawsql.app/teams/man-21/diagrams/edage-aware-security-db/embed -->
 

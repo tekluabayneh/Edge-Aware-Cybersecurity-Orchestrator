@@ -46,33 +46,22 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
-    # Optional: add any extra root files to all archives
     files:
       - LICENSE*
       - README*
 
-  # Custom archive for Windows installers only (this will produce Agent_Setup_amd64.exe etc.)
+  # Custom entry to include the Inno Setup .exe files as separate assets
   - id: windows-installer
     name_template: "Agent_Setup_{{ .Arch }}"
-    format: binary  # dummy; we override with files
+    format: binary  # dummy format since we're just including files
     files:
-      - src: "Output_{{ .Arch }}/*.exe"   # if you have OutputDir=Output_{#Arch} in .iss
+      - src: "Output_{{ .Arch }}/*.exe"   # primary: if OutputDir=Output_{#Arch} in .iss
         dst: .
-      - src: "Output/*.exe"               # fallback if no per-arch dir
+      - src: "Output/*.exe"               # fallback: single Output folder
         dst: .
-      - src: "*.exe"                      # fallback if OutputDir=. (root)
+      - src: "*.exe"                      # fallback: if OutputDir=. (root)
         dst: .
-    goos:
-      - windows
-    builds:
-      - agent
-
-# Optional fallback: copy installers to dist/ so they get auto-uploaded
-before_publish:
-  - cmd: >
-      {{- if eq .Os "windows" -}}
-      if exist "Output_{{ .Arch }}\*.exe" copy "Output_{{ .Arch }}\*.exe" dist\
-      {{- end -}}
+    # No 'goos' here — archives inherit from builds; this will only produce artifacts for windows targets since .exe files only exist then
 
 release:
   github:
