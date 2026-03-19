@@ -186,13 +186,14 @@ func Register() bool {
 		OS:           utils.StaticSysInfo().OS,
 	}
 
-	path := filepath.Join("internal/register", "email.txt")
+	FolderPath, _ := utils.GetStoragePath()
+	path := filepath.Join(FolderPath, "email.txt")
 	err = os.WriteFile(path, []byte(DeviceInfoPaylod.Email), 0644)
 	if err != nil {
 		fmt.Println(utils.ErrorBox.Render("message: =>", "error storing usre email"))
 	}
 
-	path = filepath.Join("internal/register", "token.txt")
+	path = filepath.Join(FolderPath, "token.txt")
 	json, err := json.Marshal(store)
 	if err != nil {
 		fmt.Println(utils.ErrorBox.Render("message: =>", "error while marshling struct"))

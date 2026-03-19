@@ -125,7 +125,9 @@ func Telemetry() {
 				network := <-Network
 				process := <-Processes
 				integrity := <-Integrity
-				path := filepath.Join("internal/register", "token.txt")
+
+				FolderPath, _ := utils.GetStoragePath()
+				path := filepath.Join(FolderPath, "token.txt")
 
 				content, err := ioutil.ReadFile(path)
 				if err != nil {

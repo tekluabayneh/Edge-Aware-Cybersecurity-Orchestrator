@@ -3,9 +3,11 @@ package app
 import (
 	"agent/internal/register"
 	"agent/internal/telemetry"
+	"agent/internal/utils"
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 // first the cli cick in
@@ -17,11 +19,14 @@ import (
 
 func App() {
 	// check registration status
-	value, err := os.ReadFile("./register")
+	_, folderPath := utils.GetStoragePath()
+	value, err := os.ReadFile(folderPath)
 	if err != nil {
 		fmt.Println("READ FILE ERROR:", err)
 		value = []byte{}
 	}
+
+	time.Sleep(time.Second * 5)
 
 	if len(value) < 1 || !strings.Contains(string(value), "registred") {
 		// authenticate agent with user

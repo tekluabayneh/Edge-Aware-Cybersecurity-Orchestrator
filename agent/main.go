@@ -13,10 +13,11 @@ import (
 //
 
 func main() {
+	folderPath, _ := utils.GetStoragePath()
 	// creaet all the files
 	fileTocreate := []string{"token.text", "email.text"}
 	for _, v := range fileTocreate {
-		Filepath := filepath.Join("internal/register", v)
+		Filepath := filepath.Join(folderPath, v)
 		if _, err := os.Stat(Filepath); os.IsNotExist(err) {
 			f, err := os.Create(Filepath)
 			if err != nil {
@@ -29,9 +30,7 @@ func main() {
 
 	_, err := utils.FetchEnv()
 	if err != nil {
-
 		fmt.Println(err)
-		fmt.Println("Error loading env")
 	}
 
 	app.App()

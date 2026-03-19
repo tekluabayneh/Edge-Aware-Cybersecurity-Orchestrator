@@ -51,8 +51,9 @@ func Commands() {
 	}
 
 	///////////////////////////////////////// fetch the url isntade of from env////////////////////////////////////////////////
+	folderPath, _ := utils.GetStoragePath()
 	fullUrl := URL.BASE_URL + "/api/fetch/fetch"
-	path := filepath.Join("internal/register", "email.txt")
+	path := filepath.Join(folderPath, "email.txt")
 
 	if _, err := os.Stat(path); err != nil {
 		fmt.Println("STAT ERROR:", err)
