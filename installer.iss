@@ -7,6 +7,7 @@ DefaultDirName={sd}\AgentOrchestrator
 DefaultGroupName=Agent Orchestrator
 PrivilegesRequired=admin
 OutputBaseFilename=Agent_Setup_{#Arch}
+OutputDir=Output_{#Arch}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
