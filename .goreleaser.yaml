@@ -19,12 +19,12 @@ builds:
       - arm64
     env:
       - CGO_ENABLED=0
-    # --- NEW WINDOWS STAFF ---
+    # --- FIXED WINDOWS HOOK ---
     hooks:
       post:
-        # This calls Inno Setup only when building for Windows
+        # In v2, we use the 'if' property with Go template boolean logic
         - cmd: iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} ../installer.iss
-          if: '"{{.Os}}" == "windows"'
+          if: '{{ eq .Os "windows" }}'
 
 # --- NEW LINUX STAFF (.deb / .rpm) ---
 nfpms:
@@ -38,7 +38,8 @@ nfpms:
       - src: ./agent
         dst: /usr/bin/agent
     scripts:
-      postinstall: ./scripts/postinstall.sh
+      # Use ../ because your build 'dir' is ./agent, but scripts is in the root
+      postinstall: ../scripts/postinstall.sh
 
 archives:
   - id: agent
