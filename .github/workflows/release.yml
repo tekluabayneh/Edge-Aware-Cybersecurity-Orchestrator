@@ -9,11 +9,11 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  # BUILD LINUX & MAC (Using Ubuntu)
+  release-nix:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -23,9 +23,35 @@ jobs:
         with:
           go-version: "1.22"
 
-      - name: Run GoReleaser
+      - name: Run GoReleaser (Linux/Mac)
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          # We tell it to SKIP the Windows specific build here
+          args: release --clean --config .goreleaser.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # BUILD WINDOWS INSTALLER (Using Windows)
+  release-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Install Inno Setup
+        run: choco install innosetup
+
+      - name: Run GoReleaser (Windows EXE)
         uses: goreleaser/goreleaser-action@v6
         with:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
