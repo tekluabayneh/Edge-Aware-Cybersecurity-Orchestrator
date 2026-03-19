@@ -2,35 +2,52 @@ version: 2
 
 project_name: agent
 
+gomod:
+  dir: ./agent
+
 builds:
   - id: agent
-    main: ./agent/
+    dir: ./agent
+    main: ./main.go
     binary: agent
-
     goos:
       - linux
       - darwin
       - windows
-
     goarch:
       - amd64
       - arm64
-
     env:
       - CGO_ENABLED=0
+    hooks:
+      post:
+        - cmd: >
+            {{- if and (eq .Os "windows") (eq .Runtime.Goos "windows") -}}
+            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{ dir .Path }} /DArch={{.Arch}} "{{ dir (dir (dir .Path)) }}/installer.iss"
+            {{- end -}}
+
+nfpms:
+  - id: agent-linux
+    package_name: agent
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}"
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/bin
+    scripts:
+      postinstall: scripts/postinstall.sh   # ← this is correct (no {{ }})
 
 archives:
   - id: agent
     builds:
       - agent
-
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-
+    format: tar.gz
     format_overrides:
       - goos: windows
         format: zip
 
 release:
   github:
-    owner: "{{ .Env.GITHUB_REPOSITORY_OWNER }}"
-    name: "{{ .ProjectName }}"
+    owner: tekluabayneh
+    name: Edge-Aware-Cybersecurity-Orchestrator

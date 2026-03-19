@@ -15,7 +15,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"path/filepath"
 	"sync"
 	"time"
@@ -48,8 +47,13 @@ func Telemetry() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	AnalizerBaseURL := os.Getenv("ANALIZER_BASE_URL")
-	if AnalizerBaseURL == "" {
+	// AnalizerBaseURL := os.Getenv("ANALIZER_BASE_URL")
+	AnalizerBaseURL, err := utils.FetchEnv()
+	if err != nil {
+		fmt.Println("ANALIZER_BASE_URL not set")
+	}
+	////////////////////////////////////////////instade of env get it from backend ///////////////////////////////////////////////////////
+	if AnalizerBaseURL.ANALIZER_BASE_URL == "" {
 		fmt.Println("ANALIZER_BASE_URL not set")
 		return
 	}
@@ -121,7 +125,9 @@ func Telemetry() {
 				network := <-Network
 				process := <-Processes
 				integrity := <-Integrity
-				path := filepath.Join("internal/register", "token.txt")
+
+				FolderPath, _ := utils.GetStoragePath()
+				path := filepath.Join(FolderPath, "token.txt")
 
 				content, err := ioutil.ReadFile(path)
 				if err != nil {
@@ -154,7 +160,8 @@ func Telemetry() {
 					return
 				}
 				client := &http.Client{Timeout: time.Second * 10}
-				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL+"/rawTelementory", bytes.NewReader(jsonPayload))
+				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL.ANALIZER_BASE_URL+"/rawTelementory", bytes.NewReader(jsonPayload))
+
 				token, err := utils.Getjwt()
 				if err != nil {
 					token = ""

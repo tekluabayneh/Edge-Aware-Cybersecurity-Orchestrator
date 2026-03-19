@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"agent/internal/utils"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -43,9 +44,16 @@ func Commands() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	URL := os.Getenv("BASE_URL")
-	fullUrl := URL + "/api/fetch/fetch"
-	path := filepath.Join("internal/register", "email.txt")
+	// URL := os.Getenv("BASE_URL")
+	URL, err := utils.FetchEnv()
+	if err != nil {
+		fmt.Println("ERROR fetching file:", err)
+	}
+
+	///////////////////////////////////////// fetch the url isntade of from env////////////////////////////////////////////////
+	folderPath, _ := utils.GetStoragePath()
+	fullUrl := URL.BASE_URL + "/api/fetch/fetch"
+	path := filepath.Join(folderPath, "email.txt")
 
 	if _, err := os.Stat(path); err != nil {
 		fmt.Println("STAT ERROR:", err)
@@ -94,7 +102,7 @@ func Commands() {
 		}
 	}
 
-	req, err = http.NewRequestWithContext(ctx, "POST", URL+"/api/ack/ack", bytes.NewReader(jsonPayload))
+	req, err = http.NewRequestWithContext(ctx, "POST", URL.BASE_URL+"/api/ack/ack", bytes.NewReader(jsonPayload))
 	if err != nil {
 		fmt.Println("ACK REQUEST ERROR:", err)
 	}
@@ -114,7 +122,7 @@ func Commands() {
 	}
 	// ack Response message back
 	ackjsonRspnose, err := json.Marshal(ackResponsePayload)
-	req, err = http.NewRequestWithContext(ctx, "POST", URL+"/api/res/ack", bytes.NewReader(ackjsonRspnose))
+	req, err = http.NewRequestWithContext(ctx, "POST", URL.BASE_URL+"/api/res/ack", bytes.NewReader(ackjsonRspnose))
 	if err != nil {
 		fmt.Println("RES ACK REQUEST ERROR:", err)
 	}

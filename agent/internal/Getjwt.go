@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"agent/internal/utils"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -37,9 +38,9 @@ type storedUserInfoType struct {
 func GetJwt() {
 	ctx := context.TODO()
 	client := http.Client{Timeout: 10 * time.Second}
-
+	FolderPath, _ := utils.GetStoragePath()
 	// read the register files so it can get user info
-	path := filepath.Join("internal/register", "token.txt")
+	path := filepath.Join(FolderPath, "token.txt")
 	content, err := os.ReadFile(path)
 	if err != nil {
 		log.Printf("failed to read file %s: %v", path, err)
@@ -60,13 +61,19 @@ func GetJwt() {
 
 	data := bytes.NewReader(jsondata)
 
-	BASEURL := os.Getenv("BASE_URL")
-	if BASEURL == "" {
-		log.Println("BASE_URL environment variable is empty")
-		return
+	// BASEURL := os.Getenv("BASE_URL")
+	///////////////////////////////////////// fetch the url isntade of from env////////////////////////////////////////////////
+	// if BASEURL == "" {
+	// 	log.Println("BASE_URL environment variable is empty")
+	// 	return
+	// }
+
+	baseurl, err := utils.FetchEnv()
+	if err != nil {
+		log.Printf("failed to request env file: %v", err)
 	}
 
-	url := BASEURL + "/api/auth/l/login"
+	url := baseurl.BASE_URL + "/api/auth/l/login"
 
 	req, err := http.NewRequestWithContext(ctx, "POST", url, data)
 	if err != nil {
@@ -94,7 +101,8 @@ func GetJwt() {
 	}
 
 	// if the fiels does not exist creat the fiels and append it
-	tokenpath := filepath.Join("internal/register", "Jwttoken.txt")
+
+	tokenpath := filepath.Join(FolderPath, "Jwttoken.txt")
 	_, err = os.Stat(tokenpath)
 	if os.IsNotExist(err) {
 		_, err := os.Create(tokenpath)
