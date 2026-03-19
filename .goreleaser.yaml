@@ -37,8 +37,7 @@ nfpms:
     scripts:
       postinstall: scripts/postinstall.sh
 
-# ... your builds, hooks, nfpms stay the same ...
-
+# 1. Keep your archives simple (for the .tar.gz and .zip files)
 archives:
   - id: default
     builds:
@@ -49,18 +48,16 @@ archives:
       - goos: windows
         format: zip
     files:
-      - LICENSE*   # optional; remove if no LICENSE file
+      - LICENSE*
       - README*
 
-# Remove the entire windows-installer archive block (that's the duplicate source)
 
-# ADD THIS at top-level (same level as builds/archives/nfpms/release)
-extra_files:
-  - glob: "Output_{{ .Arch }}/*.exe"
-    name_template: "{{ .ProjectName }}_setup_{{ .Version }}_{{ .Arch }}.exe"  # unique name
-
-
+# 3. Use this instead at the bottom of the file
 release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
+  # This is the "Staff" way to upload the Inno Setup results
+  extra_files:
+    - glob: "./Agent_Setup_*.exe"
+    - glob: "./Output_*/Agent_Setup_*.exe" # Covers both possible output locations
