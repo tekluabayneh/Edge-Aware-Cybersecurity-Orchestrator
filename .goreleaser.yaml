@@ -23,7 +23,7 @@ builds:
       post:
         - cmd: >
             {{- if and (eq .Os "windows") (eq .Runtime.Goos "windows") -}}
-            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} "{{ dir (dir .Path) }}/installer.iss"
+            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{ dir .Path }} /DArch={{.Arch}} "{{ dir (dir (dir .Path)) }}/installer.iss"
             {{- end -}}
 
 nfpms:
