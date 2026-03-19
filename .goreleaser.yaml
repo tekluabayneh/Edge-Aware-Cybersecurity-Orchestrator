@@ -7,7 +7,7 @@ gomod:
 
 builds:
   - id: agent
-    dir: ./agent/
+    dir: ./agent
     main: ./main.go
     binary: agent
     goos:
@@ -19,15 +19,15 @@ builds:
       - arm64
     env:
       - CGO_ENABLED=0
-    # --- FIXED WINDOWS HOOK FOR V2 ---
+
     hooks:
       post:
         - cmd: >
             {{- if and (eq .Os "windows") (eq .Runtime.Goos "windows") -}}
-            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} "{{ .ProjectDir }}/installer.iss"
+            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} "{{ .Dir }}/../installer.iss"
             {{- end -}}
 
-# --- NEW LINUX STAFF (.deb / .rpm) ---
+# ✅ Linux packages (.deb / .rpm)
 nfpms:
   - id: agent-linux
     package_name: agent
@@ -35,13 +35,15 @@ nfpms:
     formats:
       - deb
       - rpm
+
     contents:
       - src: agent
         dst: /usr/bin/agent
-    scripts:
-      # Using .ProjectDir ensures it finds the script from the root
-      postinstall: "{{ .ProjectDir }}/scripts/postinstall.sh"
 
+    scripts:
+      postinstall: "{{ .Dir }}/../scripts/postinstall.sh"
+
+# ✅ Archives (.tar.gz / .zip)
 archives:
   - id: agent
     builds:
@@ -52,8 +54,9 @@ archives:
       - goos: windows
         format: zip
 
+# ✅ GitHub release
 release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
-
+    
