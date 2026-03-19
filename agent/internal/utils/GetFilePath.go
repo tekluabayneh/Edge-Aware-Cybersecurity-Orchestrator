@@ -17,10 +17,6 @@ func GetStoragePath() (string, string) {
 		exe, _ := os.Executable()
 		baseDir = filepath.Dir(exe)
 
-	case "macOS": // i have to also handerl the macOS one
-		// exe, _ := os.Executable()
-		// baseDir = filepath.Dir(exe)
-
 	case "linux":
 		// Standard Linux path for app data
 		baseDir = "/var/lib/agent-orchestrator"
@@ -31,7 +27,7 @@ func GetStoragePath() (string, string) {
 	}
 
 	finalPath := filepath.Join(baseDir, "internal", "register")
-	RegisterFolder := filepath.Join(baseDir, "register.text")
+	RegisterFolder := filepath.Join(baseDir, "register")
 
 	// Create it if it's missing
 	err := os.MkdirAll(finalPath, 0755)

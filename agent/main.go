@@ -15,7 +15,7 @@ import (
 func main() {
 	folderPath, _ := utils.GetStoragePath()
 	// creaet all the files
-	fileTocreate := []string{"token.text", "email.text"}
+	fileTocreate := []string{"token.txt", "email.txt"}
 	for _, v := range fileTocreate {
 		Filepath := filepath.Join(folderPath, v)
 		if _, err := os.Stat(Filepath); os.IsNotExist(err) {
