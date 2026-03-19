@@ -1,22 +1,44 @@
 [Setup]
 AppName=Agent Orchestrator
 AppVersion={#AppVersion}
-DefaultDirName={autopf}\AgentOrchestrator
+AppPublisher=Your Name / Company
+AppPublisherURL=https://github.com/tekluabayneh/Edge-Aware-Cybersecurity-Orchestrator
+DefaultDirName={sd}\AgentOrchestrator
 DefaultGroupName=Agent Orchestrator
 PrivilegesRequired=admin
-; This names the output file based on the architecture (amd64 or arm64)
 OutputBaseFilename=Agent_Setup_{#Arch}
 Compression=lzma
 SolidCompression=yes
+WizardStyle=modern
+UninstallDisplayIcon={app}\agent.exe
+UninstallFilesDir={app}\unins
 
 [Files]
-; Using the full path sent by GoReleaser ({#SourcePath})
-Source: "{#SourcePath}"; DestDir: "{app}"; Flags: ignoreversion
+; The binary folder is passed dynamically from GoReleaser via {#SourcePath}
+Source: "{#SourcePath}\agent.exe"; DestDir: "{app}"; Flags: ignoreversion external
+
+; Optional: add other files from project root if needed
+; Source: "README.md"; DestDir: "{app}"; Flags: ignoreversion
+; Source: "LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 
 [Dirs]
-; This creates the folder and gives the USER full control forever
+; Folder with full user permissions (your original requirement)
 Name: "{app}\internal\register"; Permissions: users-full
 
 [Icons]
-Name: "{group}\Agent Orchestrator"; Filename: "{app}\agent-orchestrator.exe"
-Name: "{commondesktop}\Agent Orchestrator"; Filename: "{app}\agent-orchestrator.exe"
+Name: "{group}\Agent Orchestrator"; Filename: "{app}\agent.exe"
+Name: "{group}\Uninstall Agent Orchestrator"; Filename: "{uninstallexe}"
+Name: "{autodesktop}\Agent Orchestrator"; Filename: "{app}\agent.exe"; Tasks: desktopicon
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
+[Code]
+// Optional: small Pascal script to make uninstall cleaner (optional but nice)
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+  begin
+  end;
+end;
+
