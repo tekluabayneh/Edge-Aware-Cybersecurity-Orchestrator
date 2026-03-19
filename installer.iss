@@ -10,7 +10,7 @@ Compression=lzma
 SolidCompression=yes
 
 [Files]
-; GoReleaser will tell Inno exactly where the fresh binary is
+; Using the full path sent by GoReleaser ({#SourcePath})
 Source: "{#SourcePath}"; DestDir: "{app}"; Flags: ignoreversion
 
 [Dirs]
