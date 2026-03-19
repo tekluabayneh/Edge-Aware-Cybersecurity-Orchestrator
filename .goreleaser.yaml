@@ -19,12 +19,13 @@ builds:
       - arm64
     env:
       - CGO_ENABLED=0
-    # --- FIXED WINDOWS HOOK ---
+    # --- FIXED WINDOWS HOOK FOR V2 ---
     hooks:
       post:
-        # In v2, we use the 'if' property with Go template boolean logic
-        - cmd: iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} ../installer.iss
-          if: '{{ eq .Os "windows" }}'
+        - cmd: >
+            {{ if eq .Os "windows" }}
+            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} ../installer.iss
+            {{ end }}
 
 # --- NEW LINUX STAFF (.deb / .rpm) ---
 nfpms:
@@ -38,7 +39,7 @@ nfpms:
       - src: ./agent
         dst: /usr/bin/agent
     scripts:
-      # Use ../ because your build 'dir' is ./agent, but scripts is in the root
+      # Since 'dir' is ./agent, we must go up to find the scripts folder
       postinstall: ../scripts/postinstall.sh
 
 archives:
@@ -55,3 +56,4 @@ release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
+
