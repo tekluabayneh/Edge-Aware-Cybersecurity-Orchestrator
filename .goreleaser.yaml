@@ -35,10 +35,10 @@ nfpms:
       - rpm
     bindir: /usr/bin
     scripts:
-      postinstall: scripts/postinstall.sh   # ← this is correct (no {{ }})
+      postinstall: scripts/postinstall.sh
 
 archives:
-  - id: agent
+  - id: default
     builds:
       - agent
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
@@ -46,6 +46,33 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+    # Optional: add any extra root files to all archives
+    files:
+      - LICENSE*
+      - README*
+
+  # Custom archive for Windows installers only (this will produce Agent_Setup_amd64.exe etc.)
+  - id: windows-installer
+    name_template: "Agent_Setup_{{ .Arch }}"
+    format: binary  # dummy; we override with files
+    files:
+      - src: "Output_{{ .Arch }}/*.exe"   # if you have OutputDir=Output_{#Arch} in .iss
+        dst: .
+      - src: "Output/*.exe"               # fallback if no per-arch dir
+        dst: .
+      - src: "*.exe"                      # fallback if OutputDir=. (root)
+        dst: .
+    goos:
+      - windows
+    builds:
+      - agent
+
+# Optional fallback: copy installers to dist/ so they get auto-uploaded
+before_publish:
+  - cmd: >
+      {{- if eq .Os "windows" -}}
+      if exist "Output_{{ .Arch }}\*.exe" copy "Output_{{ .Arch }}\*.exe" dist\
+      {{- end -}}
 
 release:
   github:

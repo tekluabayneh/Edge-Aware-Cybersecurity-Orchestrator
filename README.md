@@ -1,145 +1,85 @@
 🛡️ Edge-Aware Cybersecurity Orchestrator
 Intelligent Edge Threat Detection and Device Orchestration System
 📖 Overview
+Edge-Aware Cybersecurity Orchestrator is a distributed system designed to detect, analyze, and respond to potential threats in real time across connected devices. It represents a modern edge-first architecture where devices participate in their own defense.
 
-Edge-Aware Cybersecurity Orchestrator is a distributed system designed to detect, analyze, and respond to potential threats in real time across connected devices.
+The Core Components:
+🟦 Go Backend (Orchestrator): The command center managing device registration and threat intelligence.
 
-It’s built to represent a modern edge-first cybersecurity architecture — where devices themselves participate in detecting anomalies and securely communicating with a central orchestrator.
+🟩 Go Agent (Edge Service): A lightweight service running on edge devices, collecting telemetry and executing secure commands.
 
-The project is composed of three core components that work together seamlessly:
+🐍 Python Analyzer: An AI-driven engine using machine learning to flag anomalies in real-time data.
 
-🟦 Go Backend (Orchestrator) – The control center that manages registered devices, distributes commands, and stores threat reports.
+🟨 TypeScript Client (Dashboard): A React-based interface for global network visualization and alert management.
 
-🟩 Go Agent – A lightweight service that runs on each edge device, collects local metrics (CPU, network activity, errors), and executes secure backend commands.
+🚀 Installation & Setup
+You can now install the Edge Agent using professional installers or run the entire stack via Docker.
 
-🐍 Python Analyzer – An intelligent analysis service that uses rule-based or machine learning models to detect anomalies and generate alerts based on incoming telemetry.
+1. For End Users (Installers)
+If you just want to run the Agent on a device, download the latest version from the Releases Page.
 
-🟨 TypeScript Client (Dashboard) – A web-based interface for users to monitor devices, review alerts, and visualize network health in real time.
+Windows: Download Agent_Setup_amd64.exe. Run the installer to set up the service and automatic permissions.
 
-🧠 Problem It Solves
+Linux (Ubuntu/Debian): Download agent_1.0.x_amd64.deb.
 
-As the number of smart devices and distributed systems continues to grow, traditional centralized security models are no longer enough.
+Bash
+sudo dpkg -i agent_1.0.x_amd64.deb
+The Linux installer automatically configures /var/lib/agent-orchestrator/ with the necessary write permissions for telemetry storage.
 
-Many organizations struggle with real-time visibility across their networked devices.
+2. For Developers (Docker Compose)
+To run the full ecosystem (Backend, Analyzer, Agent, and Dashboard) at once:
 
-Security threats often remain undetected until too late, due to slow data aggregation.
+Bash
+# Clone the repository
+git clone https://github.com/tekluabayneh/Edge-Aware-Cybersecurity-Orchestrator.git
+cd Edge-Aware-Cybersecurity-Orchestrator
 
-Edge devices lack coordination when reacting to incidents.
+# Spin up the entire stack
+docker-compose up --build
+Orchestrator API: http://localhost:8080
 
-This project solves these issues by building a self-coordinating, edge-aware cybersecurity platform, capable of:
+AI Analyzer: http://localhost:8000
 
-✅ Collecting local telemetry in real time
-✅ Analyzing anomalies using intelligent rules or models
-✅ Sending commands back to devices to respond instantly
-✅ Providing operators with an interactive dashboard to monitor everything
+Dashboard UI: http://localhost:5173
 
 ⚙️ Architecture Overview
-┌────────────────────────┐
-│ TypeScript │
-│ Client │
-│ (Dashboard UI) │
-└──────────▲──────────────┘
-│ REST / WebSocket
-│
-┌──────────┴──────────────┐
-│ Go Backend │
-│ (Orchestrator / API) │
-└──────────▲──────────────┘
-│ REST / gRPC
-│
-┌──────────┴──────────────┐
-│ Python Analyzer │
-│ (AI / Anomaly Engine) │
-└──────────▲──────────────┘
-│ REST / gRPC
-│
-┌──────────┴──────────────┐
-│ Go Agent │
-│ (Edge Device Service) │
-└──────────────────────────┘
+Code snippet
+graph TD
+    subgraph Cloud/Central
+    A[TypeScript Dashboard] <-->|REST/WS| B[Go Backend]
+    B <-->|gRPC/REST| C[Python AI Analyzer]
+    end
+    
+    subgraph Edge Devices
+    B <-->|Secure Channel| D[Go Agent 1]
+    B <-->|Secure Channel| E[Go Agent 2]
+    end
+🔒 Security & Edge Design
+Zero-Config Permissions: Windows and Linux installers handle filesystem permissions automatically so the Agent can store JWT tokens securely.
 
-🧩 Technology Stack
-Layer Language Description
-Backend / Orchestrator Go Device registration, command dispatch, API, and alert management
-Agent (Edge) Go Local telemetry collection and device control
-Analyzer Python Anomaly detection and data analysis
-Client Dashboard TypeScript (React) Real-time visualization and user control
-Communication REST / gRPC Service-to-service interaction
-Data Streaming Goroutines / Async Real-time telemetry flow without external broker
+Whitelisted Execution: Agents only execute backend-signed commands to prevent remote code execution (RCE).
+
+Data Sovereignty: Telemetry is processed locally before being summarized for the orchestrator.
 
 🗂️ Project Structure
-edge-aware-cybersecurity/
-├── backend/ # Go orchestrator
-│ ├── cmd/server/
-│ ├── internal/
-│ └── pkg/
-├── agent/ # Go device agent
-│ ├── cmd/agent/
-│ └── internal/
-├── analyzer/ # Python anomaly detection service
-│ ├── app/
-│ └── tests/
-├── client/ # TypeScript dashboard (React)
-└── docker-compose.yml # Unified service runner
+agent/: Go source for the edge service.
 
-🚀 Getting Started
-Prerequisites
+backend/: Go source for the orchestrator and database logic.
 
-Go 1.22+
+analyzer/: Python scripts for threat detection logic.
 
-Python 3.11+
+client/: React/Vite dashboard source.
 
-Node.js 20+
+scripts/: Post-install automation for Linux environments.
 
-Docker & Docker Compose
+installer.iss: Inno Setup configuration for Windows production builds.
 
-Setup
-
-# Clone the repository
-
-git clone ......
-cd edge-aware-cybersecurity
-
-# Run all services with Docker
-
-docker-compose up --build
-
-Each service runs in its own container:
-
-Backend → http://localhost:8080
-
-Analyzer → http://localhost:8000
-
-Dashboard → http://localhost:5173
-
-🔒 Security Design
-
-All communication between services is signed and encrypted.
-
-Devices are authenticated when registering with the backend.
-
-Agents can only execute whitelisted commands.
-
-Alerts include severity, origin, and timestamp.
-
-db schema:
-https://drawsql.app/teams/man-21/diagrams/edage-aware-security-db/embed
-
-🧠 Future Enhancements
-
-Integrate Kafka or NATS for high-throughput event streaming.
-
-Add machine learning anomaly detection with TensorFlow or PyTorch.
-
-Implement user roles and access control in the dashboard.
-
-Expand agent support for IoT and embedded systems.
+🧠 Database Schema
+Detailed schema relations can be viewed here: DrawSQL Diagram
 
 🧑‍💻 Author
+Teklu Abayneh (Abera Kuraleo)
+Cybersecurity Enthusiast | Full-Stack Developer | Edge Systems Engineer
 
-Teklu Abayneh
-Cybersecurity Enthusiast | Backend Developer | Edge Systems Engineer
+<!-- https://drawsql.app/teams/man-21/diagrams/edage-aware-security-db/embed -->
 
-📜 License
-
-This project is open-source and available under the MIT License.
