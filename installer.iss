@@ -15,8 +15,9 @@ UninstallDisplayIcon={app}\agent.exe
 UninstallFilesDir={app}\unins
 
 [Files]
-; The binary folder is passed dynamically from GoReleaser via {#SourcePath}
-Source: "{#SourcePath}\agent.exe"; DestDir: "{app}"; Flags: ignoreversion external
+; The "Source" is where ISCC finds the file on the GitHub runner
+; The "DestDir" is {app} (C:\Program Files\...) on YOUR computer
+Source: "{#SourcePath}"; DestDir: "{app}"; DestName: "agent.exe"; Flags: ignoreversion
 
 ; Optional: add other files from project root if needed
 ; Source: "README.md"; DestDir: "{app}"; Flags: ignoreversion
