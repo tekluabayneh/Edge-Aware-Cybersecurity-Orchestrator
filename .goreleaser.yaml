@@ -57,14 +57,8 @@ archives:
     files:
       - src: "Output_{{ .Arch }}/*.exe"   # primary: if OutputDir=Output_{#Arch} in .iss
         dst: .
-      # - src: "Output/*.exe"               # fallback: single Output folder
-        # dst: .
-      # - src: "*.exe"                      # fallback: if OutputDir=. (root)
-        # dst: .
-    # No 'goos' here — archives inherit from builds; this will only produce artifacts for windows targets since .exe files only exist then
 
 release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
-    # replace_existing_artifacts: true
