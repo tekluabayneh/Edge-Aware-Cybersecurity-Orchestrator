@@ -23,9 +23,9 @@ builds:
     hooks:
       post:
         - cmd: >
-            {{ if eq .Os "windows" }}
-            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} ../installer.iss
-            {{ end }}
+            {{- if and (eq .Os "windows") (eq .Runtime.Goos "windows") -}}
+            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} "{{ .ProjectDir }}/installer.iss"
+            {{- end -}}
 
 # --- NEW LINUX STAFF (.deb / .rpm) ---
 nfpms:
@@ -36,11 +36,11 @@ nfpms:
       - deb
       - rpm
     contents:
-      - src: ./agent
+      - src: agent
         dst: /usr/bin/agent
     scripts:
-      # Since 'dir' is ./agent, we must go up to find the scripts folder
-      postinstall: ../scripts/postinstall.sh
+      # Using .ProjectDir ensures it finds the script from the root
+      postinstall: "{{ .ProjectDir }}/scripts/postinstall.sh"
 
 archives:
   - id: agent
