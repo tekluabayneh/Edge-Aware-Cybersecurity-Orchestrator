@@ -67,4 +67,4 @@ release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
-    replace_existing_artifacts: true
+    # replace_existing_artifacts: true
