@@ -19,12 +19,11 @@ builds:
       - arm64
     env:
       - CGO_ENABLED=0
-
     hooks:
       post:
         - cmd: >
             {{- if and (eq .Os "windows") (eq .Runtime.Goos "windows") -}}
-            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} "{{ .Dir }}/../installer.iss"
+            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{.Path}} /DArch={{.Arch}} "{{ dir (dir .Path) }}/installer.iss"
             {{- end -}}
 
 nfpms:
@@ -34,11 +33,9 @@ nfpms:
     formats:
       - deb
       - rpm
-
     bindir: /usr/bin
-
     scripts:
-      postinstall: scripts/postinstall.sh
+      postinstall: scripts/postinstall.sh   # ← this is correct (no {{ }})
 
 archives:
   - id: agent
