@@ -37,6 +37,8 @@ nfpms:
     scripts:
       postinstall: scripts/postinstall.sh
 
+# ... your builds, hooks, nfpms stay the same ...
+
 archives:
   - id: default
     builds:
@@ -47,16 +49,16 @@ archives:
       - goos: windows
         format: zip
     files:
-      - LICENSE*
+      - LICENSE*   # optional; remove if no LICENSE file
       - README*
 
-  # Custom entry to include the Inno Setup .exe files as separate assets
-  - id: windows-installer
-    name_template: "Agent_Setup_{{ .Arch }}"
-    format: binary  # dummy format since we're just including files
-    files:
-      - src: "Output_{{ .Arch }}/*.exe"   # primary: if OutputDir=Output_{#Arch} in .iss
-        dst: .
+# Remove the entire windows-installer archive block (that's the duplicate source)
+
+# ADD THIS at top-level (same level as builds/archives/nfpms/release)
+extra_files:
+  - glob: "Output_{{ .Arch }}/*.exe"
+    name_template: "{{ .ProjectName }}_setup_{{ .Version }}_{{ .Arch }}.exe"  # unique name
+
 
 release:
   github:
