@@ -23,9 +23,10 @@ builds:
       post:
         - cmd: >
             {{- if and (eq .Os "windows") (eq .Runtime.Goos "windows") -}}
-            cmd /c copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" >nul 2>&1 && 
+            cmd /c copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" >nul 2>&1 &&
             iscc.exe /DAppVersion={{.Version}} /DArch={{.Arch}} "{{ dir (dir (dir .Path)) }}\installer.iss"
             {{- end -}}
+
 nfpms:
   - id: agent-linux
     package_name: agent
@@ -37,7 +38,6 @@ nfpms:
     scripts:
       postinstall: scripts/postinstall.sh
 
-# 1. Keep your archives simple (for the .tar.gz and .zip files)
 archives:
   - id: default
     builds:
@@ -51,13 +51,12 @@ archives:
       - LICENSE*
       - README*
 
+# ← THIS MUST BE TOP-LEVEL (not inside release!)
+extra_files:
+  - glob: "Output_{{ .Arch }}/*.exe"
+    name_template: "agent_setup_{{ .Version }}_{{ .Arch }}.exe"
 
-# 3. Use this instead at the bottom of the file
 release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
-  # This is the "Staff" way to upload the Inno Setup results
-  extra_files:
-    - glob: "./Agent_Setup_*.exe"
-    - glob: "./Output_*/Agent_Setup_*.exe" # Covers both possible output locations
