@@ -3,7 +3,8 @@ AppName=Agent Orchestrator
 AppVersion={#AppVersion}
 AppPublisher=Your Name / Company
 AppPublisherURL=https://github.com/tekluabayneh/Edge-Aware-Cybersecurity-Orchestrator
-DefaultDirName={sd}\AgentOrchestrator
+DefaultDirName={autopf}\AgentOrchestrator   
+DisableDirPage=no
 DefaultGroupName=Agent Orchestrator
 PrivilegesRequired=admin
 OutputBaseFilename=Agent_Setup_{#Arch}
@@ -14,10 +15,9 @@ WizardStyle=modern
 UninstallDisplayIcon={app}\agent.exe
 UninstallFilesDir={app}\unins
 
+
 [Files]
-; The "Source" is where ISCC finds the file on the GitHub runner
-; The "DestDir" is {app} (C:\Program Files\...) on YOUR computer
-Source: "{#SourcePath}"; DestDir: "{app}"; DestName: "agent.exe"; Flags: ignoreversion
+Source: "agent.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Optional: add other files from project root if needed
 ; Source: "README.md"; DestDir: "{app}"; Flags: ignoreversion
