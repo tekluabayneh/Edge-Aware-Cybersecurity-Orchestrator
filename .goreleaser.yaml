@@ -23,10 +23,9 @@ builds:
       post:
         - cmd: >
             {{- if and (eq .Os "windows") (eq .Runtime.Goos "windows") -}}
-            copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" && 
+            cmd /c copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" >nul 2>&1 && 
             iscc.exe /DAppVersion={{.Version}} /DArch={{.Arch}} "{{ dir (dir (dir .Path)) }}\installer.iss"
             {{- end -}}
-
 nfpms:
   - id: agent-linux
     package_name: agent
