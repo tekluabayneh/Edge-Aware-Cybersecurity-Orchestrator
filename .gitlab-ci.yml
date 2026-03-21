@@ -1,59 +1,18 @@
-stages:
-  - setup
-  - test
-  - build
-  - deploy
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+  
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
 
-install_client:
-  stage: setup
-  image: node:24
-  before_script:
-    - apt-get update && apt-get install -y curl
-  script:
-    - cd client
-    - npm install
-    - npm run lint
-    - npm run build
+  agent:
+    build: ./agent
 
-install_backend:
-  stage: setup
-  image: golang:1.25-alpine
-  script:
-    - cd backend
-    - go mod tidy
-    - go run main.go
-
-install_agent:
-  stage: setup
-  image: golang:1.25-alpine
-  script:
-    - cd backend
-    - go mod tidy
-    - go run main.go
-
-install_analyzer:
-  stage: setup
-  image: python:3.11
-  script:
-    - cd analyzer
-    - pip install uv
-    - uv sync
-    - uv run python main.py
-
-# ---- Test ----
-# - curl http://localhost:5173 | grep "Secure Your Digital Empire"
-
-run_docker_compose:
-  stage: test
-  image: docker:latest
-  services:
-    - docker:dind
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-  script:
-    - docker-compose up --build -d
-    - docker-compose ps
-    - docker-compose logs
-    - docker-compose down
-    - docker-compose ps
+  analyzer:
+    build: ./analyzer
+    environment:
+      - LOG_LEVEL=info

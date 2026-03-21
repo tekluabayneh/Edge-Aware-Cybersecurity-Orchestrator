@@ -23,7 +23,8 @@ builds:
       post:
         - cmd: >
             {{- if and (eq .Os "windows") (eq .Runtime.Goos "windows") -}}
-            iscc.exe /DAppVersion={{.Version}} /DSourcePath={{ dir .Path }} /DArch={{.Arch}} "{{ dir (dir (dir .Path)) }}/installer.iss"
+            cmd /c copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" >nul 2>&1 &&
+            iscc.exe /DAppVersion={{.Version}} /DArch={{.Arch}} "{{ dir (dir (dir .Path)) }}\installer.iss"
             {{- end -}}
 
 nfpms:
@@ -35,10 +36,10 @@ nfpms:
       - rpm
     bindir: /usr/bin
     scripts:
-      postinstall: scripts/postinstall.sh   # ← this is correct (no {{ }})
+      postinstall: scripts/postinstall.sh
 
 archives:
-  - id: agent
+  - id: default
     builds:
       - agent
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
@@ -46,6 +47,14 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+    files:
+      - LICENSE*
+      - README*
+
+# ← THIS MUST BE TOP-LEVEL (not inside release!)
+extra_files:
+  - glob: "Output_{{ .Arch }}/*.exe"
+    name_template: "agent_setup_{{ .Version }}_{{ .Arch }}.exe"
 
 release:
   github:
