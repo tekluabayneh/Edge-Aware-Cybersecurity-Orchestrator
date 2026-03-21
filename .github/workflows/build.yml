@@ -1,0 +1,43 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Lint Go (Backend & Agent)
+      - name: Lint Go
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          working-directory: backend
+
+      # Lint TS (Client)
+      - name: Lint TypeScript
+        run: |
+          cd client
+          npm install
+          npm run lint
+
+      # Lint Python (Analyzer)
+      - name: Lint Python
+        run: |
+          cd analyzer
+          pip install flake8
+          flake8 .
+
+  build-docker:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build with Docker Compose
+        run: docker compose build
