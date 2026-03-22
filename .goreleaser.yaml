@@ -2,9 +2,6 @@ version: 2
 
 project_name: agent
 
-gomod:
-  dir: ./agent
-
 builds:
   - id: agent
     dir: ./agent
@@ -19,13 +16,6 @@ builds:
       - arm64
     env:
       - CGO_ENABLED=0
-    hooks:
-      post:
-        - cmd: >
-            {{- if and (eq .Os "windows") (eq .Runtime.Goos "windows") -}}
-            cmd /c copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" >nul 2>&1 &&
-            iscc.exe /DAppVersion={{.Version}} /DArch={{.Arch}} "{{ dir (dir (dir .Path)) }}\installer.iss"
-            {{- end -}}
 
 nfpms:
   - id: agent-linux
@@ -37,6 +27,7 @@ nfpms:
     bindir: /usr/bin
     scripts:
       postinstall: scripts/postinstall.sh
+    maintainer: "Teklu Abayneh <teklu@example.com>"
 
 archives:
   - id: default
@@ -51,12 +42,21 @@ archives:
       - LICENSE*
       - README*
 
-# ← THIS MUST BE TOP-LEVEL (not inside release!)
-extra_files:
-  - glob: "Output_{{ .Arch }}/*.exe"
-    name_template: "agent_setup_{{ .Version }}_{{ .Arch }}.exe"
-
 release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - Merge pull request
+      - Merge branch
+
+dist: ./dist
