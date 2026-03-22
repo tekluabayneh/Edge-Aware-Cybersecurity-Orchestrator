@@ -25,6 +25,7 @@ builds:
             {{- if and (eq .Os "windows") (eq .Runtime.Goos "windows") -}}
             cmd /c copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" >nul 2>&1 &&
             iscc.exe /DAppVersion={{.Version}} /DArch={{.Arch}} "{{ dir (dir (dir .Path)) }}\installer.iss" &&
+            timeout /t 5 /nobreak >nul &&
             cmd /c copy "Output_{{ .Arch }}\*.exe" "dist\" >nul 2>&1
             {{- end -}}
 
