@@ -2,9 +2,6 @@ version: 2
 
 project_name: agent
 
-# REMOVED before hooks to fix "go.mod file not found" error
-# The build process handles dependencies within the ./agent dir
-
 builds:
   - id: agent
     dir: ./agent
@@ -24,9 +21,9 @@ builds:
         - cmd: >
             {{- if eq .Os "windows" }}
             echo "Building Windows Installer for {{ .Arch }}..." &&
-            iscc.exe /DAppVersion={{ .Version }} /DArch={{ .Arch }} "{{ .Dist }}/installer.iss" &&
+            iscc.exe /DAppVersion={{ .Version }} /DArch={{ .Arch }} "{{ dir (dir .Path) }}/installer.iss" &&
             timeout /t 5 /nobreak >nul &&
-            copy "Output_{{ .Arch }}\*.exe" "{{ .Dist }}\agent_installer_{{ .Version }}_{{ .Arch }}.exe"
+            copy "Output_{{ .Arch }}\*.exe" "{{ dir (dir .Path) }}\agent_installer_{{ .Version }}_{{ .Arch }}.exe"
             {{- end }}
 
 nfpms:
@@ -57,7 +54,6 @@ release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
-  # Explicitly upload unique installer files to prevent 422 collisions
   extra_files:
     - glob: ./dist/agent_installer_*.exe
 
