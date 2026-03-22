@@ -20,10 +20,12 @@ builds:
       post:
         - cmd: >
             {{- if eq .Os "windows" }}
-            powershell -ExecutionPolicy Bypass -File "./scripts/build_installer.ps1" 
-            -Version "{{ .Version }}" 
-            -Arch "{{ .Arch }}" 
-            -Binary "{{ .Path }}"
+            powershell -Command "Copy-Item '{{ .Path }}' '../agent.exe' -Force" &&
+            powershell -Command "& 'iscc.exe' '/DAppVersion={{ .Version }}' '/DArch={{ .Arch }}' '../installer.iss'" &&
+            powershell -Command "$o='../Output_{{ .Arch }}/Agent_Setup_{{ .Arch }}.exe'; if (!(Test-Path $o)) { exit 1 }" &&
+            powershell -Command "New-Item -ItemType Directory -Force -Path '../dist' | Out-Null" &&
+            powershell -Command "Copy-Item '../Output_{{ .Arch }}/Agent_Setup_{{ .Arch }}.exe' '../dist/agent_installer_{{ .Version }}_{{ .Arch }}.exe' -Force" &&
+            powershell -Command "Remove-Item '../agent.exe' -Force"
             {{- end }}
 
 nfpms:
