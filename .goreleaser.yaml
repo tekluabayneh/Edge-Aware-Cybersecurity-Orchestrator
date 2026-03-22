@@ -2,9 +2,8 @@ version: 2
 
 project_name: agent
 
-before:
-  hooks:
-    - go mod tidy
+# REMOVED before hooks to fix "go.mod file not found" error
+# The build process handles dependencies within the ./agent dir
 
 builds:
   - id: agent
@@ -58,6 +57,7 @@ release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
+  # Explicitly upload unique installer files to prevent 422 collisions
   extra_files:
     - glob: ./dist/agent_installer_*.exe
 
@@ -74,4 +74,3 @@ changelog:
       - Merge branch
 
 dist: ./dist
-
