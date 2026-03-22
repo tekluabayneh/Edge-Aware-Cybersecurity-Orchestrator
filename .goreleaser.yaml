@@ -16,12 +16,6 @@ builds:
       - arm64
     env:
       - CGO_ENABLED=0
-    hooks:
-      post:
-        - cmd: >-
-            {{- if eq .Os "windows" }}
-            powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $bin='{{ .Path }}'; $root=(Split-Path (Split-Path (Split-Path $bin))) -replace '\\\\','/'; Write-Host \"[INFO] Root: $root\"; Copy-Item -Path $bin -Destination \"$root/agent.exe\" -Force; $iscc=$env:ISCC_PATH; if (-not $iscc -or -not (Test-Path $iscc)) { $iscc='C:/Program Files/Inno Setup 6/ISCC.exe'; } if (-not (Test-Path $iscc)) { $iscc='D:/Program Files/Inno Setup 6/ISCC.exe'; } if (-not (Test-Path $iscc)) { $iscc=(Get-Command iscc.exe -ErrorAction SilentlyContinue).Source; } if (-not $iscc -or -not (Test-Path $iscc)) { Write-Error 'ISCC.exe not found'; exit 1; } Write-Host \"[INFO] ISCC: $iscc\"; & $iscc \"/DAppVersion={{ .Version }}\" \"/DArch={{ .Arch }}\" \"$root/installer.iss\"; if ($LASTEXITCODE -ne 0) { Write-Error 'ISCC failed'; exit 1; } $src=\"$root/Output_{{ .Arch }}/Agent_Setup_{{ .Arch }}.exe\"; if (-not (Test-Path $src)) { Write-Error \"Output missing: $src\"; exit 1; } $dist=\"$root/dist\"; if (-not (Test-Path $dist)) { New-Item -ItemType Directory -Force -Path $dist | Out-Null; } $dest=\"$dist/agent_installer_{{ .Version }}_{{ .Arch }}.exe\"; Copy-Item -Path $src -Destination $dest -Force; if (-not (Test-Path $dest)) { Write-Error \"Dest missing: $dest\"; exit 1; } Write-Host \"[INFO] Installer: $dest\"; Remove-Item -Path \"$root/agent.exe\" -Force;"
-            {{- end }}
 
 nfpms:
   - id: agent-linux
@@ -52,9 +46,6 @@ release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
-  extra_files:
-    - glob: "./dist/agent_installer_*.exe"
-    - glob: "dist/agent_installer_*.exe"
 
 checksum:
   name_template: "checksums.txt"
