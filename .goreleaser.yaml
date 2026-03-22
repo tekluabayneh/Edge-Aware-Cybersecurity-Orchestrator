@@ -20,10 +20,12 @@ builds:
       post:
         - cmd: >
             {{- if eq .Os "windows" }}
-            echo "Building Windows Installer for {{ .Arch }}..." &&
-            iscc.exe /DAppVersion={{ .Version }} /DArch={{ .Arch }} "{{ dir (dir .Path) }}/installer.iss" &&
+            echo "=== Building Windows Installer for {{ .Arch }} ===" &&
+            copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" >nul &&
+            iscc.exe /DAppVersion={{ .Version }} /DArch={{ .Arch }} "{{ dir (dir (dir .Path)) }}/installer.iss" &&
             timeout /t 5 /nobreak >nul &&
-            copy "Output_{{ .Arch }}\*.exe" "{{ dir (dir .Path) }}\agent_installer_{{ .Version }}_{{ .Arch }}.exe"
+            copy "{{ dir (dir (dir .Path)) }}/Output_{{ .Arch }}/Agent_Setup_{{ .Arch }}.exe" "{{ dir (dir .Path) }}/agent_installer_{{ .Version }}_{{ .Arch }}.exe" >nul &&
+            del "{{ dir (dir (dir .Path)) }}\agent.exe" >nul 2>&1
             {{- end }}
 
 nfpms:
