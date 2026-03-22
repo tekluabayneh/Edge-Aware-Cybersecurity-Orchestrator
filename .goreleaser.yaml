@@ -20,11 +20,10 @@ builds:
       post:
         - cmd: >
             {{- if eq .Os "windows" }}
-            powershell -ExecutionPolicy Bypass -File "../scripts/build_installer.ps1" 
+            powershell -ExecutionPolicy Bypass -File "./scripts/build_installer.ps1" 
             -Version "{{ .Version }}" 
             -Arch "{{ .Arch }}" 
-            -Binary "{{ .Path }}" 
-            -Dist "../dist"
+            -Binary "{{ .Path }}"
             {{- end }}
 
 nfpms:

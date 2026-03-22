@@ -1,24 +1,30 @@
 param(
     [string]$Version,
     [string]$Arch,
-    [string]$Binary,
-    [string]$Dist
+    [string]$Binary
 )
 
 Write-Host "=== INSTALLER BUILD START [$Arch] ==="
 Write-Host "Binary: $Binary"
-Write-Host "Dist Target: $Dist"
+Write-Host "Version: $Version"
 
-# 1. Resolve paths relative to project root (../ from agent dir)
-$RootDir = Resolve-Path (Join-Path $PSScriptRoot "..")
+# Resolve project root: script is at agent/scripts/, so root is ../
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$RootDir = Resolve-Path (Join-Path $ScriptDir "..")
+
+# Paths relative to project root
 $AgentExe = Join-Path $RootDir "agent.exe"
 $IssFile = Join-Path $RootDir "installer.iss"
+$OutputDir = Join-Path $RootDir "Output_$Arch"
+$OutputFile = Join-Path $OutputDir "Agent_Setup_$Arch.exe"
+$DistDir = Join-Path $RootDir "dist"
+$DistFile = Join-Path $DistDir "agent_installer_$Version_$Arch.exe"
 
-# 2. Copy binary to root for ISCC
+# 1. Copy built binary to root for ISCC
 Write-Host "Copying binary to root: $AgentExe"
 Copy-Item -Path $Binary -Destination $AgentExe -Force
 
-# 3. Run ISCC
+# 2. Run ISCC
 Write-Host "Running ISCC: $IssFile"
 & "iscc.exe" "/DAppVersion=$Version" "/DArch=$Arch" $IssFile
 
@@ -27,24 +33,20 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# 4. Locate Output
-$OutputDir = Join-Path $RootDir "Output_$Arch"
-$OutputFile = Join-Path $OutputDir "Agent_Setup_$Arch.exe"
-
+# 3. Verify output exists
 Write-Host "Checking output: $OutputFile"
 if (-not (Test-Path $OutputFile)) {
     Write-Error "OUTPUT NOT FOUND: $OutputFile"
     exit 1
 }
 
-# 5. Ensure Dist directory exists and copy
-$DistPath = Join-Path $RootDir $Dist
-if (-not (Test-Path $DistPath)) {
-    New-Item -ItemType Directory -Force -Path $DistPath | Out-Null
+# 4. Ensure dist directory exists
+if (-not (Test-Path $DistDir)) {
+    New-Item -ItemType Directory -Force -Path $DistDir | Out-Null
 }
 
-$DistFile = Join-Path $DistPath "agent_installer_$Version_$Arch.exe"
-Write-Host "Copying to Dist: $DistFile"
+# 5. Copy installer to dist
+Write-Host "Copying to dist: $DistFile"
 Copy-Item -Path $OutputFile -Destination $DistFile -Force
 
 if (-not (Test-Path $DistFile)) {
@@ -52,7 +54,7 @@ if (-not (Test-Path $DistFile)) {
     exit 1
 }
 
-# 6. Cleanup
+# 6. Cleanup temporary agent.exe
 Remove-Item -Path $AgentExe -Force
 
 Write-Host "=== INSTALLER BUILD COMPLETE [$Arch] ==="
