@@ -20,19 +20,18 @@ builds:
       post:
         - cmd: >
             {{- if eq .Os "windows" }}
-            echo "=== START INSTALLER BUILD FOR {{ .Arch }} ===" &&
-            echo "Binary path: {{ .Path }}" &&
-            echo "Project root: {{ dir (dir (dir .Path)) }}" &&
-            echo "Dist folder: {{ dir (dir .Path) }}" &&
-            copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" &&
-            echo "Running ISCC..." &&
-            iscc.exe /DAppVersion={{ .Version }} /DArch={{ .Arch }} "{{ dir (dir (dir .Path)) }}/installer.iss" &&
-            echo "ISCC finished, checking output..." &&
-            dir "{{ dir (dir (dir .Path)) }}\Output_{{ .Arch }}\" &&
-            copy "{{ dir (dir (dir .Path)) }}\Output_{{ .Arch }}\Agent_Setup_{{ .Arch }}.exe" "{{ dir (dir .Path ) }}\agent_installer_{{ .Version }}_{{ .Arch }}.exe" &&
-            echo "Installer copied to dist, listing dist folder:" &&
-            dir "{{ dir (dir .Path) }}\agent_installer_*" &&
-            del "{{ dir (dir (dir .Path)) }}\agent.exe"
+            powershell -Command "Write-Host '=== INSTALLER BUILD START [{{ .Arch }}] ==='" &&
+            powershell -Command "Write-Host 'Binary: {{ .Path }}'" &&
+            powershell -Command "Copy-Item -Path '{{ .Path }}' -Destination '.\\agent.exe' -Force" &&
+            powershell -Command "Write-Host 'Running ISCC...'" &&
+            powershell -Command "& 'iscc.exe' '/DAppVersion={{ .Version }}' '/DArch={{ .Arch }}' '.\\installer.iss'" &&
+            powershell -Command "Write-Host 'Checking output...'" &&
+            powershell -Command "if (Test-Path '.\\Output_{{ .Arch }}\\Agent_Setup_{{ .Arch }}.exe') { Write-Host 'Output found' } else { Write-Host 'OUTPUT NOT FOUND'; exit 1 }" &&
+            powershell -Command "Copy-Item -Path '.\\Output_{{ .Arch }}\\Agent_Setup_{{ .Arch }}.exe' -Destination '.\\dist\\agent_installer_{{ .Version }}_{{ .Arch }}.exe' -Force" &&
+            powershell -Command "Write-Host 'Verifying dist...'" &&
+            powershell -Command "if (Test-Path '.\\dist\\agent_installer_{{ .Version }}_{{ .Arch }}.exe') { Write-Host 'Installer in dist: OK' } else { Write-Host 'INSTALLER NOT IN DIST'; exit 1 }" &&
+            powershell -Command "Remove-Item -Path '.\\agent.exe' -Force" &&
+            powershell -Command "Write-Host '=== INSTALLER BUILD COMPLETE [{{ .Arch }}] ==='"
             {{- end }}
 
 nfpms:
