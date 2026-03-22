@@ -24,7 +24,7 @@ builds:
             -Version "{{ .Version }}" 
             -Arch "{{ .Arch }}" 
             -Binary "{{ .Path }}" 
-            -Dist "{{ .Dist }}"
+            -Dist "../dist"
             {{- end }}
 
 nfpms:

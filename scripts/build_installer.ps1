@@ -7,7 +7,7 @@ param(
 
 Write-Host "=== INSTALLER BUILD START [$Arch] ==="
 Write-Host "Binary: $Binary"
-Write-Host "Dist: $Dist"
+Write-Host "Dist Target: $Dist"
 
 # 1. Copy binary to root for ISCC (ISCC often expects relative paths)
 $RootDir = Split-Path -Parent $PSScriptRoot
@@ -36,7 +36,12 @@ if (-not (Test-Path $OutputFile)) {
     exit 1
 }
 
-# 4. Copy to Dist
+# 4. Copy to Dist (Using the path passed from Goreleaser)
+# Ensure Dist directory exists
+if (-not (Test-Path $Dist)) {
+    New-Item -ItemType Directory -Force -Path $Dist | Out-Null
+}
+
 $DistFile = Join-Path $Dist "agent_installer_$Version_$Arch.exe"
 Write-Host "Copying to Dist: $DistFile"
 Copy-Item -Path $OutputFile -Destination $DistFile -Force
