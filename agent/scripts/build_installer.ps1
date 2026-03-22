@@ -9,16 +9,17 @@ Write-Host "=== INSTALLER BUILD START [$Arch] ==="
 Write-Host "Binary: $Binary"
 Write-Host "Dist Target: $Dist"
 
-# 1. Copy binary to root for ISCC (ISCC often expects relative paths)
-$RootDir = Split-Path -Parent $PSScriptRoot
+# 1. Resolve paths relative to project root (../ from agent dir)
+$RootDir = Resolve-Path (Join-Path $PSScriptRoot "..")
 $AgentExe = Join-Path $RootDir "agent.exe"
+$IssFile = Join-Path $RootDir "installer.iss"
 
-Write-Host "Copying binary to root..."
+# 2. Copy binary to root for ISCC
+Write-Host "Copying binary to root: $AgentExe"
 Copy-Item -Path $Binary -Destination $AgentExe -Force
 
-# 2. Run ISCC
-$IssFile = Join-Path $RootDir "installer.iss"
-Write-Host "Running ISCC..."
+# 3. Run ISCC
+Write-Host "Running ISCC: $IssFile"
 & "iscc.exe" "/DAppVersion=$Version" "/DArch=$Arch" $IssFile
 
 if ($LASTEXITCODE -ne 0) {
@@ -26,7 +27,7 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# 3. Locate Output
+# 4. Locate Output
 $OutputDir = Join-Path $RootDir "Output_$Arch"
 $OutputFile = Join-Path $OutputDir "Agent_Setup_$Arch.exe"
 
@@ -36,13 +37,13 @@ if (-not (Test-Path $OutputFile)) {
     exit 1
 }
 
-# 4. Copy to Dist (Using the path passed from Goreleaser)
-# Ensure Dist directory exists
-if (-not (Test-Path $Dist)) {
-    New-Item -ItemType Directory -Force -Path $Dist | Out-Null
+# 5. Ensure Dist directory exists and copy
+$DistPath = Join-Path $RootDir $Dist
+if (-not (Test-Path $DistPath)) {
+    New-Item -ItemType Directory -Force -Path $DistPath | Out-Null
 }
 
-$DistFile = Join-Path $Dist "agent_installer_$Version_$Arch.exe"
+$DistFile = Join-Path $DistPath "agent_installer_$Version_$Arch.exe"
 Write-Host "Copying to Dist: $DistFile"
 Copy-Item -Path $OutputFile -Destination $DistFile -Force
 
@@ -51,7 +52,7 @@ if (-not (Test-Path $DistFile)) {
     exit 1
 }
 
-# 5. Cleanup
+# 6. Cleanup
 Remove-Item -Path $AgentExe -Force
 
 Write-Host "=== INSTALLER BUILD COMPLETE [$Arch] ==="
