@@ -26,6 +26,11 @@ builds:
             cmd /c copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" >nul 2>&1 &&
             iscc.exe /DAppVersion={{.Version}} /DArch={{.Arch}} "{{ dir (dir (dir .Path)) }}\installer.iss"
             {{- end -}}
+    post-publish:
+        - cmd: >
+            {{- if eq .Os "windows" -}}
+            cmd /c copy "Output_{{ .Arch }}\*.exe" "dist\" >nul 2>&1
+            {{- end -}}
 
 nfpms:
   - id: agent-linux
