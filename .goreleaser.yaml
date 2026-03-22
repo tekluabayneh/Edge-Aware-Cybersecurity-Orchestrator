@@ -20,12 +20,7 @@ builds:
       post:
         - cmd: >
             {{- if eq .Os "windows" }}
-            powershell -Command "Copy-Item '{{ .Path }}' '../agent.exe' -Force" &&
-            powershell -Command "& 'iscc.exe' '/DAppVersion={{ .Version }}' '/DArch={{ .Arch }}' '../installer.iss'" &&
-            powershell -Command "$o='../Output_{{ .Arch }}/Agent_Setup_{{ .Arch }}.exe'; if (!(Test-Path $o)) { exit 1 }" &&
-            powershell -Command "New-Item -ItemType Directory -Force -Path '../dist' | Out-Null" &&
-            powershell -Command "Copy-Item '../Output_{{ .Arch }}/Agent_Setup_{{ .Arch }}.exe' '../dist/agent_installer_{{ .Version }}_{{ .Arch }}.exe' -Force" &&
-            powershell -Command "Remove-Item '../agent.exe' -Force"
+            powershell -Command "$bin='{{ .Path }}'; $root=Split-Path (Split-Path (Split-Path $bin)); Write-Host \"[DEBUG] ProjectRoot: $root\"; Write-Host \"[DEBUG] Binary: $bin\"; Copy-Item $bin \"$root\agent.exe\" -Force; Write-Host \"[DEBUG] Running ISCC\"; & \"$env:ProgramFiles\Inno Setup 6\ISCC.exe\" \"/DAppVersion={{ .Version }}\" \"/DArch={{ .Arch }}\" \"$root\installer.iss\"; if ($LASTEXITCODE -ne 0) { Write-Error \"ISCC failed\"; exit 1 }; $src=\"$root\Output_{{ .Arch }}\Agent_Setup_{{ .Arch }}.exe\"; Write-Host \"[DEBUG] Checking: $src\"; if (!(Test-Path $src)) { Write-Error \"ISCC output missing: $src\"; exit 1 }; $dist=\"$root\dist\"; if (!(Test-Path $dist)) { New-Item -ItemType Directory -Force -Path $dist | Out-Null }; $dest=\"$dist\agent_installer_{{ .Version }}_{{ .Arch }}.exe\"; Write-Host \"[DEBUG] Copying to: $dest\"; Copy-Item $src $dest -Force; if (!(Test-Path $dest)) { Write-Error \"Installer not in dist: $dest\"; exit 1 }; Write-Host \"[DEBUG] Installer ready: $dest\"; Remove-Item \"$root\agent.exe\" -Force; Write-Host \"[DEBUG] Cleanup done\""
             {{- end }}
 
 nfpms:
@@ -57,6 +52,7 @@ release:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
   extra_files:
+    - glob: "./dist/agent_installer_*.exe"
     - glob: "dist/agent_installer_*.exe"
 
 checksum:
