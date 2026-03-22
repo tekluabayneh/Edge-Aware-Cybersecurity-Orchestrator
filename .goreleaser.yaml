@@ -20,25 +20,7 @@ builds:
       post:
         - cmd: >
             {{- if eq .Os "windows" }}
-            powershell -Command "
-              $bin = '{{ .Path }}';
-              $root = (Get-Item $bin).Directory.Parent.Parent.FullName -replace '\\\\','/';
-              Write-Host '[DEBUG] Root: $root';
-              Copy-Item -Path $bin -Destination ('$root/agent.exe') -Force;
-              $iscc = $env:ISCC_PATH;
-              if (-not $iscc) { $iscc = 'C:/Program Files/Inno Setup 6/ISCC.exe'; if (-not (Test-Path $iscc)) { $iscc = 'D:/Program Files/Inno Setup 6/ISCC.exe'; if (-not (Test-Path $iscc)) { $iscc = (Get-Command iscc.exe -ErrorAction SilentlyContinue).Source; if (-not $iscc) { Write-Error 'ISCC not found'; exit 1 } } } };
-              Write-Host '[DEBUG] ISCC: $iscc';
-              & $iscc '/DAppVersion={{ .Version }}' '/DArch={{ .Arch }}' ('$root/installer.iss');
-              if ($LASTEXITCODE -ne 0) { Write-Error 'ISCC failed'; exit 1 };
-              $src = ('$root/Output_{{ .Arch }}/Agent_Setup_{{ .Arch }}.exe');
-              if (-not (Test-Path $src)) { Write-Error \"Missing: $src\"; exit 1 };
-              $dist = ('$root/dist'); if (-not (Test-Path $dist)) { New-Item -ItemType Directory -Force -Path $dist | Out-Null };
-              $dest = ('$dist/agent_installer_{{ .Version }}_{{ .Arch }}.exe');
-              Copy-Item -Path $src -Destination $dest -Force;
-              if (-not (Test-Path $dest)) { Write-Error \"Missing: $dest\"; exit 1 };
-              Write-Host '[DEBUG] Done: $dest';
-              Remove-Item -Path ('$root/agent.exe') -Force;
-            "
+            powershell -Command "$bin='{{ .Path }}'; $root=(Get-Item $bin).Directory.Parent.Parent.FullName -replace '\\\\','/'; Write-Host \"[DEBUG] Root: $root\"; Copy-Item -Path $bin -Destination \"$root/agent.exe\" -Force; $iscc=$env:ISCC_PATH; if (-not $iscc) { $iscc='C:/Program Files/Inno Setup 6/ISCC.exe'; if (-not (Test-Path $iscc)) { $iscc='D:/Program Files/Inno Setup 6/ISCC.exe'; if (-not (Test-Path $iscc)) { $iscc=(Get-Command iscc.exe -ErrorAction SilentlyContinue).Source; if (-not $iscc) { Write-Error 'ISCC not found'; exit 1 } } } }; Write-Host \"[DEBUG] ISCC: $iscc\"; & $iscc \"/DAppVersion={{ .Version }}\" \"/DArch={{ .Arch }}\" \"$root/installer.iss\"; if ($LASTEXITCODE -ne 0) { Write-Error 'ISCC failed'; exit 1 }; $src=\"$root/Output_{{ .Arch }}/Agent_Setup_{{ .Arch }}.exe\"; if (-not (Test-Path $src)) { Write-Error \"Missing: $src\"; exit 1 }; $dist=\"$root/dist\"; if (-not (Test-Path $dist)) { New-Item -ItemType Directory -Force -Path $dist | Out-Null }; $dest=\"$dist/agent_installer_{{ .Version }}_{{ .Arch }}.exe\"; Copy-Item -Path $src -Destination $dest -Force; if (-not (Test-Path $dest)) { Write-Error \"Missing: $dest\"; exit 1 }; Write-Host \"[DEBUG] Done: $dest\"; Remove-Item -Path \"$root/agent.exe\" -Force"
             {{- end }}
 
 nfpms:
