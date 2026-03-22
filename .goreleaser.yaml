@@ -51,16 +51,14 @@ archives:
       - LICENSE*
       - README*
 
-extra_files:
-  - glob: "Output_{{ .Arch }}/*.exe"
+  - id: windows-installers
     name_template: "agent_setup_{{ .Version }}_{{ .Arch }}.exe"
-  - glob: "Output/*.exe"
-    name_template: "agent_setup_{{ .Version }}_{{ .Arch }}.exe"
-  - glob: "*.exe"
-    name_template: "agent_setup_{{ .Version }}_{{ .Arch }}.exe"
+    format: binary
+    files:
+      - src: "Output_{{ .Arch }}/*.exe"
+        dst: .
 
 release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
-
