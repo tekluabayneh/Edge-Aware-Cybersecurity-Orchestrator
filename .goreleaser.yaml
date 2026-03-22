@@ -24,12 +24,13 @@ builds:
             powershell -Command "Write-Host 'Binary: {{ .Path }}'" &&
             powershell -Command "Copy-Item -Path '{{ .Path }}' -Destination '.\\agent.exe' -Force" &&
             powershell -Command "Write-Host 'Running ISCC...'" &&
-            powershell -Command "& 'iscc.exe' '/DAppVersion={{ .Version }}' '/DArch={{ .Arch }}' '.\\installer.iss'" &&
+            powershell -Command "& 'iscc.exe' '/DAppVersion={{ .Version }}' '/DArch={{ .Arch }}' '..\\installer.iss'" &&
             powershell -Command "Write-Host 'Checking output...'" &&
             powershell -Command "if (Test-Path '.\\Output_{{ .Arch }}\\Agent_Setup_{{ .Arch }}.exe') { Write-Host 'Output found' } else { Write-Host 'OUTPUT NOT FOUND'; exit 1 }" &&
-            powershell -Command "Copy-Item -Path '.\\Output_{{ .Arch }}\\Agent_Setup_{{ .Arch }}.exe' -Destination '.\\dist\\agent_installer_{{ .Version }}_{{ .Arch }}.exe' -Force" &&
+            powershell -Command "Write-Host 'Copying to Dist: {{ .Dist }}'" &&
+            powershell -Command "Copy-Item -Path '.\\Output_{{ .Arch }}\\Agent_Setup_{{ .Arch }}.exe' -Destination '{{ .Dist }}\\agent_installer_{{ .Version }}_{{ .Arch }}.exe' -Force" &&
             powershell -Command "Write-Host 'Verifying dist...'" &&
-            powershell -Command "if (Test-Path '.\\dist\\agent_installer_{{ .Version }}_{{ .Arch }}.exe') { Write-Host 'Installer in dist: OK' } else { Write-Host 'INSTALLER NOT IN DIST'; exit 1 }" &&
+            powershell -Command "if (Test-Path '{{ .Dist }}\\agent_installer_{{ .Version }}_{{ .Arch }}.exe') { Write-Host 'Installer in dist: OK' } else { Write-Host 'INSTALLER NOT IN DIST'; exit 1 }" &&
             powershell -Command "Remove-Item -Path '.\\agent.exe' -Force" &&
             powershell -Command "Write-Host '=== INSTALLER BUILD COMPLETE [{{ .Arch }}] ==='"
             {{- end }}
