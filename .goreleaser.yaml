@@ -51,12 +51,16 @@ archives:
       - LICENSE*
       - README*
 
-# ← THIS MUST BE TOP-LEVEL (not inside release!)
 extra_files:
   - glob: "Output_{{ .Arch }}/*.exe"
+    name_template: "agent_setup_{{ .Version }}_{{ .Arch }}.exe"
+  - glob: "Output/*.exe"
+    name_template: "agent_setup_{{ .Version }}_{{ .Arch }}.exe"
+  - glob: "*.exe"
     name_template: "agent_setup_{{ .Version }}_{{ .Arch }}.exe"
 
 release:
   github:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
+
