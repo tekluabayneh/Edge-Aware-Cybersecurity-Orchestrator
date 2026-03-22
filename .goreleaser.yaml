@@ -52,7 +52,7 @@ archives:
       - README*
 
   - id: windows-installers
-    name_template: "agent_setup_{{ .Version }}_{{ .Arch }}.exe"
+    name_template: "agent_setup_{{ .Version }}_{{ .Arch }}_{{ now.Format \"20060102-150405\" }}.exe"
     format: binary
     files:
       - src: "Output_{{ .Arch }}/*.exe"
