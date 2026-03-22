@@ -20,12 +20,19 @@ builds:
       post:
         - cmd: >
             {{- if eq .Os "windows" }}
-            echo "=== Building Windows Installer for {{ .Arch }} ===" &&
-            copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" >nul &&
+            echo "=== START INSTALLER BUILD FOR {{ .Arch }} ===" &&
+            echo "Binary path: {{ .Path }}" &&
+            echo "Project root: {{ dir (dir (dir .Path)) }}" &&
+            echo "Dist folder: {{ dir (dir .Path) }}" &&
+            copy "{{ .Path }}" "{{ dir (dir (dir .Path)) }}\agent.exe" &&
+            echo "Running ISCC..." &&
             iscc.exe /DAppVersion={{ .Version }} /DArch={{ .Arch }} "{{ dir (dir (dir .Path)) }}/installer.iss" &&
-            timeout /t 5 /nobreak >nul &&
-            copy "{{ dir (dir (dir .Path)) }}/Output_{{ .Arch }}/Agent_Setup_{{ .Arch }}.exe" "{{ dir (dir .Path) }}/agent_installer_{{ .Version }}_{{ .Arch }}.exe" >nul &&
-            del "{{ dir (dir (dir .Path)) }}\agent.exe" >nul 2>&1
+            echo "ISCC finished, checking output..." &&
+            dir "{{ dir (dir (dir .Path)) }}\Output_{{ .Arch }}\" &&
+            copy "{{ dir (dir (dir .Path)) }}\Output_{{ .Arch }}\Agent_Setup_{{ .Arch }}.exe" "{{ dir (dir .Path ) }}\agent_installer_{{ .Version }}_{{ .Arch }}.exe" &&
+            echo "Installer copied to dist, listing dist folder:" &&
+            dir "{{ dir (dir .Path) }}\agent_installer_*" &&
+            del "{{ dir (dir (dir .Path)) }}\agent.exe"
             {{- end }}
 
 nfpms:
@@ -57,7 +64,7 @@ release:
     owner: tekluabayneh
     name: Edge-Aware-Cybersecurity-Orchestrator
   extra_files:
-    - glob: ./dist/agent_installer_*.exe
+    - glob: "dist/agent_installer_*.exe"
 
 checksum:
   name_template: "checksums.txt"
