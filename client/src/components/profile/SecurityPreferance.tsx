@@ -24,8 +24,11 @@ export default function SecurityPreferences({ user }: { user: userInfoType | nul
         if (!user) return
 
         setProfileInfo({
+            // @ts-expect-error index is type number
             two_fa: user.two_fa ?? false,
+            // @ts-expect-error index is type number
             notification: user.notification ?? false,
+            // @ts-expect-error index is type number
             alert_notification: user.alert_notification ?? false
         })
     }, [user])
