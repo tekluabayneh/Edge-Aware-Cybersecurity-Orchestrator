@@ -22,10 +22,19 @@ func App() {
 	_, folderPath := utils.GetStoragePath()
 	value, err := os.ReadFile(folderPath)
 	if err != nil {
+		if os.IsNotExist(err) {
+			fmt.Println("📁 Register file doesn't exist yet (first run) - proceeding to registration")
+		} else {
+			fmt.Println("🚨 READ FILE ERROR:", err)
+		}
+		value = []byte{}
+	} else {
+		fmt.Printf("✅ Read existing registration: %q\n", string(value))
+	}
+	if err != nil {
 		fmt.Println("READ FILE ERROR:", err)
 		value = []byte{}
 	}
-
 	time.Sleep(time.Second * 5)
 
 	if len(value) < 1 || !strings.Contains(string(value), "registred") {
@@ -36,12 +45,13 @@ func App() {
 			return
 		}
 
-		err := os.WriteFile("./register", []byte("registred"), 0644)
+		err := utils.SafeWriteFile(folderPath, []byte("registred"))
 		if err != nil {
 			fmt.Println("WRITE FILE ERROR:", err)
 			return
 		}
 	}
+
 	// start the main app
 	telemetry.Telemetry()
 }
