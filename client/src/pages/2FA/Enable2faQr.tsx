@@ -15,9 +15,10 @@ const Enable2faQr = () => {
     const [copied, setCopied] = useState(false);
     const [mounted, setMounted] = useState(false);
     const location = useLocation()
-    const navigator = useNavigate()
+    const navigate = useNavigate()
     const { otpUrl, qr } = location.state
 
+    console.log(qrUrl)
     useEffect(() => {
         setTimeout(() => setMounted(true), 50);
         const t = setTimeout(() => {
@@ -31,7 +32,7 @@ const Enable2faQr = () => {
     const handleVerify = async () => {
         if (code.length < 6) {
             setMessage({ type: "error", text: "" });
-            toast.warn("Enter a valid 6-digit code.");
+            toast("Enter a valid 6-digit code.");
             return;
         }
 
@@ -43,8 +44,8 @@ const Enable2faQr = () => {
                 toast.success(res.data.message);
             }
 
-            if (res.status == "200") {
-                navigator("/Dashboard")
+            if (res.status == 200) {
+                navigate("/Dashboard")
             }
 
         } catch (error) {
