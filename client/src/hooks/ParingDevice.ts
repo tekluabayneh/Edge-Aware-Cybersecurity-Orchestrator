@@ -2,7 +2,7 @@ import toast from "react-hot-toast"
 import api from "../config/axios"
 import { AxiosError } from "axios"
 
-export const FetchDeviceList = async (): DeviceType => {
+export const FetchDeviceList = async () => {
     try {
         const res = await api.get("/api/list/agent")
         return res.data
@@ -21,7 +21,7 @@ export const FetchDeviceList = async (): DeviceType => {
 
 }
 
-export const GenerateParingToken = async (): DeviceType => {
+export const GenerateParingToken = async () => {
     try {
         const res = await api.post("/api/paringToken/token")
         return res.data
