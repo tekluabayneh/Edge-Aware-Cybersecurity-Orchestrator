@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
@@ -160,7 +161,7 @@ func (h *TelemetryType) ReceiveTelemetry(w http.ResponseWriter, r *http.Request)
 		Column7:   integrityJson,
 		Column8:   networkJson,
 	}
-
+	fmt.Println(TelemetryData)
 	err = h.DB.UpsertAgentTelemetry(ctx, TelemetryData)
 	if utils.CheckError(w, err, http.StatusInternalServerError, "failed creating telemetry") {
 		return
