@@ -1,12 +1,10 @@
 import { Filter } from 'lucide-react'
 import { filters } from '../../data/filters'
-import GetAllAlerts from "../../hooks/fetchAlerts"
 
 type StateType = {
     setActiveFilter: React.Dispatch<React.SetStateAction<string>>
 }
 
-const Alerts = await GetAllAlerts()
 
 const AlertFilters: React.FC<StateType> = ({ setActiveFilter }) => {
     return (
