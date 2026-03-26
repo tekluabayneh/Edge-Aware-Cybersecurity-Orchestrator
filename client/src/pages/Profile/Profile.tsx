@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import NotificationBell from '../../components/Notification/Notification'
 
 export default function Profile() {
-    const { data, isLoading } = useQuery({
+    let { data, isLoading } = useQuery({
         queryKey: ["userProfile"],
         queryFn: FechUserProfile
     });
@@ -17,6 +17,10 @@ export default function Profile() {
                 <div className="text-gray-400">Loading profile...</div>
             </div>
         )
+    }
+
+    if (!data) {
+        data = []
     }
 
     return (

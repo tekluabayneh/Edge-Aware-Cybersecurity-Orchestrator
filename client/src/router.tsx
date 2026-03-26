@@ -1,4 +1,3 @@
-
 import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import Loading from "./components/loading";
@@ -31,7 +30,6 @@ const Routers = () => {
                     <Route path="*" element={<NotFound />} />
                 </Routes>
             </Suspense>
-            {/* Footer */}
             <Footer />
         </>
     );

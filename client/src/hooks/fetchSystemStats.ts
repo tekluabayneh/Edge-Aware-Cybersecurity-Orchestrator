@@ -2,10 +2,8 @@
 import toast from "react-hot-toast"
 import api from "../config/axios"
 import { AxiosError } from "axios"
-import { useNavigate } from "react-router-dom"
 
-
-export const FechUserAgentSystem = async (): UserResponse => {
+export const FechUserAgentSystem = async () => {
     try {
         const res = await api.get("/api/data/telemetry")
         return res.data

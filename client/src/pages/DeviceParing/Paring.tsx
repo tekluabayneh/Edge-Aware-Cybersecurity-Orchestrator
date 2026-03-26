@@ -10,10 +10,12 @@ export default function PairDevice() {
     const [isLoading, setisLoading] = useState(false);
 
     const handleRefresh = async () => {
+        setisLoading(true)
         const token = await GenerateParingToken()
-        toast.success(token.message);
-        setPairingToken(token.token)
+        toast.success(token?.message);
+        setPairingToken(token?.token)
         setCopied(false);
+        setisLoading(false)
     };
 
     const handleCopy = async () => {

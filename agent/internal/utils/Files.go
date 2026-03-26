@@ -2,8 +2,11 @@ package utils
 
 // more files can be added to check here
 var FilesNameToCheckAgainst = map[string]bool{
-	"exe": true,
-	"sh":  true,
+	"exe":  true,
+	"dll":  true,
+	"sh":   true,
+	"bash": true,
+	"bin":  true,
 }
 
 // here also if cretical fiels can be excluded

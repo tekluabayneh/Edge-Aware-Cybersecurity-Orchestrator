@@ -60,17 +60,15 @@ export default function RecentAlerts() {
             </div>
             <div className="space-y-3">
                 {alerts?.slice(0, 5).map((alert, idx) => (
-                    <div
-                        key={alert._id || idx}
-                        className="p-4 bg-gray-800/50 border border-gray-700 rounded-lg hover:border-cyan-500/30 transition-all duration-200"
-                    >
+                    // @ts-expect-error can be change later
+                    <div key={alert?._id || idx} className="p-4 bg-gray-800/50 border border-gray-700 rounded-lg hover:border-cyan-500/30 transition-all duration-200" >
                         <div className="flex items-start justify-between mb-2">
                             <div className="flex items-center gap-2">
-                                <div
-                                    className={`w-2 h-2 rounded-full bg-gradient-to-r ${severityColorsForAlert[alert.risk_level]} animate-pulse`}
+
+                                <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${severityColorsForAlert[alert.risk_level]} animate-pulse`}
                                 ></div>
                                 <span className="text-sm font-medium text-white">
-                                    {alert.summery}
+                                    {alert?.summary}
                                 </span>
                             </div>
                             <span className={`px-2 rounded-sm text-sm bg-gradient-to-r ${severityColorsForAlert[alert.risk_level]} `}>
@@ -81,7 +79,7 @@ export default function RecentAlerts() {
                         <div className="flex items-center gap-4 text-xs text-gray-500">
                             <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
-                                {alert.CreatedAt}
+                                {alert.created_at}
                             </span>
                             <span className="px-2 py-1 bg-gray-700/50 rounded">
                                 {alert.alertType}

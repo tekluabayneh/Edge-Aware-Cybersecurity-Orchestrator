@@ -27,19 +27,24 @@ func GetStoragePath() (string, string) {
 	}
 
 	finalPath := filepath.Join(baseDir, "internal", "register")
-	RegisterFolder := filepath.Join(baseDir, "register")
+	RegisterFolder := filepath.Join(baseDir, "register.txt")
 
 	// Create it if it's missing
 	err := os.MkdirAll(finalPath, 0755)
 	if err != nil {
-		fmt.Println("err man nega", err)
+		fmt.Println("err create folders", err)
 		panic(err)
 	}
 
-	_, err = os.Create(RegisterFolder)
-	if err != nil {
-		fmt.Println("err man nega", err)
-		panic(err)
+	_, err = os.Stat(RegisterFolder)
+	if os.IsNotExist(err) {
+		_, err = os.Create(RegisterFolder)
+		if err != nil {
+			fmt.Println("err create file", err)
+			panic(err)
+		}
+	} else {
+		fmt.Println("fils already exists")
 	}
 
 	return finalPath, RegisterFolder

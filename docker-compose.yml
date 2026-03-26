@@ -5,9 +5,6 @@ services:
     ports:
       - "8000:8000"
 
-  agent:
-    build: ./agent
-
   analyzer:
     build: ./analyzer
     ports:

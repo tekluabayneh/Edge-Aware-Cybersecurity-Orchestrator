@@ -129,7 +129,7 @@ export default function Alerts() {
                     <div className="text-center py-12 text-gray-400">No alerts found</div>
                 ) : (
                     filteredAlerts.map((alert, idx) => (
-                        <AlertCard key={alert._id || alert.id || idx} alert={alert} />
+                        <AlertCard key={idx} alert={alert} />
                     ))
                 )}
             </div>

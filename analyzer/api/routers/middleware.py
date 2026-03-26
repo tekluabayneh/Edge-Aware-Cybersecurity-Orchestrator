@@ -13,7 +13,9 @@ from starlette.responses import JSONResponse, Response
 class JWTAuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         excluded_paths = {
-            "/docs",
+             "/docs",
+             "/openapi.json",
+             "/favicon.ico",
         }
 
         if request.method == "OPTIONS" or request.url.path in excluded_paths:

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"reflect"
 	"strconv"
 	"strings"
 
@@ -44,27 +43,26 @@ type NewAlertRequest struct {
 func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	email := r.Context().Value("email").(string)
+	// 1. Get user from context
+	email, ok := r.Context().Value("email").(string)
+	if !ok {
+		utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"message": "invalid user context",
+		})
+		return
+	}
+
 	user, err := h.DB.GetUserByEmail(ctx, email)
 	if utils.CheckError(w, err, http.StatusBadRequest, "user not found") {
 		return
 	}
+
+	// 2. Get current agent
 	agent, err := h.DB.GetAgentByUserId(ctx, int64(user.ID))
 	if errors.Is(err, sql.ErrNoRows) {
-		utils.WriteJSON(w, http.StatusNotFound, map[string]any{
-			"message": "agent not found so No Alert",
-		})
-		return
-	}
-	if utils.CheckError(w, err, http.StatusInternalServerError, "internal server errors") {
-		return
-	}
-
-	// Get all alerts for the user
-	alerts, err := h.DB.GetAllAlert(ctx, string(agent.AgentID))
-	if len(alerts) < 1 {
-		utils.WriteJSON(w, http.StatusNotFound, map[string]string{
-			"message": "alert not found",
+		utils.WriteJSON(w, http.StatusOK, map[string]any{
+			"message": "no agent found",
+			"alert":   []any{},
 		})
 		return
 	}
@@ -72,53 +70,116 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var allAlerts []map[string]any
-	for _, alert := range alerts {
-		fields := []string{"Network", "Performance", "Security", "RawPayload"}
-		unmarshaledData := make(map[string]any)
+	// 3. Try current agent alerts FIRST
+	alertsToSend, err := h.DB.GetAllAlert(ctx, string(agent.AgentID))
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"message": "failed to fetch alerts",
+		})
+		return
+	}
 
-		val := reflect.Indirect(reflect.ValueOf(alert))
+	// 4. If current agent has no alerts → check other agents
+	if len(alertsToSend) == 0 {
+		allAgents, err := h.DB.GetAllAgentByUserId(ctx, int64(user.ID))
+		if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
+			return
+		}
 
-		for _, field := range fields {
-			f := val.FieldByName(field)
-			if !f.IsValid() {
+		for _, v := range allAgents {
+			// skip current agent
+			if v.AgentID == agent.AgentID {
 				continue
 			}
 
-			fieldBytes, ok := f.Interface().([]byte)
-			if !ok || len(fieldBytes) == 0 {
+			alerts, err := h.DB.GetAllAlert(ctx, string(v.AgentID))
+
+			if errors.Is(err, sql.ErrNoRows) {
 				continue
 			}
 
-			var tmp any
-			if err := json.Unmarshal(fieldBytes, &tmp); err != nil {
+			if utils.CheckError(w, err, http.StatusInternalServerError, "internal server error") {
 				return
 			}
 
-			unmarshaledData[field] = tmp
+			if len(alerts) > 0 {
+				alertsToSend = alerts
+				break
+			}
+		}
+	}
+
+	// 5. If still no alerts → return empty array
+	if len(alertsToSend) == 0 {
+		utils.WriteJSON(w, http.StatusOK, map[string]any{
+			"message": "no alerts found",
+			"alert":   []any{},
+		})
+		return
+	}
+
+	// 6. Transform alerts
+	var allAlerts []map[string]any
+
+	for _, alert := range alertsToSend {
+		unmarshaledData := make(map[string]any)
+
+		// Network
+		if len(alert.Network) > 0 {
+			var tmp any
+			if err := json.Unmarshal(alert.Network, &tmp); err == nil {
+				unmarshaledData["network"] = tmp
+			}
+		}
+
+		// Performance
+		if len(alert.Performance) > 0 {
+			var tmp any
+			if err := json.Unmarshal(alert.Performance, &tmp); err == nil {
+				unmarshaledData["performance"] = tmp
+			}
+		}
+
+		// Security
+		if len(alert.Security) > 0 {
+			var tmp any
+			if err := json.Unmarshal(alert.Security, &tmp); err == nil {
+				unmarshaledData["security"] = tmp
+			}
+		}
+
+		// RawPayload
+		if len(alert.RawPayload) > 0 {
+			var tmp any
+			if err := json.Unmarshal(alert.RawPayload, &tmp); err == nil {
+				unmarshaledData["raw"] = tmp
+			}
 		}
 
 		alertMap := map[string]any{
-			"network":     unmarshaledData["Network"],
-			"performance": unmarshaledData["Performance"],
-			"security":    unmarshaledData["Security"],
-			"raw":         unmarshaledData["RawPayload"],
+			"network":     unmarshaledData["network"],
+			"performance": unmarshaledData["performance"],
+			"security":    unmarshaledData["security"],
+			"raw":         unmarshaledData["raw"],
 			"alertType":   alert.AlertType,
 			"agent_id":    alert.AgentID,
 			"message":     alert.Message,
-			"summery":     alert.Summary,
+			"summary":     alert.Summary,
 			"agent_token": alert.AgentToken,
 			"risk_level":  alert.RiskLevel,
 			"status":      alert.Status,
-			"CreatedAt":   alert.CreatedAt,
+			"created_at":  alert.CreatedAt,
 		}
+
 		allAlerts = append(allAlerts, alertMap)
 	}
 
+	// 7. Final response
 	utils.WriteJSON(w, http.StatusOK, map[string]any{
 		"message": "alerts fetched successfully",
 		"alert":   allAlerts,
 	})
+
 }
 
 // GET /api/alerts/:agent_id
@@ -188,7 +249,11 @@ func (h *AlertType) GetAlertByAgentId(w http.ResponseWriter, r *http.Request) {
 		"Security":    securityJson,
 		"CreatedAt":   alert.CreatedAt,
 	}
-	json.NewEncoder(w).Encode(alertToSend)
+	fmt.Println("hrere man", alertToSend)
+	utils.WriteJSON(w, http.StatusOK, map[string]any{
+		"message": "alert fetched successfully",
+		"alert":   alertToSend,
+	})
 }
 
 // PATCH /api/alerts/:id/read

@@ -1,17 +1,15 @@
 FROM python:3.11-slim
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /app
 
+# install uv
+RUN pip install uv
 
-COPY pyproject.toml uv.lock ./
-
-
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
-
-
+# copy project files
 COPY . .
 
+# install dependencies using uv
+RUN uv sync
 
-CMD ["uv", "run", "main.py"]
+# run app
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9090"]

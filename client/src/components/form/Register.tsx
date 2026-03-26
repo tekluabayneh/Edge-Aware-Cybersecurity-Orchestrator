@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Lock, Mail, User } from "lucide-react";
+import { ArrowRight, Lock, Mail } from "lucide-react";
 import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ import { validateFormData } from "../../utils/ValidateForm";
 const Register = () => {
     const { register, handleSubmit, formState: { errors } } = useForm()
     const [isLoading, setisLoading] = useState(false)
+
     const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
     const navigator = useNavigate()
 
@@ -52,6 +53,7 @@ const Register = () => {
     }
 
     return (
+
         <form className="relative w-full" style={{ perspective: 1000, }} onSubmit={handleSubmit(onSubmit)} >
 
             <AnimatePresence mode="wait">
@@ -77,6 +79,8 @@ const Register = () => {
                                 {...register("name", { required: "username is required" })}
                                 className="bg-gray-800 w-full placeholder:pl-3 rounded-md border-gray-700 text-white placeholder:text-gray-500 h-12 focus:border-cyan-500 focus:ring-cyan-500"
                             />
+
+                            {/* @ts-expect-error onSubmit is the right one */}
                             {errors.name && <p className="text-red-500">{errors.name.message}</p>}
 
                         </div>
@@ -92,6 +96,7 @@ const Register = () => {
                                 {...register("email", { required: "Email is required" })}
                                 className="bg-gray-800 w-full placeholder:pl-3 rounded-md border-gray-700 text-white placeholder:text-gray-500 h-12 focus:border-cyan-500 focus:ring-cyan-500"
                             />
+                            {/* @ts-expect-error onSubmit is the right one */}
                             {errors.email && <p className="text-red-500">{errors.email.message}</p>}
 
                         </div>
@@ -108,6 +113,7 @@ const Register = () => {
                                 {...register("password", { required: "Password is required" })}
                                 className="bg-gray-800 w-full placeholder:pl-3 rounded-md border-gray-700 text-white placeholder:text-gray-500 h-12 focus:border-cyan-500 focus:ring-cyan-500"
                             />
+                            {/* @ts-expect-error onSubmit is the right one */}
                             {errors.password && <p className="text-red-500">{errors.password.message}</p>}
                         </div>
 

@@ -80,6 +80,7 @@ const Login = () => {
                                 {...register("email", { required: "Email is required" })}
                                 className="bg-gray-800 w-full placeholder:pl-3 rounded-md border-gray-700 text-white placeholder:text-gray-500 h-12 focus:border-cyan-500 focus:ring-cyan-500"
                             />
+                            {/* @ts-expect-error onSubmit is the right one */}
                             {errors.email && <p className="text-red-500">{errors.email.message}</p>}
 
                         </div>
@@ -96,6 +97,7 @@ const Login = () => {
                                 {...register("password", { required: "Password is required" })}
                                 className="bg-gray-800 w-full placeholder:pl-3 rounded-md border-gray-700 text-white placeholder:text-gray-500 h-12 focus:border-cyan-500 focus:ring-cyan-500"
                             />
+                            {/* @ts-expect-error onSubmit is the right one */}
                             {errors.password && <p className="text-red-500">{errors.password.message}</p>}
                         </div>
 

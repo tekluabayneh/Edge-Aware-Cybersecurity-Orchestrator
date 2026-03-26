@@ -1,9 +1,7 @@
 import { Activity, Clock } from 'lucide-react'
-import { format } from 'date-fns'
-
-import { recentActivities } from '../../data/filters'
 import GetAllAlerts from '../../hooks/fetchAlerts';
 import { useQuery } from '@tanstack/react-query';
+
 
 export default function ActivityLog() {
     const { data, isLoading, error } = useQuery({
@@ -30,7 +28,6 @@ export default function ActivityLog() {
     if (error) return <p className="text-red-500">Something went wrong</p>;
 
 
-
     return (
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
@@ -48,7 +45,7 @@ export default function ActivityLog() {
                             <p className="text-sm text-white">{activity.message}</p>
                             <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                                 <Clock className="w-3 h-3" />
-                                {format(activity.CreatedAt, "MMM d, yyyy 'at' HH:mm")}
+                                {activity.CreatedAt ? activity.CreatedAt : activity.created_at}
                             </p>
                         </div>
                     </div>

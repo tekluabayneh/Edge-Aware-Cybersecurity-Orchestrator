@@ -73,7 +73,7 @@ const Verify2FA = () => {
         try {
             const res = await api.post("/api/verify2fa/verify", { code: toVerify })
 
-            if (res.status == "200") {
+            if (res.status == 200) {
                 setSuccess(true);
                 navigator("/Dashboard")
             }
@@ -145,8 +145,8 @@ const Verify2FA = () => {
                                     </div>
                                 )}
 
-                                <input
-                                    ref={(el) => (inputsRef.current[i] = el)}
+                                {/* @ts-expect-error handleVerify shold be empty in her */}
+                                <input ref={(el) => (inputsRef.current[i] = el)}
                                     type="text"
                                     inputMode="numeric"
                                     maxLength={1}
@@ -187,8 +187,8 @@ const Verify2FA = () => {
                 )}
 
                 {/* Button */}
-                <button
-                    onClick={() => handleVerify()}
+                {/* @ts-expect-error handleVerify shold be empty in her */}
+                <button onClick={() => handleVerify()}
                     disabled={verifying || code.length < 6 || success}
                     className="w-full py-[13px] rounded-[10px] text-[13px] font-semibold tracking-[-0.01em] bg-purple-600 text-white hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
