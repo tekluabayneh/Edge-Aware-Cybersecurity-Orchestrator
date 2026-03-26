@@ -1,10 +1,5 @@
 import { Clock, MapPin, Server } from 'lucide-react'
-import { format } from 'date-fns'
-import {
-    categoryIcons,
-    severityColors,
-    statusColors,
-} from '../../constants/colors'
+import { categoryIcons, severityColors, statusColors, } from '../../constants/colors'
 import type { AlertType } from '../../types/Alert'
 
 const AlertCard = ({ alert }: { alert: AlertType }) => {
@@ -15,22 +10,20 @@ const AlertCard = ({ alert }: { alert: AlertType }) => {
                     <div className="text-2xl">{categoryIcons[alert.alertType]}</div>
                     <div className="flex-1">
                         <h3 className="text-lg font-semibold text-white mb-1">
-                            {alert.summery}
+                            {alert.summary}
                         </h3>
                         <p className="text-sm text-gray-400">{alert.message}</p>
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <div
-                        className={`${severityColors[alert.risk_level]
-                            } border  rounded-lg px-3 text-xs font-semibold`}
+                    <div className={`${severityColors[alert.risk_level]
+                        } border  rounded-lg px-3 text-xs font-semibold`}
                     >
                         {alert.risk_level}
                     </div>
 
-                    <div
-                        className={`${statusColors[alert.status]
-                            } border  uppercase text-xs rounded-lg px-3 font-semibold`}
+                    <div className={`${statusColors[alert.status]}
+border  uppercase text-xs rounded-lg px-3 font-semibold`}
                     >
                         {alert.status}
                     </div>
@@ -41,7 +34,7 @@ const AlertCard = ({ alert }: { alert: AlertType }) => {
                 <div className="flex items-center gap-2 text-sm text-gray-400">
                     <Clock className="w-4 h-4 text-cyan-400" />
                     <span>
-                        {alert.CreatedAt}
+                        {alert?.created_at}
                     </span>
                 </div>
                 {alert.alertType && (
