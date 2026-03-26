@@ -11,7 +11,7 @@ export type NotificationType = {
     CreatedAt: string,
 }
 
-export const FetchAllNotification = async (): NotificationType => {
+export const FetchAllNotification = async () => {
     try {
         const res = await api.get("/api/getAll/get")
         return res.data
@@ -27,7 +27,8 @@ export const FetchAllNotification = async (): NotificationType => {
 
 }
 
-export const MarkRadSingleNotification = async () => {
+export const MarkRadSingleNotification = async (id: number) => {
+    console.log(id)
     try {
         const res = await api.post("/api/updateSingle/updateSingle")
         toast.success(res?.data.message);
@@ -44,9 +45,9 @@ export const MarkRadSingleNotification = async () => {
 
 }
 
-export const MarkRadAlllNotification = async (id: number) => {
+export const MarkRadAlllNotification = async () => {
     try {
-        const res = await api.post("/api/updatAll/update", { id: id })
+        const res = await api.post("/api/updatAll/update")
         toast.success(res?.data.message);
         return res.data
     } catch (error) {
