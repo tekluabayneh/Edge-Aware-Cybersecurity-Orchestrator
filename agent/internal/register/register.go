@@ -188,7 +188,7 @@ func Register() bool {
 
 	FolderPath, _ := utils.GetStoragePath()
 	path := filepath.Join(FolderPath, "email.txt")
-	err = os.WriteFile(path, []byte(DeviceInfoPaylod.Email), 0644)
+	err = utils.SafeWriteFile(path, []byte(DeviceInfoPaylod.Email))
 	if err != nil {
 		fmt.Println(utils.ErrorBox.Render("message: =>", "error storing usre email"))
 	}
@@ -199,12 +199,11 @@ func Register() bool {
 		fmt.Println(utils.ErrorBox.Render("message: =>", "error while marshling struct"))
 	}
 
-	err = os.WriteFile(path, []byte(json), 0644)
+	err = utils.SafeWriteFile(path, []byte(json))
 	if err != nil {
 		fmt.Println(utils.ErrorBox.Render("message: =>", "error storing usre email"))
 	}
 
 	fmt.Println(utils.SuccessBox.Render("✅ DeviceParing complete!"))
 	return true
-
 }
