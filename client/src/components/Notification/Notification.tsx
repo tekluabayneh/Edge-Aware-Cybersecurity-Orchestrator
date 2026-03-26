@@ -1,19 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { Bell, Check, Info, CheckCircle2, AlertTriangle, AlertCircle, Inbox } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { FetchAllNotification, MarkRadAlllNotification, MarkRadSingleNotification, type NotificationType } from "../../hooks/Notification";
+import { Bell, Check, Inbox } from "lucide-react";
 
-const typeStyles = {
-    info: { icon: Info, iconClass: "text-blue-500", bgClass: "bg-blue-50" },
-    success: { icon: CheckCircle2, iconClass: "text-emerald-500", bgClass: "bg-emerald-50" },
-    warning: { icon: AlertTriangle, iconClass: "text-amber-500", bgClass: "bg-amber-50" },
-    alert: { icon: AlertCircle, iconClass: "text-red-500", bgClass: "bg-red-50" },
-};
 
 export default function NotificationBell() {
     const [open, setOpen] = useState(false);
     const [notifications, setNotifications] = useState<NotificationType[] | []>([]);
-    const ref = useRef(null);
+    const ref = useRef<HTMLDivElement>(null);
 
     const { data, isLoading } = useQuery({
         queryKey: ["allNotification"],
@@ -31,8 +25,8 @@ export default function NotificationBell() {
 
     // Close on outside click
     useEffect(() => {
-        const handler = (e) => {
-            if (ref.current && !ref.current.contains(e.target)) {
+        const handler = (e: MouseEvent) => {
+            if (ref.current && e.target instanceof Node && !ref.current.contains(e.target)) {
                 setOpen(false)
             }
         }
@@ -42,6 +36,7 @@ export default function NotificationBell() {
 
 
     const markRead = async (id: number, user_id: number) => {
+        console.log(user_id)
         MarkRadSingleNotification(id)
     };
 
@@ -105,16 +100,14 @@ export default function NotificationBell() {
                             </div>
                         ) : (
                             notifications?.map((n) => {
-                                const cfg = typeStyles[n?.type] || typeStyles?.info;
-                                const Icon = cfg.icon;
                                 return (
                                     <div
                                         key={n.ID}
                                         className={`flex gap-3 px-4 py-3 border-b border-slate-100 last:border-0 ${!n.IsRead ? "bg-slate-50" : "bg-white"}`}
                                     >
-                                        <div className={`shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${cfg.bgClass}`}>
-                                            <Icon className={`h-4 w-4 ${cfg.iconClass}`} />
-                                        </div>
+                                        {/* <div className={`shrink-0 h-8 w-8 rounded-full flex items-center justify-center`}> */}
+                                        {/* <Icon className={`h-4 w-4`} /> */}
+                                        {/* </div> */}
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-start justify-between gap-2">
                                                 <p className={`text-sm leading-snug ${!n.IsRead ? "font-semibold text-slate-900" : "font-medium text-slate-500"}`}>
