@@ -15,6 +15,7 @@ export default function UserInfoCard({ user }: { user: userInfoType | null }) {
                 <h2 className="text-2xl font-bold text-white">
                     {user?.name || 'User'}
                 </h2>
+                {/* @ts-expect-error index is type number */}
                 <p className="text-gray-400 text-sm">{user?.role || 'user'}</p>
             </div>
 
@@ -34,6 +35,7 @@ export default function UserInfoCard({ user }: { user: userInfoType | null }) {
                     <div>
                         <p className="text-xs text-gray-400">Account Type</p>
                         <p className="text-sm text-white capitalize">
+                            {/* @ts-expect-error index is type number */}
                             {user?.role || 'Standard User'}
                         </p>
                     </div>
