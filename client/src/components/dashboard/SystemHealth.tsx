@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-// import { healthMetrics } from '../../data/filters'
 import { FechUserAgentSystem } from '../../hooks/fetchSystemStats'
 import { useEffect, useState } from 'react';
 import { Server, Cpu, HardDrive, Network, type LucideIcon } from "lucide-react";
@@ -36,6 +35,7 @@ export default function SystemHealth() {
                 })
             );
 
+        // @ts-expect-error can be change later 
         setSystemInfo(SysInfo);
     }, [data, setSystemInfo]);
 
@@ -68,12 +68,12 @@ export default function SystemHealth() {
                                 {metric.name}
                             </span>
                             <span className="text-sm font-semibold text-white">
+
                                 {Number(metric.value) ? Math.round(metric.value) : metric.value}%
                             </span>
                         </div>
                         <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div
-                                className={`h-full bg-gradient-to-r ${metric.bar} transition-all duration-1000 ease-out`}
+                            <div className={`h-full bg-gradient-to-r ${metric.bar} transition-all duration-1000 ease-out`}
                                 style={{ width: `${metric.value}%` }}
                             ></div>
                         </div>
