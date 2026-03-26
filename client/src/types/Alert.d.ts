@@ -1,7 +1,5 @@
-import type { number } from "framer-motion"
-
 export type AlertType = {
-    CreatedAt: string
+    created_at: string
     agent_id: string
     agent_token: string
     alertType: string
@@ -11,7 +9,7 @@ export type AlertType = {
     risk_level: string
     security: string
     status: string
-    summery: string
+    summary: string
 }
 
 export type AlertType = {
@@ -24,6 +22,14 @@ export type AlertType = {
     source_ip: string
     target: string
 }
+export type FormDataType = {
+    email: string
+
+}
+export type RegisterRequest = {
+    email: string
+    password: string
+}
 
 export type userType = {
     email: string
@@ -32,7 +38,7 @@ export type userType = {
 }
 
 
-type MetricCardProps = {
+export type MetricCardProps = {
     title: string
     value: string | number
     change: string
@@ -41,17 +47,17 @@ type MetricCardProps = {
 }
 
 export type DeviceType = {
-AgentID:string,
-AgentToken:string
-AgentVersion :string 
-CreatedAt:string
-DeviceName:string 
-ID:number 
-LastSeen:string 
-MachineID:string
-Os:string
-Status:string
-UserID: string
+    AgentID: string,
+    AgentToken: string
+    AgentVersion: string
+    CreatedAt: string
+    DeviceName: string
+    ID: number
+    LastSeen: string
+    MachineID: string
+    Os: string
+    Status: string
+    UserID: string
 }
 
 
