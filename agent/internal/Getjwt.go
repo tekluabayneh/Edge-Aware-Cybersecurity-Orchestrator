@@ -116,7 +116,7 @@ func GetJwt() {
 
 	// check if it exist if not creat the file if does exist just use that
 
-	if err := os.WriteFile(tokenpath, []byte(userinfo.Token), 0644); err != nil {
+	if err := utils.SafeWriteFile(tokenpath, []byte(userinfo.Token)); err != nil {
 		log.Printf("failed to write token file %s: %v", tokenpath, err)
 		return
 	}
