@@ -5,8 +5,8 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"log"
-	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -19,17 +19,26 @@ type SuspiciouseFiletype struct {
 	Content   string      `json:"content"`
 }
 
+func getHomeDir() string {
+	switch runtime.GOOS {
+	case "linux":
+		return "/home"
+	case "darwin":
+		return "/Users"
+	case "windows":
+		return "C:\\Users"
+	default:
+		return "/home"
+	}
+}
+
 // start form HomeDir and read all fiels
 func DetectSuspiciousFiles() []SuspiciouseFiletype {
-	var SuspiciousFile []SuspiciouseFiletype
-	HomeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Printf("error reading home directory")
-	}
+	SuspiciousFile := []SuspiciouseFiletype{}
 
 	// walk all the fils but only grap file with cetain extenstion
 	// and collect files with their info
-	filepath.WalkDir(HomeDir, func(path string, d fs.DirEntry, err error) error {
+	filepath.WalkDir(getHomeDir(), func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
 			if utils.SkipDirs[d.Name()] {
 				return filepath.SkipDir
@@ -63,6 +72,6 @@ func DetectSuspiciousFiles() []SuspiciouseFiletype {
 		}
 		return nil
 	})
-
 	return SuspiciousFile
+
 }
