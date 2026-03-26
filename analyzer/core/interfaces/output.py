@@ -5,13 +5,8 @@ import requests
 def send_output(event, token): 
    try:
      BASEURL = os.getenv("BACKEND_BASE_URL")
-     print("base url",BASEURL)
      if BASEURL is None: 
         return 
-
-     print(event.get("email"))
-     print(event.get("agent_id"))
-     print(event.get("agent_token"))
 
      response = requests.post(f"{BASEURL}/api/telementary/report", json=event,  headers={
       "Content-Type": "application/json",
@@ -26,4 +21,4 @@ def send_output(event, token):
       print("error",e)
 
 
-   # print("Clean payload going to pipeline:\n" + json.dumps(event.get("integ"), indent=2))
+   # print("Clean payload going to pipeline:\n" + json.dumps(event.get("security"), indent=2))
