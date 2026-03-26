@@ -1,7 +1,6 @@
 import toast from "react-hot-toast"
 import api from "../config/axios"
 import { AxiosError } from "axios"
-import { useNavigate } from "react-router-dom"
 import { type ProfileInfo } from "../components/profile/SecurityPreferance"
 export type userInfoType = {
     alert_notification: string
@@ -29,7 +28,7 @@ type UserResponse = {
 
 
 
-export const FechUserProfile = async (): UserResponse => {
+export const FechUserProfile = async (): Promise<UserResponse | []> => {
     try {
         const res = await api.get("/api/get/profile")
         return res.data
@@ -48,13 +47,13 @@ export const FechUserProfile = async (): UserResponse => {
 
 }
 
-export const UpdateUserProfile = async (usreinfo: ProfileInfo): userInfoType => {
+export const UpdateUserProfile = async (usreinfo: ProfileInfo): Promise<userInfoType | []> => {
     try {
         const res = await api.post("/api/user/profile", usreinfo)
         if (res.status) {
             toast.success(res.data.message);
         }
-
+        return res.data
     } catch (error) {
         if (error instanceof AxiosError) {
             toast.error(error.response?.data.message);
