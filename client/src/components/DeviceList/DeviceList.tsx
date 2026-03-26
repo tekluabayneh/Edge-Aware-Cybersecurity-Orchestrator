@@ -49,50 +49,50 @@ export default function DeviceList() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800">
-                        {data.length === 0 ? (
+                        {data?.length === 0 ? (
                             <tr>
-                                <td colSpan="4" className="px-6 py-12 text-center text-sm text-gray-500">
+                                <td colSpan={4} className="px-6 py-12 text-center text-sm text-gray-500">
                                     No devices paired yet
                                 </td>
                             </tr>
                         ) : (
-                            (Array.isArray(data?.agents) ? data.agents : data?.agents ? [data.agents] : []).map((device, index) => (
+                            (Array.isArray(data?.agents) ? data.agents : data?.agents ? [data.agents] : []).map((device, index: number) => (
                                 <tr
                                     key={device.MachineID}
                                     className="hover:bg-gray-800 transition-all duration-200"
                                     style={{
                                         animation: `slideUp 0.5s ease-out ${index * 0.1}s both`
-                                                                                                                                                                                                                                                                        }}
+                                    }}
+                                >
+                                    <td className="px-6 py-4 text-sm font-medium text-white">
+                                        {device.Os}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm text-gray-400">
+                                        {device.Os}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span
+                                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-300 ${device.status === 'online'
+                                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                                : 'bg-gray-700/50 text-gray-400 border border-gray-600/30'
+                                                }`}
                                         >
-                                        <td className="px-6 py-4 text-sm font-medium text-white">
-                                            {device.Os}
+                                            <span
+                                                className={`w-1.5 h-1.5 rounded-full ${device.Status === 'online' ? 'bg-emerald-400 animate-pulse' : 'bg-gray-500'
+                                                    }`}
+                                            />
+                                            {device.Status === 'online' ? 'Online' : 'Offline'}
+                                        </span>
                                     </td>
-                                            <td className="px-6 py-4 text-sm text-gray-400">
-                                                {device.Os}
+                                    <td className="px-6 py-4 text-sm text-gray-400">
+                                        {formatLastSeen(device.CreatedAt)}
                                     </td>
-                                                <td className="px-6 py-4">
-                                                    <span
-                                                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-300 ${device.status === 'online'
-                                                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                                                            : 'bg-gray-700/50 text-gray-400 border border-gray-600/30'
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }`}
-                                        >
-                                                    <span
-                                                        className={`w-1.5 h-1.5 rounded-full ${device.Status === 'online' ? 'bg-emerald-400 animate-pulse' : 'bg-gray-500'
-                                                            }`}
-                                                    />
-                                                    {device.Status === 'online' ? 'Online' : 'Offline'}
-                        </span>
-                                    </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-400">
-                                                        {formatLastSeen(device.CreatedAt)}
-                    </td>
                                 </tr>
                             ))
                         )}
-                                                    </tbody>
-                                                </table>
-                                            </div >
-                                        </div >
-                        );
+                    </tbody>
+                </table>
+            </div >
+        </div >
+    );
 }
