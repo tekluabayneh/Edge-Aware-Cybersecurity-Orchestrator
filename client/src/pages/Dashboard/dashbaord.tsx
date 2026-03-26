@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { AlertType } from '../../types/Alert'
-import { Shield, Activity, Eye, AlertCircle, AlertTriangleIcon } from 'lucide-react'
+import { Shield, Activity, Eye, AlertCircle } from 'lucide-react'
 import MetricCard from '../../components/dashboard/MatricCard'
 import SecurityScore from '../../components/dashboard/Security'
 import RecentAlerts from '../../components/dashboard/RecentAlert'
@@ -76,16 +76,6 @@ export default function Dashboard() {
             </div>
         )
     }
-
-    //
-    // if (!data) {
-    //     return (
-    //         <div className="flex items-center justify-center h-screen">
-    //             <div className="text-gray-400">Opps! you don't have alerts yet</div>
-    //         </div>
-    //     )
-    // }
-
 
     return (
         <div className="space-y-8">
