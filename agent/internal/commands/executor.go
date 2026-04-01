@@ -126,6 +126,7 @@ func Commands() {
 	if err != nil {
 		fmt.Println("RES ACK REQUEST ERROR:", err)
 	}
+
 	req.Header.Set("Content-Type", "application/json")
 	res, err = http.DefaultClient.Do(req)
 	if err != nil {

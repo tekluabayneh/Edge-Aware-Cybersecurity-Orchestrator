@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/utils"
@@ -116,7 +118,9 @@ type TelemetryType struct {
 }
 
 func (h *TelemetryType) ReceiveTelemetry(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	var IncomingAgentInfo TelemetryReport
 	err := json.NewDecoder(r.Body).Decode(&IncomingAgentInfo)
 	if utils.CheckError(w, err, http.StatusBadRequest, "invalid telemetry payload") {
@@ -173,7 +177,9 @@ func (h *TelemetryType) ReceiveTelemetry(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *TelemetryType) GetLatestTelemetryData(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	email := r.Context().Value("email").(string)
 	user, err := h.DB.GetUserByEmail(ctx, email)
 	if errors.Is(err, sql.ErrNoRows) {

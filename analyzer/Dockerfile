@@ -1,14 +1,20 @@
-FROM python:3.11-slim
+FROM python:3.12
 
 WORKDIR /app
 
-# install uv
-RUN pip install uv
 
-# copy project files
+RUN apt-get update && apt-get install -y curl
+
+
+RUN curl -Ls https://astral.sh/uv/install.sh | sh
+
+
+ENV PATH="/root/.local/bin:$PATH"
+
+
 COPY . .
 
-# install dependencies using uv
+
 RUN uv sync
 
 # run app

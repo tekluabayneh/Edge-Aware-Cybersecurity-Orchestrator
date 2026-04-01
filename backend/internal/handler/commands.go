@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -48,7 +49,9 @@ type notification struct {
 
 // Create a new command for a device (from dashboard)
 func (h *CreateCommdnType) CreateCommandHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	var Email incomingPayload
 	json.NewDecoder(r.Body).Decode(&Email)
 
@@ -100,7 +103,9 @@ func (h *CreateCommdnType) CreateCommandHandler(w http.ResponseWriter, r *http.R
 
 // Fetch pending commands for a given agent
 func (h *CreateCommdnType) FetchPendingCommandsHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	var Email incomingPayload
 	json.NewDecoder(r.Body).Decode(&Email)
 
@@ -143,7 +148,9 @@ func (h *CreateCommdnType) FetchPendingCommandsHandler(w http.ResponseWriter, r 
 
 // Acknowledge command execution from agent
 func (h *CreateCommdnType) AcknowledgeCommandExecutionHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	var Email incomingPayload
 	json.NewDecoder(r.Body).Decode(&Email)
 
@@ -177,7 +184,9 @@ func (h *CreateCommdnType) AcknowledgeCommandExecutionHandler(w http.ResponseWri
 }
 
 func (h *CreateCommdnType) AcknowledgeCommandExecutionResponseHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	var AckREsponse AckResponseType
 	json.NewDecoder(r.Body).Decode(&AckREsponse)
 	user, err := h.DB.GetUserByEmail(ctx, AckREsponse.Email)

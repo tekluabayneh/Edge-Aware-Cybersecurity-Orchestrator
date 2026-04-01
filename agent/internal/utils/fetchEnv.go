@@ -23,7 +23,6 @@ func FetchEnv() (IncomingEnv, error) {
 
 	var IncomingEnvData IncomingEnv
 	err = json.NewDecoder(res.Body).Decode(&IncomingEnvData)
-
 	if err != nil {
 		return IncomingEnv{}, err
 	}

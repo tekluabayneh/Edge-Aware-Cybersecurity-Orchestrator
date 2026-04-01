@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"net/http"
+	"time"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/utils"
@@ -15,7 +17,9 @@ type AgentType struct {
 
 // GET all agent
 func (h *AgentType) GetAllUserAgents(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	email := r.Context().Value("email").(string)
 	user, err := h.DB.GetUserByEmail(ctx, email)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {

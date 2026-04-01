@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	notify "github.com/edge-aware-cyberSecurity/internal/handler/notification"
@@ -41,8 +43,8 @@ type NewAlertRequest struct {
 
 // GET /api/alerts
 func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	// 1. Get user from context
 	email, ok := r.Context().Value("email").(string)
 	if !ok {
@@ -78,7 +80,7 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-
+	fmt.Println(alertsToSend)
 	// 4. If current agent has no alerts → check other agents
 	if len(alertsToSend) == 0 {
 		allAgents, err := h.DB.GetAllAgentByUserId(ctx, int64(user.ID))
@@ -88,11 +90,13 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 
 		for _, v := range allAgents {
 			// skip current agent
-			if v.AgentID == agent.AgentID {
-				continue
-			}
+			// if v.AgentID == agent.AgentID {
+			// 	continue
+			// }
 
 			alerts, err := h.DB.GetAllAlert(ctx, string(v.AgentID))
+
+			fmt.Println("alerts", alerts)
 
 			if errors.Is(err, sql.ErrNoRows) {
 				continue
@@ -184,7 +188,9 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 
 // GET /api/alerts/:agent_id
 func (h *AlertType) GetAlertByAgentId(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	userId := r.URL.Query().Get("id")
 	email := r.Context().Value("email").(string)
 	if userId == "" {

@@ -16,7 +16,9 @@ func Authorize(db *db.Queries) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
+
 			ctx := r.Context()
+
 			isValid, token := utils.VerifyToken(r)
 			if !isValid {
 				utils.WriteJSON(w, http.StatusBadRequest, map[string]string{
@@ -24,6 +26,7 @@ func Authorize(db *db.Queries) func(http.Handler) http.Handler {
 				})
 				return
 			}
+
 			claims := token.Claims.(jwt.MapClaims)
 			expiryTime := time.Unix(int64(claims["exp"].(float64)), 0)
 			email := claims["user_email"]
@@ -59,7 +62,6 @@ func Authorize(db *db.Queries) func(http.Handler) http.Handler {
 
 			ctxValue := context.WithValue(ctx, "email", emailStr)
 			next.ServeHTTP(w, r.WithContext(ctxValue))
-
 		})
 	}
 }

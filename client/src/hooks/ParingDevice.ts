@@ -5,7 +5,9 @@ import { AxiosError } from "axios"
 export const FetchDeviceList = async () => {
     try {
         const res = await api.get("/api/list/agent")
+        console.log("aget list", res.data)
         return res.data
+
     } catch (error) {
         if (error instanceof AxiosError) {
             toast.error(error.response?.data.message);
@@ -24,6 +26,7 @@ export const FetchDeviceList = async () => {
 export const GenerateParingToken = async () => {
     try {
         const res = await api.post("/api/paringToken/token")
+        console.log("paritn token", res.data)
         return res.data
     } catch (error) {
         if (error instanceof AxiosError) {

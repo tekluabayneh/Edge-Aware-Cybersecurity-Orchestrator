@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -24,7 +26,9 @@ type LoginStructure struct {
 
 func (h *AuthLoginHandlerType) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/json")
-	ctx := r.Context()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	formData, ok := r.Context().Value(middleware.LoginFromDataKey).(middleware.FormType)
 	if !ok {

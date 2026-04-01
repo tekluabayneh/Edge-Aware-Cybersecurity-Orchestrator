@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/utils"
@@ -26,7 +28,9 @@ type Agent struct {
 }
 
 func (h *DevicePairingType) AcknowledgePairing(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	var AgentValue Agent
 
 	err := json.NewDecoder(r.Body).Decode(&AgentValue)

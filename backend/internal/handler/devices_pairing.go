@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -21,7 +22,9 @@ type EmailType struct {
 }
 
 func (h *DevicePairingType) DevicePairing(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	var UserEmail EmailType
 	json.NewDecoder(r.Body).Decode(&UserEmail)
 	incomingToken := strings.TrimSpace(r.URL.Query().Get("token"))
