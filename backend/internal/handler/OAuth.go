@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"os"
+	"time"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	OAuth "github.com/edge-aware-cyberSecurity/internal/OAuthConfig"
@@ -32,8 +34,10 @@ type OAuthHandler struct {
 }
 
 func (h *OAuthHandler) GitHubCallbackHandler(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	code := r.URL.Query().Get("code")
-	ctx := r.Context()
 	token, err := OAuth.GithubOauthConfig.Exchange(r.Context(), code)
 	if err != nil {
 		http.Error(w, "Failed to exchange token", http.StatusInternalServerError)
