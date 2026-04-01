@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/utils"
@@ -38,7 +40,9 @@ type UserUpdateType struct {
 }
 
 func (h *UserType) GetUserProfileInfo(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	email := r.Context().Value("email").(string)
 
 	user, err := h.DB.GetUserByEmail(ctx, email)
@@ -70,8 +74,10 @@ func (h *UserType) GetUserProfileInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserType) UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	email := ctx.Value("email").(string)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	email := r.Context().Value("email").(string)
 
 	// check if user exist
 	oldProfile, err := h.DB.GetUserByEmail(ctx, email)
