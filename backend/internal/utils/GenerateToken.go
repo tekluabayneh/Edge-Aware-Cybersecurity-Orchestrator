@@ -9,7 +9,6 @@ import (
 )
 
 func GenerateToken(email string) (string, error) {
-
 	claims := jwt.MapClaims{
 		"user_email": email,
 		"exp":        time.Now().Add(time.Hour * 14).Unix(),
