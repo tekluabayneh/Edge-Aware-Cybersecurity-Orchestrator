@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"net/http"
+	"time"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/middleware"
@@ -22,7 +24,9 @@ type RegisterStructure struct {
 
 func (h *AuthRegisterHandlerType) Register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	ctx := r.Context()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	// get user data form context
 	formData, ok := r.Context().Value(middleware.RegisterFormDataKey).(middleware.FormType)
@@ -62,12 +66,11 @@ func (h *AuthRegisterHandlerType) Register(w http.ResponseWriter, r *http.Reques
 		Email:    formData.Email,
 		Password: HashedPassword,
 	}
-
 	// register user if does not exists
 	err = h.DB.CreateUser(ctx, userInfo)
 	if err != nil {
 		utils.WriteJSON(w, http.StatusInternalServerError, map[string]string{
-			"message": "internal ddd server error",
+			"message": "internal server error",
 		})
 		return
 	}
