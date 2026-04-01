@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/router"
@@ -21,12 +22,37 @@ type App struct {
 
 // create db sqlc instance and check load the db to the router
 func New() *App {
-	DBURL := os.Getenv("DBURL")
+	//
+	// host := os.Getenv("DB_HOST")
+	// port := os.Getenv("DB_PORT")
+	// user := os.Getenv("DB_USER")
+	// password := os.Getenv("DB_PASSWORD")
+	// dbname := os.Getenv("DB_NAME")
+	//
+	// if host == "" || port == "" || user == "" || password == "" || dbname == "" {
+	// 	log.Fatal("failed to get env files")
+	// }
+	//
+	// DBURL := fmt.Sprintf(
+	// 	"postgres://%s:%s@%s:%s/%s?sslmode=disable&search_path=migrations",
+	// 	user, password, host, port, dbname,
+	// )
 
+	DBURL := os.Getenv("DBURL")
 	if DBURL == "" {
 		log.Fatal("failed to get env files")
 	}
-	pool, err := pgxpool.New(context.Background(), DBURL)
+
+	config, err := pgxpool.ParseConfig(DBURL)
+	if err != nil {
+		log.Fatal("Failed to parse DB config:", err)
+	}
+
+	config.MaxConns = 10
+	config.MinConns = 2
+	config.MaxConnLifetime = 30 * time.Minute
+	config.MaxConnIdleTime = 5 * time.Minute
+	pool, err := pgxpool.NewWithConfig(context.Background(), config)
 	if err != nil {
 		log.Fatal("Failed to create connection pool:", err)
 	}
@@ -58,8 +84,11 @@ func (app *App) Start() {
 	}
 
 	server := &http.Server{
-		Addr:    ":" + PORT,
-		Handler: app.router,
+		Addr:         ":" + PORT,
+		Handler:      app.router,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  60 * time.Second,
 	}
 
 	fmt.Printf("Server is running on post %v", PORT)
