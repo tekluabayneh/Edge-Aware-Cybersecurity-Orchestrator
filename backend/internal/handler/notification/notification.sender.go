@@ -1,11 +1,13 @@
 package notification
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	"github.com/edge-aware-cyberSecurity/internal/utils"
@@ -21,7 +23,9 @@ type incomignNotificationDataType struct {
 
 func (h *NotificationType) GetAllNotification(w http.ResponseWriter, r *http.Request) {
 	// get the user email and get the notification id and mark is as read
-	ctx := r.Context()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	email := r.Context().Value("email").(string)
 	var incomignNotificationData incomignNotificationDataType
 	err := json.NewDecoder(r.Body).Decode(&incomignNotificationData)
