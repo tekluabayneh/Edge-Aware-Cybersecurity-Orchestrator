@@ -2,16 +2,27 @@ version: "3.9"
 services:
   backend:
     build: ./backend
+    env_file:
+        - ./backend/.env
     ports:
       - "8000:8000"
 
   analyzer:
     build: ./analyzer
+    env_file: 
+        - ./analyzer/.env
     ports:
       - "9090:9090"
+    depends_on:
+      - backend
 
   client:
     build: ./client
+    env_file:
+        - ./client/.env
     ports:
       - "5173:5173"
+    depends_on:
+      - backend
+
 
