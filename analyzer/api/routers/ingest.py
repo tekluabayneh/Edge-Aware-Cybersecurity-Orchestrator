@@ -6,6 +6,7 @@ from ..schemas.Telementory import RawTelemetryPayload
 from shared.schemas.schema import Alert   
 from core.interfaces.alert_handler import send_alert
 import uuid
+import time
 from typing import Dict, Any
 import json
 
@@ -88,8 +89,10 @@ async def ingest_raw_telemetry(payload: RawTelemetryPayload, req: Request):
                         alert["email"] = payload.email 
                         alert_to_send.append(alert)
 
-        for uniqe_alert in alert_to_send: 
-            send_alert(uniqe_alert, token)
+
+        if len(alert_to_send) > 1:
+            send_alert(alert_to_send[0], token)
+           
 
     except Exception as e:
         context.logger.exception("Pipeline failed during ingest")

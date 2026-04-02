@@ -1,13 +1,14 @@
 package app
 
 import (
-	"agent/internal/register"
-	"agent/internal/telemetry"
-	"agent/internal/utils"
 	"fmt"
 	"os"
 	"strings"
 	"time"
+
+	"agent/internal/register"
+	"agent/internal/telemetry"
+	"agent/internal/utils"
 )
 
 // first the cli cick in

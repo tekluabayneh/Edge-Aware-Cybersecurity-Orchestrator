@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -13,12 +14,13 @@ type IncomingEnv struct {
 }
 
 func FetchEnv() (IncomingEnv, error) {
-	discoveryURL := "https://gist.githubusercontent.com/tekluabayneh/7b75001d3acbc0e1d8965495d0408676/raw/9a60a31d37d0a43c41c37542c52aad0e9afea013/config.json"
+	discoveryURL := "https://gist.githubusercontent.com/tekluabayneh/7b75001d3acbc0e1d8965495d0408676/raw/config.json"
 	client := &http.Client{Timeout: time.Second * 10}
 	res, err := client.Get(discoveryURL)
 	if err != nil {
 		return IncomingEnv{}, err
 	}
+
 	defer res.Body.Close()
 
 	var IncomingEnvData IncomingEnv
@@ -26,6 +28,9 @@ func FetchEnv() (IncomingEnv, error) {
 	if err != nil {
 		return IncomingEnv{}, err
 	}
+
+	fmt.Println("ANALIZER_BASE_URL", IncomingEnvData.ANALIZER_BASE_URL)
+	fmt.Println("backend_base_url", IncomingEnvData.BASE_URL)
 
 	return IncomingEnvData, nil
 }

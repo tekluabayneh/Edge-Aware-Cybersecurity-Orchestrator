@@ -3,6 +3,7 @@ import os
 
 import requests 
 def send_output(event, token): 
+   print("Clean payload going to pipeline:\n" + json.dumps(event.get("security"), indent=2))
    try:
      BASEURL = os.getenv("BACKEND_BASE_URL")
      if BASEURL is None: 
@@ -21,4 +22,3 @@ def send_output(event, token):
       print("error",e)
 
 
-   # print("Clean payload going to pipeline:\n" + json.dumps(event.get("security"), indent=2))

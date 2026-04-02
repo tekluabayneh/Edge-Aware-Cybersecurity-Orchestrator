@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -92,10 +91,12 @@ type SystemSection struct {
 	Payload map[string]interface{} `json:"payload"`
 }
 
-type ProcessesSection map[string]interface{}
-type SecuritySection struct {
-	Payload map[string]interface{} `json:"payload"`
-}
+type (
+	ProcessesSection map[string]interface{}
+	SecuritySection  struct {
+		Payload map[string]interface{} `json:"payload"`
+	}
+)
 
 type IntegritySection struct {
 	Payload map[string]interface{} `json:"payload"`
@@ -165,7 +166,7 @@ func (h *TelemetryType) ReceiveTelemetry(w http.ResponseWriter, r *http.Request)
 		Column7:   integrityJson,
 		Column8:   networkJson,
 	}
-	fmt.Println(TelemetryData)
+
 	err = h.DB.UpsertAgentTelemetry(ctx, TelemetryData)
 	if utils.CheckError(w, err, http.StatusInternalServerError, "failed creating telemetry") {
 		return
@@ -235,5 +236,4 @@ func (h *TelemetryType) GetLatestTelemetryData(w http.ResponseWriter, r *http.Re
 		"message": "fetched telemetry Data successfully!",
 		"data":    TelemetryList,
 	})
-
 }

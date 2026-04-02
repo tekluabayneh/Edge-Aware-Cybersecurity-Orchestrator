@@ -2,36 +2,28 @@ import toast from "react-hot-toast";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Lock, Mail } from "lucide-react";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { validateFormData } from "../../utils/ValidateForm";
 import type { FormDataType } from "../../types/Alert";
 import { useNavigate } from "react-router-dom";
+import api from "../../config/axios";
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm()
   const [isLoading, setisLoading] = useState(false)
-  const BASE_URL = "__VITE_REPLACE_ME__";
-  // const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL || "__VITE_REPLACE_ME__";
-
   const navigator = useNavigate()
-
-  if (!BASE_URL) {
-    console.log("base url is empty")
-    return
-  }
-
 
   const SubmiteForm = async (data: FormDataType) => {
     try {
       setisLoading(true)
-      const response = await axios.post(`${BASE_URL}/api/auth/l/login`, data)
+      const response = await api.post("/api/auth/l/login", data)
       toast.success(response.data.message);
       setisLoading(false)
       const token = response.data.token
       if (!token) {
         return
       }
-      cookieStore.set("token", token)
+      localStorage.setItem("token", token)
       if (!response.data.IsEnabled) {
         navigator("/Dashboard")
       } else {
@@ -42,6 +34,7 @@ const Login = () => {
       if (err instanceof AxiosError) {
         toast.error(err.response?.data.message);
       } else {
+        console.log(err)
         toast.error("operation failed");
       }
     }

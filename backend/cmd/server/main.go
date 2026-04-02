@@ -57,7 +57,7 @@ func New() *App {
 		log.Fatal("Failed to create connection pool:", err)
 	}
 
-	//Test the connection
+	// Test the connection
 	if err := pool.Ping(context.Background()); err != nil {
 		log.Fatal("Failed to ping database:", err)
 	}
@@ -90,11 +90,9 @@ func (app *App) Start() {
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
-
 	fmt.Printf("Server is running on post %v", PORT)
 
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatal("Server failed to run ", err.Error())
 	}
-
 }
