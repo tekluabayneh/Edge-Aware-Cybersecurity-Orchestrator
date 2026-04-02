@@ -4,26 +4,22 @@ import { motion } from "framer-motion";
 import Login from "../../components/form/Login";
 import Register from "../../components/form/Register";
 import { FaGoogle, FaGithub } from "react-icons/fa";
+import api from "../../config/axios";
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
 
-  // const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL || "__VITE_REPLACE_ME__";
-  const BASE_URL = "__VITE_REPLACE_ME__";
 
-  if (!BASE_URL) {
-    console.log("base url is empty")
-    return
-  }
-
+  const currentBase = api.defaults.baseURL;
 
   // === OAuth Handlers ===
   const GoogleOAuth = () => {
-    window.location.href = BASE_URL + "/api/oauth/google";
+    window.location.href = `${currentBase}/api/oauth/google`;
   };
 
   const GithubOAuth = () => {
-    window.location.href = BASE_URL + "/api/oauth/github";
+    window.location.href = `${currentBase}/api/oauth/github`;
   };
+
   return (
     <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center p-4">
       {/* Animated Background */}

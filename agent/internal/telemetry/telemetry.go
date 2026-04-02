@@ -1,14 +1,6 @@
 package telemetry
 
 import (
-	handler "agent/internal"
-	"agent/internal/commands"
-	"agent/internal/telemetry/integrity"
-	"agent/internal/telemetry/network"
-	"agent/internal/telemetry/processes"
-	"agent/internal/telemetry/security"
-	"agent/internal/telemetry/system"
-	"agent/internal/utils"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -18,6 +10,15 @@ import (
 	"path/filepath"
 	"sync"
 	"time"
+
+	handler "agent/internal"
+	"agent/internal/commands"
+	"agent/internal/telemetry/integrity"
+	"agent/internal/telemetry/network"
+	"agent/internal/telemetry/processes"
+	"agent/internal/telemetry/security"
+	"agent/internal/telemetry/system"
+	"agent/internal/utils"
 )
 
 type Agent struct {
@@ -162,17 +163,17 @@ func Telemetry() {
 
 				// 🎯 DEBUG: Print human-readable preview
 				// Set to false in production to reduce logs
-				// const DEBUG_TELEMETRY = true
-				// if DEBUG_TELEMETRY {
-				// 	pretty, err := json.MarshalIndent(TelementoryPaylod, "", "  ")
-				// 	if err == nil {
-				// 		fmt.Println("\n📡 === TELEMETRY PAYLOAD PREVIEW ===")
-				// 		fmt.Println(string(pretty))
-				// 		fmt.Println("=== END PREVIEW ===\n")
-				// 	}
-				// }
-				//
-				client := &http.Client{Timeout: time.Second * 10}
+				const DEBUG_TELEMETRY = true
+				if DEBUG_TELEMETRY {
+					pretty, err := json.MarshalIndent(TelementoryPaylod, "", "  ")
+					if err == nil {
+						fmt.Println("\n📡 === TELEMETRY PAYLOAD PREVIEW ===")
+						fmt.Println(string(pretty))
+						fmt.Println("=== END PREVIEW ===\n")
+					}
+				}
+
+				client := &http.Client{Timeout: time.Second * 20}
 				req, err := http.NewRequestWithContext(ctx, "POST", AnalizerBaseURL.ANALIZER_BASE_URL+"/rawTelementory", bytes.NewReader(jsonPayload))
 
 				token, err := utils.Getjwt()

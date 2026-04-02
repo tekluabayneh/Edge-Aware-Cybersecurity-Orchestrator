@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"agent/internal/utils"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -12,6 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"agent/internal/utils"
 )
 
 type CommandType struct {
@@ -41,7 +42,7 @@ type Response struct {
 // 4 user can't send Commands that need admin to execute that Commands
 
 func Commands() {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
 	// URL := os.Getenv("BASE_URL")

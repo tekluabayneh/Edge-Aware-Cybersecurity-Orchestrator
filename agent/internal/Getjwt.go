@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"agent/internal/utils"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -11,6 +10,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"agent/internal/utils"
 )
 
 type JwtType struct {

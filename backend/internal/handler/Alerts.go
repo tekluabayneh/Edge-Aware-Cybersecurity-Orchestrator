@@ -90,9 +90,9 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 
 		for _, v := range allAgents {
 			// skip current agent
-			// if v.AgentID == agent.AgentID {
-			// 	continue
-			// }
+			if v.AgentID == agent.AgentID {
+				continue
+			}
 
 			alerts, err := h.DB.GetAllAlert(ctx, string(v.AgentID))
 
@@ -183,7 +183,6 @@ func (h *AlertType) Alerts(w http.ResponseWriter, r *http.Request) {
 		"message": "alerts fetched successfully",
 		"alert":   allAlerts,
 	})
-
 }
 
 // GET /api/alerts/:agent_id
@@ -378,7 +377,6 @@ func (h *AlertType) GetAllAlertStatus(w http.ResponseWriter, r *http.Request) {
 		"message": "alert status fetched successfully",
 		"status":  AlertSTatus,
 	})
-
 }
 
 // DELETE /api/alerts/:id
@@ -414,7 +412,6 @@ func (h *AlertType) DeleteAlertById(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, map[string]string{
 		"message": "deleted alert by id",
 	})
-
 }
 
 func (h *AlertType) CreateAlert(w http.ResponseWriter, r *http.Request) {

@@ -3,6 +3,7 @@ package router
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 
 	db "github.com/edge-aware-cyberSecurity/db/sqlc"
 	OAuthconfig "github.com/edge-aware-cyberSecurity/internal/OAuthConfig"
@@ -15,9 +16,13 @@ import (
 func LoadRouter(db *db.Queries) *chi.Mux {
 	router := chi.NewRouter()
 
+	frontendURL := os.Getenv("FRONT_END_URL")
+	if frontendURL == "" {
+		frontendURL = "*"
+	}
 	router.Use(middlewareGlobal.ErrorHandler)
 	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"*"},
+		AllowedOrigins:   []string{frontendURL},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
@@ -145,7 +150,6 @@ func LoadRouter(db *db.Queries) *chi.Mux {
 		api.With(middlewareGlobal.Authorize(db)).Route("/updatAll", func(route chi.Router) {
 			UpdateAllNotification(route, db)
 		})
-
 	})
 	return router
 }

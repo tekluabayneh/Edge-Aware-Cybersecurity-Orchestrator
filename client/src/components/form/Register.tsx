@@ -1,38 +1,29 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Lock, Mail } from "lucide-react";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import type { RegisterRequest } from "../../types/Alert";
 import { validateFormData } from "../../utils/ValidateForm";
+import api from "../../config/axios";
 const Register = () => {
   const { register, handleSubmit, formState: { errors } } = useForm()
   const [isLoading, setisLoading] = useState(false)
 
-  const BASE_URL = "__VITE_REPLACE_ME__";
-  // const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL || "__VITE_REPLACE_ME__";
   const navigator = useNavigate()
-
-  if (!BASE_URL) {
-    console.log("base url is empty")
-    return
-  }
-
   const SubmitREgisterForm = async (data: RegisterRequest) => {
-    console.log(data)
     try {
       setisLoading(true)
-      const response = await axios.post(`${BASE_URL}/api/auth/r/register`, data)
+      const response = await api.post("/api/auth/r/register", data)
       toast.success(response.data.message);
 
-      const loginRes = await axios.post(`${BASE_URL}/api/auth/l/login`, {
+      const loginRes = await api.post("/api/auth/l/login", {
         email: data.email,
         password: data.password
       })
-
-      await cookieStore.set("token", loginRes.data.token)
+      localStorage.setItem("token", loginRes.data.token)
 
       navigator("/paring")
       setisLoading(false)
@@ -41,6 +32,7 @@ const Register = () => {
       if (err instanceof AxiosError) {
         toast.error(err.response?.data.message);
       } else {
+        console.log(err)
         toast.error("operation failed");
       }
     }

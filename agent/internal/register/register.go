@@ -1,8 +1,6 @@
 package register
 
 import (
-	"agent/internal/httpclient"
-	"agent/internal/utils"
 	"bufio"
 	"context"
 	"encoding/json"
@@ -11,6 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"agent/internal/httpclient"
+	"agent/internal/utils"
 )
 
 // user generate code from user dashboard
