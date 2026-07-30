@@ -1,9 +1,13 @@
 # ---------- BUILD STAGE ----------
 FROM node:24-alpine AS builder
+
 WORKDIR /app
-COPY package*.json ./
+
+COPY package*.json ./ 
+
 # Use clean-install to ensure no local junk interferes
-RUN npm ci 
+RUN npm ci  
+
 COPY . .
 
 ARG VITE_BACKEND_BASE_URL
@@ -14,7 +18,7 @@ ENV VITE_BACKEND_BASE_URL=$VITE_BACKEND_BASE_URL
 RUN npm run build
 
 # ---------- RUNNER STAGE ----------
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 WORKDIR /app
 
 # Copy the static files
@@ -23,6 +27,9 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/vite.config.* ./
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
+
+RUN chgrp -R 0 /app && \
+  chmod -R g=u /app
 
 EXPOSE 5173
 
