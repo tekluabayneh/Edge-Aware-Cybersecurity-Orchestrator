@@ -1,0 +1,74 @@
+# Namespace — where your app lives
+namespace: teklu-soft-dev
+
+# Frontend config
+frontend:
+  name: edge-frontend
+  label: edge-frontend
+  containerName: edge-frontend-app
+  image: tekluman/micro-client
+  tag: latest
+  port: 80
+  replicas: 3
+  secretName: edge-frontend-secret
+  secret:
+    INTERNAL_API_URL: localhost
+    NEXT_PUBLIC_BACKEND_URL: localhost
+    PORT: 3000
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "384Mi"
+    limits:
+      cpu: "1000m"
+      memory: "768Mi"
+
+# Backend config
+backend:
+  name: edge-backend
+  label: edge-backend
+  containerName: edge-backend-app
+  image: tekluman/micro-backend
+  tag: v2.1
+  port: 5000
+  replicas: 3
+  secretName: edge-backend-secret
+  secret:
+    PORT: 5000
+    CHAT_BOT_SECRET: sdflkjdsf
+    DB_HOST: sdfdsf
+    DB_NAME: sdfds
+    DB_PASSWORD: sdfldsf
+    DB_PORT: sdfdsf
+    DB_USER: sdf
+    GITHUB_CALLBACK_URL:
+    GITHUB_CLIENT_ID:
+    GITHUB_CLIENT_SECRET:
+    GOOGLE_CALLBACK_URL: sdfkdsjf
+    GOOGLE_CLIENT_ID: sdfsjdfk
+    GOOGLE_CLIENT_SECRET: sdfkjj
+    HF_API_TOKEN: sdfljdskf
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "384Mi"
+    limits:
+      cpu: "1000m"
+      memory: "768Mi"
+
+# Ingress config
+ingress:
+  enabled: true
+  host: localhost
+  className: nginx
+  ssl:
+    redirect: false
+  proxyBodySize: "50m"
+  proxyReadTimeout: "60"
+  proxySendTimeout: "60"
+
+route:
+  enabled: true
+  name: edge-route
+  host: /
+  serviceName: frontend-service

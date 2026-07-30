@@ -71,3 +71,5 @@ agent/internal/register/email.txt
 agent/register
 
 **/register
+
+./K8s/edge-security-chart/values.yaml 

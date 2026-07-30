@@ -1,0 +1,18 @@
+{{- if .Values.frontendroute.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Values.frontendroute.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  path: {{ .Values.frontendroute.path }}
+  to:
+    kind: Service
+    name: {{ .Values.frontendroute.serviceName }}
+  port:
+    targetPort: {{ .Values.frontend.port }}
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+{{- end }}

@@ -1,0 +1,204 @@
+version: "3"
+env:
+  BORDER: double
+  BORDER_FOREGROUND: "212"
+  PADDING: "1 1"
+  MARGIN: "1 1"
+
+vars:
+  CHART_NAME: .
+  RELEASE_NAME: edge
+  NAMESPACE: teklu-soft-dev
+
+tasks:
+  # KIND CLUSTER SETUP
+  kind:01-generate-config:
+    desc: "Generate kind config from template"
+    # Context: Substitutes ${PWD} into kind-config.yaml.TEMPLATE to create the actual kind-config.yaml
+    # Use when: You have a template config with placeholders
+    cmds:
+      - REPLACE_WITH_ABSOLUTE_PATH=${PWD} envsubst < kind-config.yaml.TEMPLATE >
+        kind-config.yaml
+
+  # HELM PREVIEW & DRY-RUN (Safe to run, no actual deployment)
+  helm:01-template:
+    desc: "Preview Helm chart (dry-run)"
+    # Context: Renders your Helm templates with values.yaml and shows the final YAML output
+    # Use when: Before installing/upgrading, to see exactly what will be deployed
+    cmds:
+      - helm template {{.RELEASE_NAME}} ./{{.CHART_NAME}}
+
+  helm:02-template-debug:
+    desc: "Preview Helm chart with debug info"
+    # Context: Same as helm:01-template but shows extra debugging information
+    # Use when: Templates fail to render or you need to troubleshoot variable substitution
+    cmds:
+      - helm template {{.RELEASE_NAME}} ./{{.CHART_NAME}} --debug
+
+  # HELM INSTALL (First time deployment)
+  helm:03-install:
+    desc: "Install Helm release"
+    # Context: Deploys your Helm chart to the cluster for the first time
+    # Use when: Initial deployment of the app to the namespace
+    cmds:
+      - helm install {{.RELEASE_NAME}} ./{{.CHART_NAME}} --namespace
+        {{.NAMESPACE}}
+
+  helm:04-install-dry-run:
+    desc: "Install (dry-run, no actual deploy)"
+    # Context: Tests installation without actually deploying (safe preview)
+    # Use when: You want to see what would be installed before committing
+    cmds:
+      - helm install {{.RELEASE_NAME}} ./{{.CHART_NAME}} --namespace
+        {{.NAMESPACE}} --dry-run --debug
+
+  # HELM UPGRADE (Update existing deployment)
+  helm:05-upgrade:
+    desc: "Upgrade Helm release after changes"
+    # Context: Updates an already-deployed Helm release with changes from values.yaml or templates
+    # Use when: You changed values.yaml or templates and want to apply those changes
+    cmds:
+      - helm upgrade {{.RELEASE_NAME}} ./{{.CHART_NAME}} -n {{.NAMESPACE}}
+
+  helm:06-upgrade-with-values:
+    desc: "Upgrade with custom values file"
+    # Context: Upgrades using an alternate values file instead of values.yaml
+    # Use when: You have environment-specific values (dev.yaml, prod.yaml, etc.)
+    vars:
+      VALUES_FILE: custom-values.yaml
+    cmds:
+      - helm upgrade {{.RELEASE_NAME}} ./{{.CHART_NAME}} -n {{.NAMESPACE}} -f
+        {{.VALUES_FILE}}
+
+  helm:07-upgrade-set-tag:
+    desc: "Upgrade with specific image tag (usage: task helm:07-upgrade-set-tag --
+      TAG=v5)"
+    # Context: Upgrades just the image tag without editing values.yaml
+    # Use when: You want to quickly deploy a new Docker image version
+    vars:
+      TAG: "{{.TAG}}"
+    cmds:
+      - helm upgrade {{.RELEASE_NAME}} ./{{.CHART_NAME}} -n {{.NAMESPACE}} --set
+        frontend.tag={{.TAG}}
+
+  # HELM INSPECTION & MANAGEMENT
+  helm:08-list:
+    desc: "List Helm releases"
+    # Context: Shows all deployed Helm releases in your namespace
+    # Use when: You want to see what's currently deployed and their versions
+    cmds:
+      - helm list -n {{.NAMESPACE}}
+
+  helm:09-rollback:
+    desc: "Rollback to previous release"
+    # Context: Reverts to the previous version of your release (undo last upgrade)
+    # Use when: Last upgrade broke things and you need to go back
+    cmds:
+      - helm rollback {{.RELEASE_NAME}} -n {{.NAMESPACE}}
+
+  helm:10-rollback-revision:
+    desc: "Rollback to specific revision (usage: task helm:10-rollback-revision --
+      REVISION=1)"
+    # Context: Reverts to a specific revision from release history
+    # Use when: You want to go back to a particular version (not just the previous one)
+    vars:
+      REVISION: "{{.REVISION}}"
+    cmds:
+      - helm rollback {{.RELEASE_NAME}} {{.REVISION}} -n {{.NAMESPACE}}
+
+  helm:11-uninstall:
+    desc: "Uninstall Helm release"
+    # Context: Completely removes the Helm release and all its resources from the cluster
+    # Use when: You want to delete the entire deployment
+    cmds:
+      - helm uninstall {{.RELEASE_NAME}} -n {{.NAMESPACE}}
+
+  helm:12-history:
+    desc: "Show release history"
+    # Context: Shows all revisions of your Helm release (every upgrade/rollback recorded)
+    # Use when: You want to see what versions exist and when they were deployed
+    cmds:
+      - helm history {{.RELEASE_NAME}} -n {{.NAMESPACE}}
+
+  helm:13-get-values:
+    desc: "Show current values"
+    # Context: Displays the actual values currently being used in your deployed release
+    # Use when: You need to verify what config is running in production
+    cmds:
+      - helm get values {{.RELEASE_NAME}} -n {{.NAMESPACE}}
+
+  # KUBERNETES POD MANAGEMENT
+  k8s:01-restart-backend:
+    desc: "Restart backend deployment"
+    # Context: Kills all backend pods and restarts them (picks up new env vars/images)
+    # Use when: You changed secrets/config and need pods to reload
+    cmds:
+      - kubectl rollout restart deployment/{{.RELEASE_NAME}}-backend -n
+        {{.NAMESPACE}}
+
+  k8s:02-restart-frontend:
+    desc: "Restart frontend deployment"
+    # Context: Kills all frontend pods and restarts them
+    # Use when: You changed frontend image or config
+    cmds:
+      - kubectl rollout restart deployment/{{.RELEASE_NAME}}-frontend -n
+        {{.NAMESPACE}}
+
+  k8s:03-get-pods:
+    desc: "List all pods"
+    # Context: Shows all running pods in your namespace
+    # Use when: You want to check if pods are running/crashing
+    cmds:
+      - kubectl get pods -n {{.NAMESPACE}}
+
+  k8s:04-get-pods-wide:
+    desc: "List pods with details"
+    # Context: Shows pods with extra info (node, IP, readiness, restarts)
+    # Use when: You need detailed pod status (which node it's on, restart count, etc.)
+    cmds:
+      - kubectl get pods -n {{.NAMESPACE}} -o wide
+
+  k8s:05-logs-backend:
+    desc: "Show backend logs (usage: task k8s:05-logs-backend -- POD=pod-name)"
+    # Context: Streams logs from a specific pod to debug issues
+    # Use when: A pod is crashing or misbehaving and you need to see the error
+    vars:
+      POD: "{{.POD}}"
+    cmds:
+      - kubectl logs {{.POD}} -n {{.NAMESPACE}}
+
+  # WORKFLOW AUTOMATION (Run multiple tasks in sequence)
+  workflow:01-update-deploy:
+    desc: "Full workflow: template → upgrade → restart pods"
+    # Context: Complete deployment pipeline: preview → upgrade → restart everything
+    # Use when: You changed values.yaml and want full deploy with pod restart
+    cmds:
+      - task: helm:01-template
+      - task: helm:05-upgrade
+      - task: k8s:01-restart-backend
+      - task: k8s:02-restart-frontend
+      - task: helm:08-list
+      - task: k8s:03-get-pods
+
+  workflow:02-quick-tag-update:
+    desc: "Quick update image tag (usage: task workflow:02-quick-tag-update --
+      TAG=v5)"
+    # Context: Fast path for just updating Docker image tag and restarting pods
+    # Use when: You only changed the image tag (quick hotfix deployment)
+    vars:
+      TAG: "{{.TAG}}"
+    cmds:
+      - task: helm:07-upgrade-set-tag
+        vars:
+          TAG: "{{.TAG}}"
+      - task: k8s:01-restart-backend
+      - task: k8s:02-restart-frontend
+
+  workflow:03-full-reinstall:
+    desc: "Full reinstall (uninstall + install)"
+    # Context: Completely removes and redeploys from scratch (clean slate)
+    # Use when: Previous deployment is broken and you want fresh install
+    cmds:
+      - task: helm:11-uninstall
+      - task: helm:03-install
+      - task: helm:08-list
